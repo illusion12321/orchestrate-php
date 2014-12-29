@@ -10,6 +10,7 @@ use GuzzleHttp\Message\ResponseInterface;
 
 // TODO method to move object to another collection
 // TODO method to move object to another application
+// TODO implement archival and tombstone properties like the ruby client
 
 
 class KeyValue extends AbstractObject
@@ -23,19 +24,15 @@ class KeyValue extends AbstractObject
     /**
      * @var string
      */
-    protected $ref;
-       
+    protected $ref = null;
+    
 
 
 
-    // decidir se o ref é passado aqui ou nos métodos, ver como vai lidar com o put if match
-
-
-    public function __construct(Application $application, $collection, $key, $ref=null)
+    public function __construct(Application $application, $collection, $key=null)
     {
         parent::__construct($application, $collection);
         $this->key = $key;
-        $this->ref = $ref;
     }
 
 
@@ -53,6 +50,9 @@ class KeyValue extends AbstractObject
 
 
 
+    /**
+     * @return KeyValue self
+     */
     public function get($ref=null)
     {
         // define request options
@@ -74,7 +74,9 @@ class KeyValue extends AbstractObject
 
     
 
-
+    /**
+     * @return KeyValue self
+     */
     public function put(array $value=null, $ref=null)
     {
         if ($value === null) {
@@ -87,27 +89,70 @@ class KeyValue extends AbstractObject
 
         // define request options
         $path = $this->collection.'/'.$this->key;
+        $options = ['json' => $value];
 
-        // TODO if match
-        // if ($ref)
-        //     $path .= '/refs/'.$ref;
+        if ($ref) {
+
+            // set If-Match
+            if ($ref === true) {
+                $ref = $this->ref;
+            }
+
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+
+        } elseif ($ref === false) {
+
+            // set If-None-Match
+            $options['headers'] = ['If-None-Match' => '"*"'];
+
+        }
 
         // request
-        $this->request('PUT', $path, [ 'json' => $value ]);
-
+        $this->request('PUT', $path, $options);
+        
         // set ref
         $this->ref = $ref;
         $this->setRefFromETag();
 
-        // set body as input value if success
-        if ($this->isSuccess()) {
-            $this->body = $value;
-        }
+        // set body as input value, even if not success, we can retry
+        $this->body = $value;
 
         return $this;
     }
 
+
+    /**
+     * @return KeyValue self
+     */
+    public function post(array $value=null)
+    {
+        if ($value === null) {
+            if ($this->isDirty()) {
+                $value = $this->body;
+            } else {
+                return $this;
+            }
+        }
+
+        // request
+        $this->request('POST', $this->collection, ['json' => $value]);
+        
+        // set ref
+        $this->key = null;
+        $this->ref = null;
+        $this->setKeyRefFromLocation();
+
+        // set body as input value, even if not success, we can retry
+        $this->body = $value;
+
+        return $this;
+    }
+
+
+
     
+    
+
 
 
     // helpers
@@ -123,6 +168,24 @@ class KeyValue extends AbstractObject
     }
 
     
+    private function setKeyRefFromLocation()
+    {
+        // Location: /v0/collection/key/refs/ad39c0f8f807bf40
 
+        $location = $this->response->getHeader('Location');
+        if (!$location)
+            $location = $this->response->getHeader('Content-Location');
+
+        $location = explode('/', trim($location, '/'));
+        if (count($location) > 4)
+        {
+            $this->key = $location[2];
+            $this->ref = $location[4];
+        }
+    }
+
+
+
+    
 
 }

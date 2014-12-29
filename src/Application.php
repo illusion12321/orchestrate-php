@@ -197,7 +197,7 @@ class Application
      */
     public function get($collection, $key, $ref=null)
     {
-        return (new KeyValue($this, $collection, $key, $ref))->get($ref);
+        return (new KeyValue($this, $collection, $key))->get($ref);
     }
 
     /**
@@ -205,7 +205,15 @@ class Application
      */
     public function put($collection, $key, array $value, $ref=null)
     {
-        return (new KeyValue($this, $collection, $key, $ref))->put($value, $ref);
+        return (new KeyValue($this, $collection, $key))->put($value, $ref);
+    }
+
+    /**
+     * @return KeyValue
+     */
+    public function post($collection, array $value)
+    {
+        return (new KeyValue($this, $collection))->post($value);
     }
 
 

@@ -83,7 +83,7 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     {
         // request
         $this->response = $this->application->request($method, $url, $options);
-
+        
         // set status
         $statusCode = $this->response->getStatusCode();
         $success = !($statusCode >= 400 && $statusCode <= 599);
