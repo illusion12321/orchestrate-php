@@ -1,4 +1,4 @@
-orchestrate php client
+Orchestrate PHP Client
 ======
 
 Simple client for Orchestrate.io API
