@@ -31,7 +31,7 @@ class Response
 	 * @var \GuzzleHttp\Message\ResponseInterface
 	 */
 	protected $httpResponse;
-
+	
 
 	/**
 	 * @param \GuzzleHttp\Message\ResponseInterface $httpResponse
@@ -57,6 +57,12 @@ class Response
 	public function getError()
 	{
 		return $this->error;
+	}
+
+
+	public function json()
+	{
+		return $this->httpResponse->json();
 	}
 
 	public function getStatusCode()

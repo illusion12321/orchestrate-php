@@ -2,14 +2,17 @@
 namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Response\Response;
-use andrefelipe\Orchestrate\Response\ResponseKeyValue;
-use andrefelipe\Orchestrate\Response\ResponseSearch;
+
+
+use andrefelipe\Orchestrate\Collection;
+use andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Objects\Search;
 
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Exception\ClientException;
 
 
-class Client
+class Application
 {
 	/**
 	 * @var string
@@ -29,7 +32,7 @@ class Client
 	/**
 	 * @var \GuzzleHttp\ClientInterface
 	 */
-	protected $httpClient;
+	protected $client;
 
 
 
@@ -38,12 +41,16 @@ class Client
 	 */
 	public function __construct($apiKey=null, $host=null, $apiVersion=null)
 	{
+        // set client options
         $this->setApiKey($apiKey);
         $this->setHost($host);
         $this->setApiVersion($apiVersion);
 	}
 
 
+
+
+    // -------------------- Http Client --------------------
 
     /**
      * @param string $apiKey 
@@ -56,28 +63,24 @@ class Client
             $this->apiKey = getenv('ORCHESTRATE_API_KEY');
     }
 
-
-
-	/**
-	 * @return string
-	 */
-	public function getHost()
-	{
-		return $this->host;
-	}
+    /**
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
 
     /**
      * @param string $host 
      */
-	public function setHost($host=null)
+    public function setHost($host=null)
     {
         if ($host)
             $this->host = trim($host, '/'); 
         else
             $this->host = 'https://api.orchestrate.io';
     }
-
-
 
     /**
      * @return string
@@ -96,18 +99,15 @@ class Client
     }
 
 
-
-
-
-	/**
-	 * @return \GuzzleHttp\ClientInterface
-	 */
-	public function getHttpClient()
-	{
-        if (!$this->httpClient)
+    /**
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public function getClient()
+    {
+        if (!$this->client)
         {
             // create the default http client
-            $this->httpClient = new \GuzzleHttp\Client(
+            $this->client = new \GuzzleHttp\Client(
             [
                 'base_url' => $this->host.'/'.$this->apiVersion.'/',
                 'defaults' => [
@@ -119,97 +119,32 @@ class Client
             ]);
         }
 
-	    return $this->httpClient;
-	}
-
-	/**
-	 * @param \GuzzleHttp\ClientInterface $httpClient
-	 */
-	public function setHttpClient(\GuzzleHttp\ClientInterface $httpClient)
-	{
-	    $this->httpClient = $httpClient;
-	}
-
-
-
-
-
-
-
-
-
-    // Orchestrate API
-    // https://orchestrate.io/docs/apiref
-
+        return $this->client;
+    }
 
     /**
-     * @return boolean
+     * @param \GuzzleHttp\ClientInterface $client
      */
-    public function ping()
+    public function setClient(\GuzzleHttp\ClientInterface $client)
     {
-    	$response = $this->getHttpClient()->head();
-    	return $response->getStatusCode() === 200;
+        $this->client = $client;
     }
-
-
-
-
-    //get : $this->send($this->createRequest('GET', $url, $options));
-
-    public function get($collection, $key, $ref=null)
-    {
-        $path = $collection.'/'.$key;
-
-        if ($ref) {
-            $path .= '/refs/'.trim($ref, '"');
-        }            
-
-        $request = $this->getHttpClient()->createRequest('GET', $path);
-
-    	return new ResponseKeyValue($this->send($request), $collection, $key, $ref);
-    }
-
-
-    public function put($collection, $key, array $value, $ref=null)
-    {
-        $path = $collection.'/'.$key;
-
-        // TODO if match
-        // if ($ref)
-        //     $path .= '/refs/'.$ref;
-
-        $request = $this->getHttpClient()->createRequest('PUT', $path, [
-            'json' => $value
-        ]);
-
-    	return new Response($this->send($request));
-    }
-
-
-
-    public function search($collection, $query, $sort='', $limit=10, $offset=0)
-    {
-        $request = $this->getHttpClient()->createRequest('GET', $collection, [
-            'query' => [
-                'query' => $query,
-                'sort' => $sort,
-                'limit'=> $limit,
-                'offset' => $offset,
-            ]
-        ]);
-
-        return new ResponseSearch($this->send($request), $collection);
-    }
-
 
 
 
     
+    public function request($method, $url = null, array $options = [])
+    {
+        $request = $this->getClient()->createRequest($method, $url, $options);
+
+        return $this->send($request);
+    }
+
 
     private function send(RequestInterface $request)
     {
         try {
-            $response = $this->getHttpClient()->send($request);
+            $response = $this->getClient()->send($request);
         }
         catch (ClientException $e)
         {
@@ -218,6 +153,79 @@ class Client
 
         return $response;
     }
+
+
+
+
+
+
+
+
+
+    // -------------------- Orchestrate Objects --------------------
+
+    public function collection($collection)
+    {
+        return new Collection($this, $collection);
+    }
+
+
+
+
+
+
+
+
+    // -------------------- Orchestrate API --------------------
+    // https://orchestrate.io/docs/apiref
+
+
+    /**
+     * @return boolean
+     */
+    public function ping()
+    {
+    	$response = $this->getClient()->head();
+    	return $response->getStatusCode() === 200;
+    }
+
+
+    // Key/Value
+
+    /**
+     * @return KeyValue
+     */
+    public function get($collection, $key, $ref=null)
+    {
+        return (new KeyValue($this, $collection, $key, $ref))->get($ref);
+    }
+
+    /**
+     * @return KeyValue
+     */
+    public function put($collection, $key, array $value, $ref=null)
+    {
+        return (new KeyValue($this, $collection, $key, $ref))->put($value, $ref);
+    }
+
+
+
+    // Search
+
+    /**
+     * @return Search
+     */
+    public function search($collection, $query, $sort='', $limit=10, $offset=0)
+    {
+        return (new Search($this, $collection))->get($query, $sort, $limit, $offset);
+    }
+
+
+
+
+    
+
+
 
 
 
