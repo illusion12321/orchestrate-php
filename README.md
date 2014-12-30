@@ -38,9 +38,11 @@ require 'vendor/autoload.php';
 use andrefelipe\Orchestrate\Application;
 
 $application = new Application();
-// if you don't provide any parameters it will get the environment variable 'ORCHESTRATE_API_KEY' and use the default host 'https://api.orchestrate.io' and API version 'v0;
+// if you don't provide any parameters it will 
+// get the environment variable 'ORCHESTRATE_API_KEY'
+// and use the default host 'https://api.orchestrate.io' and API version 'v0;
 
-// you can also provide the values, in order: `key`, `host`, `version`
+// you can also provide the values, in order: key, host, version
 $application = new Application($apiKey, 'https://api.aws-eu-west-1.orchestrate.io/', 'v0');
 
 // check the success with Ping
@@ -49,9 +51,9 @@ $application->ping(); // returns boolean
 
 ## Getting Started
 We define our classes following the same convention as Orchestrate, so we have:
-1. **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate (more below).
-2. **Collection** – which holds a collection name and provides the same API, but with one level-deeper.
-3. **Objects** – the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
+1. Application— which holds the Guzzle client, and provides a client-like API interface to Orchestrate (more below).
+2. Collection – which holds a collection name and provides the same API, but with one level-deeper.
+3. Objects – the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
 
 Example:
 
@@ -73,7 +75,7 @@ $object->put(['title' => 'My Title']);
 $object->delete();
 ```
 
-Please note that the result of all operations, in both approaches, are exact the same, they all return *Objects*. And the *Objects* holds the response status as well as the results.
+Please note that the result of all operations, in both approaches, are exact the same, they all return *Objects*. And the *Objects* holds the results as well as the response status.
 
 Full-example:
 
@@ -161,7 +163,7 @@ if ($object->isSuccess()) {
 To sum:
 - All requests are actually triggered from the **Objects**.
 - They prepare the request options and send to the **Application** HTTP client.
-- Then they store and process the HTTP response, according to each use case.
+- Then the **Objects** store and process the HTTP response, according to each use case.
 
 
 
