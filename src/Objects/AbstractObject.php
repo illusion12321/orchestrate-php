@@ -2,18 +2,12 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Application;
-
-// use andrefelipe\Orchestrate\Client;
-use andrefelipe\Orchestrate\Response;
 use GuzzleHttp\Message\ResponseInterface;
 
 
 abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggregate
 {
-    const STATUS_READY = 'ready';
-    const STATUS_DIRTY = 'dirty';
-    const STATUS_SUCCESS = 'success';
-    const STATUS_ERROR = 'error';
+    
 
     /**
      * @var \andrefelipe\Orchestrate\Application
@@ -28,23 +22,35 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     /**
      * @var array
      */
-    protected $body;
+    protected $body = [];
 
+
+
+    
     /**
-     * @var array
+     * @var \GuzzleHttp\Message\ResponseInterface
      */
-    protected $error;
+    protected $response = null;
 
     /**
      * @var string
      */
-    protected $status;
+    protected $status = '';
 
-     /**
-     * @var \GuzzleHttp\Message\ResponseInterface
+    /**
+     * @var string
      */
-    protected $response;
+    protected $statusCode = 0;
 
+    /**
+     * @var string
+     */
+    protected $statusMessage = '';
+
+    
+
+    
+    
 
 
 
@@ -52,9 +58,6 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     {
         $this->application = $application;
         $this->collection = $collection;
-        $this->body = [];
-        $this->error = false;
-        $this->status = self::STATUS_READY;
     }
 
 
@@ -64,9 +67,19 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
         return $this->collection;
     }
 
+
+
     public function getBody()
     {
         return $this->body;
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     public function getStatus()
@@ -74,105 +87,74 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
         return $this->status;
     }
 
-    public function getResponse() // ?
+    public function getStatusCode()
     {
-        return $this->response;
+        return $this->statusCode;
     }
+
+    public function getStatusMessage()
+    {
+        return $this->statusMessage;
+    }
+
+    public function getRequestId()
+    {
+        return $this->response ? $this->response->getHeader('X-ORCHESTRATE-REQ-ID') : '';
+    }
+
+    public function getRequestDate()
+    {
+        return $this->response ? $this->response->getHeader('Date') : '';
+    }
+
+    public function getRequestUrl()
+    {
+        return $this->response ? $this->response->getEffectiveUrl() : '';
+    }
+    
+
+    public function isSuccess()
+    {
+        return !$this->isError();
+    }
+
+    public function isError()
+    {
+        return $this->statusCode >= 400 && $this->statusCode <= 599;
+    }
+
+
+
 
     protected function request($method, $url = null, array $options = [])
     {
         // request
         $this->response = $this->application->request($method, $url, $options);
 
+        // set body
+        $this->body = $this->response->json();
+
         // set status
-        $statusCode = $this->response->getStatusCode();
-        $success = !($statusCode >= 400 && $statusCode <= 599);
-        $this->status = $success ? self::STATUS_SUCCESS : self::STATUS_ERROR;
+        $this->statusMessage = $this->response->getReasonPhrase();
+        $this->status = str_replace(' ', '_', strtolower($this->statusMessage));
+        $this->statusCode = $this->response->getStatusCode();
 
-        // set values
-        if ($success) {
+        if ($this->isError()) {
 
-            $this->body = $this->response->json();
-            $this->error = false;
+            if (isset($this->body['code'])) {
+                $this->status = $this->body['code'];
+            }
+
+            if (isset($this->body['message'])) {
+                $this->statusMessage = $this->body['message'];
+            }
         }
-        else {
-            $this->body = []; //TODO define if it should be null
-            $this->error = $this->response->json();
-        }
-    }
-
-    public function isSuccess()
-    {
-        return $this->status === self::STATUS_SUCCESS;
-    }
-
-    public function isError()
-    {
-        return $this->status === self::STATUS_ERROR;
-    }
-
-    public function isDirty()
-    {
-        return $this->status === self::STATUS_DIRTY;
-    }
-
-    public function isReady()
-    {
-        return $this->status === self::STATUS_READY;
     }
 
 
 
 
-
-
-    // ArrayAccess
-
-    public function offsetExists($offset)
-    {
-        return isset($this->body[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->body[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_null($offset)) {
-            $this->body[] = $value;
-        } else {
-            $this->body[$offset] = $value;
-        }
-        $this->status = self::STATUS_DIRTY;
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->body[$offset]);
-        $this->status = self::STATUS_DIRTY;
-    }
 
     
-
-    // Countable
-
-    public function count()
-    {
-        return count($this->body);
-    }
-
-    
-
-    // IteratorAggregate
-
-    /**
-     * @return \ArrayIterator
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->body);
-    }
 
 }

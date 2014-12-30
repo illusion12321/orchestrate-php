@@ -2,9 +2,6 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Application;
-
-// use andrefelipe\Orchestrate\Client;
-// use andrefelipe\Orchestrate\Response;
 use GuzzleHttp\Message\ResponseInterface;
 
 
@@ -12,7 +9,6 @@ use GuzzleHttp\Message\ResponseInterface;
 // TODO method to move object to another application
 // TODO implement archival and tombstone properties like the ruby client
 
-// TODO adicionar proteções se não tiver o key!
 
 
 class KeyValue extends AbstractObject
@@ -27,8 +23,23 @@ class KeyValue extends AbstractObject
      * @var string
      */
     protected $ref = null;
-    
 
+
+    /**
+     * @var array
+     */
+    protected $value = []; //TODO test, can be null?
+    
+    /**
+     * @var boolean
+     */
+    protected $isDirty = false;
+
+
+
+
+    // TODO try to remove the Application parameter and simplify the others
+    // sometimes it's interesting to instantiate these objects directly, to populate with data then send
 
 
     public function __construct(Application $application, $collection, $key=null)
@@ -45,10 +56,33 @@ class KeyValue extends AbstractObject
         return $this->key;
     }
 
+    public function setKey($key)
+    {
+        $this->key = $key;
+    }
+
+
     public function getRef()
     {
         return $this->ref;
     }
+
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function setValue(array $value)
+    {
+        $this->value = $value;
+    }
+
+    public function isDirty()
+    {
+        return $this->isDirty;
+    }
+
 
 
 
@@ -58,6 +92,9 @@ class KeyValue extends AbstractObject
      */
     public function get($ref=null)
     {
+        // require a key to be set
+        $this->noKeyException();
+
         // define request options
         $path = $this->collection.'/'.$this->key;
 
@@ -68,9 +105,15 @@ class KeyValue extends AbstractObject
         // request
         $this->request('GET', $path);
 
-        // set ref
-        $this->ref = $ref;
-        $this->setRefFromETag();
+        // set values
+        if ($this->isSuccess()) {
+            $this->value = $this->body;
+            $this->setRefFromETag();
+            $this->isDirty = false;
+        }
+        else {
+            $this->value = []; //TODO teste can be null?
+        }
 
         return $this;
     }
@@ -82,9 +125,12 @@ class KeyValue extends AbstractObject
      */
     public function put(array $value=null, $ref=null)
     {
+        // require a key to be set
+        $this->noKeyException();
+
         if ($value === null) {
-            if ($this->isDirty()) {
-                $value = $this->body;
+            if ($this->isDirty) {
+                $value = $this->value;
             } else {
                 return $this;
             }
@@ -113,15 +159,19 @@ class KeyValue extends AbstractObject
         // request
         $this->request('PUT', $path, $options);
         
-        // set ref
-        $this->ref = $ref;
-        $this->setRefFromETag();
+        // set values
+        if ($this->isSuccess()) {
+            $this->setRefFromETag();
+            $this->isDirty = false;
+        }
 
-        // set body as input value, even if not success, we can retry
-        $this->body = $value;
+        // set value as input value, even if not success, so we can retry
+        $this->value = $value;
+
 
         return $this;
     }
+
 
 
     /**
@@ -130,8 +180,8 @@ class KeyValue extends AbstractObject
     public function post(array $value=null)
     {
         if ($value === null) {
-            if ($this->isDirty()) {
-                $value = $this->body;
+            if ($this->isDirty) {
+                $value = $this->value;
             } else {
                 return $this;
             }
@@ -140,13 +190,16 @@ class KeyValue extends AbstractObject
         // request
         $this->request('POST', $this->collection, ['json' => $value]);
         
-        // set ref
-        $this->key = null;
-        $this->ref = null;
-        $this->setKeyRefFromLocation();
+        // set values
+        if ($this->isSuccess()) {
+            $this->isDirty = false;
+            $this->key = null;
+            $this->ref = null;
+            $this->setKeyRefFromLocation();
+        }
 
-        // set body as input value, even if not success, we can retry
-        $this->body = $value;
+        // set value as input value, even if not success, so we can retry
+        $this->value = $value;
 
         return $this;
     }
@@ -159,6 +212,9 @@ class KeyValue extends AbstractObject
      */
     public function delete($ref=null)
     {
+        // require a key to be set
+        $this->noKeyException();
+
         // define request options
         $path = $this->collection.'/'.$this->key;
         $options = [];
@@ -178,8 +234,13 @@ class KeyValue extends AbstractObject
         
         // TODO confirm if the success body is array
 
+        if ($this->isSuccess()) {
+            $this->isDirty = false;
+        }
+
         return $this;
     }
+
 
 
 
@@ -188,6 +249,9 @@ class KeyValue extends AbstractObject
      */
     public function purge()
     {
+        // require a key to be set
+        $this->noKeyException();
+
         // define request options
         $path = $this->collection.'/'.$this->key;
         $options = ['query' => ['purge' => 'true']];
@@ -198,7 +262,8 @@ class KeyValue extends AbstractObject
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->ref = null;
-        }        
+            $this->isDirty = false;
+        }
 
         return $this;
     }
@@ -215,14 +280,18 @@ class KeyValue extends AbstractObject
 
 
     // helpers
+    private function noKeyException()
+    {
+        if (!$this->key) {
+            throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
+        }
+    }
+
 
     private function setRefFromETag()
     {
-        if ($this->isSuccess()) {
-
-            if ($etag = $this->response->getHeader('ETag')) {
-                $this->ref = trim($etag, '"');
-            }
+        if ($etag = $this->response->getHeader('ETag')) {
+            $this->ref = trim($etag, '"');
         }
     }
 
@@ -243,6 +312,62 @@ class KeyValue extends AbstractObject
         }
     }
 
+
+
+
+
+
+
+
+
+    // ArrayAccess
+
+    public function offsetExists($offset)
+    {
+        return isset($this->value[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->value[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->value[] = $value;
+        } else {
+            $this->value[$offset] = $value;
+        }
+        $this->isDirty = true;
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->value[$offset]);
+        $this->isDirty = true;
+    }
+
+    
+
+    // Countable
+
+    public function count()
+    {
+        return count($this->value);
+    }
+
+    
+
+    // IteratorAggregate
+
+    /**
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->value);
+    }
 
 
 

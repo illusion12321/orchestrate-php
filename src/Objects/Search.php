@@ -40,6 +40,11 @@ class Search extends AbstractObject
     }
 
 
+    public function getResults()
+    {
+        return $this->results;
+    }
+
     public function getCount()
     {
         return $this->count();
@@ -61,6 +66,9 @@ class Search extends AbstractObject
     }
 
 
+
+    // TODO review this function name, may be useful to change to 'search'
+    // but still wait to the pagination methods, like getNext / getPrev
 
     public function get($query, $sort='', $limit=10, $offset=0)
     {
@@ -86,19 +94,19 @@ class Search extends AbstractObject
             $this->prevUrl = !empty($this->body['prev']) ? $this->body['prev'] : '';
 
         } else {
-            
+
             $this->totalCount = 0;
             $this->nextUrl = '';
             $this->prevUrl = '';
             $this->results = [];
         }
-
+        
         return $this;
     }
-    
-    
 
     
+
+
 
     // ArrayAccess
 
@@ -119,14 +127,13 @@ class Search extends AbstractObject
         } else {
             $this->results[$offset] = $value;
         }
-        $this->status = self::STATUS_DIRTY;
     }
 
     public function offsetUnset($offset)
     {
         unset($this->results[$offset]);
-        $this->status = self::STATUS_DIRTY;
     }
+
 
 
     // Countable
@@ -146,6 +153,8 @@ class Search extends AbstractObject
     {
         return new \ArrayIterator($this->results);
     }
+
+
 
 
 }

@@ -1,14 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Response\Response;
-
-
 use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Search;
-
-use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 
 
@@ -125,7 +121,7 @@ class Application
     /**
      * @param \GuzzleHttp\ClientInterface $client
      */
-    public function setClient(\GuzzleHttp\ClientInterface $client)
+    public function setClient(ClientInterface $client)
     {
         $this->client = $client;
     }
@@ -133,16 +129,13 @@ class Application
 
 
     
+    /**
+     * @var \GuzzleHttp\Message\ResponseInterface
+     */
     public function request($method, $url = null, array $options = [])
     {
         $request = $this->getClient()->createRequest($method, $url, $options);
 
-        return $this->send($request);
-    }
-
-
-    private function send(RequestInterface $request)
-    {
         try {
             $response = $this->getClient()->send($request);
         }
