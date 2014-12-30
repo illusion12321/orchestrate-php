@@ -37,11 +37,16 @@ use andrefelipe\Orchestrate\Application;
 
 $application = new Application();
 // if you don't provide any parameters it will 
-// get the environment variable 'ORCHESTRATE_API_KEY'
-// and use the default host 'https://api.orchestrate.io' and API version 'v0;
+// get the API key from an environment variable 'ORCHESTRATE_API_KEY'
+// use the default host 'https://api.orchestrate.io'
+// and the default API version 'v0'
 
 // you can also provide the values, in order: key, host, version
-$application = new Application($apiKey, 'https://api.aws-eu-west-1.orchestrate.io/', 'v0');
+$application = new Application(
+    $apiKey,
+    'https://api.aws-eu-west-1.orchestrate.io/',
+    'v0'
+);
 
 // check the success with Ping
 $application->ping(); // returns boolean
@@ -50,7 +55,7 @@ $application->ping(); // returns boolean
 ## Getting Started
 We define our classes following the same convention as Orchestrate, so we have:
 
-1. **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate.
+1- **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -59,10 +64,10 @@ $application = new Application();
 $object = $application->get('collection_name', 'key'); // returns a KeyValue object
 $object = $application->put('collection_name', 'key', ['title' => 'My Title']);
 $object = $application->delete('collection_name', 'key');
-// you can name the var as 'client' to feel more like it
+// you can name the var as '$client' to feel more like it
 ```
 
-2. **Collection** — which holds a collection name and provides the same API, but with one level-deeper.
+2- **Collection** — which holds a collection name and provides the same API, but with one level-deeper.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -74,19 +79,20 @@ $object = $collection->put('key', ['title' => 'My Title']);
 $object = $collection->delete('key');
 ```
 
-3. **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
+3- **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API, the results and response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
 
 $application = new Application();
-$object = new KeyValue($application, 'collection_name', 'key');
+$object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
+// you can now change the object as you like, then do the requests later
 $object->get();
 $object->put(['title' => 'My Title']);
 $object->delete();
 ```
 
-Please note that the result of all operations, in both approaches, are exact the same, they all return *Objects*. And the *Objects* holds the results as well as the response status.
+Please note that the result of all operations, in any approach, are exact the same, they all return **Objects**. **And the *Objects* holds the results as well as the response status.**
 
 Full-example:
 
