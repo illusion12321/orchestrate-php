@@ -50,26 +50,38 @@ $application->ping(); // returns boolean
 ## Getting Started
 We define our classes following the same convention as Orchestrate, so we have:
 
-1. **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate (more below).
-2. **Collection** — which holds a collection name and provides the same API, but with one level-deeper.
-3. **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
-
-Example:
+1. **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate.
 
 ```php
 use andrefelipe\Orchestrate\Application;
 
-// Client-like approach
 $application = new Application();
 $object = $application->get('collection_name', 'key'); // returns a KeyValue object
 $object = $application->put('collection_name', 'key', ['title' => 'My Title']);
 $object = $application->delete('collection_name', 'key');
 // you can name the var as 'client' to feel more like it
+```
 
-// Object-like approach
+2. **Collection** — which holds a collection name and provides the same API, but with one level-deeper.
+
+```php
+use andrefelipe\Orchestrate\Application;
+
 $application = new Application();
 $collection = $application->collection('collection_name');
 $object = $collection->get('key');
+$object = $collection->put('key', ['title' => 'My Title']);
+$object = $collection->delete('key');
+```
+
+3. **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
+
+```php
+use andrefelipe\Orchestrate\Application;
+
+$application = new Application();
+$object = new KeyValue($application, 'collection_name', 'key');
+$object->get();
 $object->put(['title' => 'My Title']);
 $object->delete();
 ```
@@ -169,9 +181,19 @@ To sum:
 ## Orchestrate API
 
 ### Key/Value Get
-… will write soon
+
+```php
+$object = $application->get('collection', 'key');
+// or
+$object = $collection->get('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->get();
+
+```
 
 
+get("users", "littlefinger")
 
 ## Docs
 

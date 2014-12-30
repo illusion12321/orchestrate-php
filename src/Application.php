@@ -31,7 +31,7 @@ class Application
 	 * @var ClientInterface
 	 */
 	protected $client;
-
+    
 
 
 	/**
