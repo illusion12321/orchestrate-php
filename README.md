@@ -1,14 +1,12 @@
 Orchestrate.io PHP Client
 ======
 
-This client goal is to follow very closely the Orchestrate API and naming conventions, so your best friend is always the great Orchestrate API Reference https://orchestrate.io/docs/apiref
+This client follows very closely the Orchestrate API and naming conventions, so your best friend is always the (great) Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
-You can follow the methods and usage example below, and feel free to fork and suggest improvements. Our goal is to build a very user-friendly client.
-
-Important info:
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
 - PHP should be 5.4 or higher.
 - JSON is parsed as, and expected to be, associative array.
+- You may find it a very user-friendly client.
 
 
 ## Instalation
@@ -168,10 +166,16 @@ To sum:
 
 
 
-## Usage
+## Orchestrate API
 
 ### Key/Value Get
 … will write soon
+
+
+
+## Docs
+
+Please refer to the source code for now, while a proper documentation is made.
 
 
 
