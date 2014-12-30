@@ -51,9 +51,10 @@ $application->ping(); // returns boolean
 
 ## Getting Started
 We define our classes following the same convention as Orchestrate, so we have:
-1. Application— which holds the Guzzle client, and provides a client-like API interface to Orchestrate (more below).
-2. Collection – which holds a collection name and provides the same API, but with one level-deeper.
-3. Objects – the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
+
+1. **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate (more below).
+2. **Collection** — which holds a collection name and provides the same API, but with one level-deeper.
+3. **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API and the HTTP response status.
 
 Example:
 
