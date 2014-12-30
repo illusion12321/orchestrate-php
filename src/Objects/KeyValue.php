@@ -12,6 +12,8 @@ use GuzzleHttp\Message\ResponseInterface;
 // TODO method to move object to another application
 // TODO implement archival and tombstone properties like the ruby client
 
+// TODO adicionar proteções se não tiver o key!
+
 
 class KeyValue extends AbstractObject
 {
@@ -36,6 +38,7 @@ class KeyValue extends AbstractObject
     }
 
 
+    // TODO maybe add setKey and setCollection after all
 
     public function getKey()
     {
@@ -150,8 +153,64 @@ class KeyValue extends AbstractObject
 
 
 
-    
-    
+
+    /**
+     * @return KeyValue self
+     */
+    public function delete($ref=null)
+    {
+        // define request options
+        $path = $this->collection.'/'.$this->key;
+        $options = [];
+
+        if ($ref) {
+
+            // set If-Match
+            if ($ref === true) {
+                $ref = $this->ref;
+            }
+
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+        }
+
+        // request
+        $this->request('DELETE', $path, $options);
+        
+        // TODO confirm if the success body is array
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return KeyValue self
+     */
+    public function purge()
+    {
+        // define request options
+        $path = $this->collection.'/'.$this->key;
+        $options = ['query' => ['purge' => 'true']];
+
+        // request
+        $this->request('DELETE', $path, $options);
+        
+        // null ref if success, as it will never exist again
+        if ($this->isSuccess()) {
+            $this->ref = null;
+        }        
+
+        return $this;
+    }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -186,6 +245,6 @@ class KeyValue extends AbstractObject
 
 
 
-    
+
 
 }

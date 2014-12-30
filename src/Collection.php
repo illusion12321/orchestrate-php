@@ -4,7 +4,8 @@ namespace andrefelipe\Orchestrate;
 namespace andrefelipe\Orchestrate\Application;
 
 
-// TODO maybe convert to an Object, with proper array access, and item storage?
+// TODO maybe convert to an Object, with proper array access, and item storage? – can work fine code-wise, but have to confirm a real world usage
+
 
 class Collection
 {
@@ -37,15 +38,15 @@ class Collection
     }
 
 
-    public function getApplication()
-    {
-        return $this->application;
-    }
+    // public function getApplication()
+    // {
+    //     return $this->application;
+    // }
 
-    public function getCollection()
-    {
-        return $this->collection;
-    }
+    // public function getCollection()
+    // {
+    //     return $this->collection;
+    // }
 
 
 
@@ -62,6 +63,16 @@ class Collection
     public function post(array $value)
     {
         return $this->application->post($this->collection, $value);
+    }
+
+    public function delete($key, $ref=null)
+    {
+        return $this->application->delete($this->collection, $key, $ref, $purge);
+    }
+
+    public function purge($key)
+    {
+        return $this->application->purge($this->collection, $key);
     }
 
     public function search($query, $sort='', $limit=10, $offset=0)

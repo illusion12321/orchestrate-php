@@ -216,6 +216,23 @@ class Application
         return (new KeyValue($this, $collection))->post($value);
     }
 
+    /**
+     * @return KeyValue
+     */
+    public function delete($collection, $key, $ref=null, $purge=false)
+    {
+        return (new KeyValue($this, $collection, $key))->delete($ref, $purge);
+    }
+
+    /**
+     * @return KeyValue
+     */
+    public function purge($collection, $key)
+    {
+        return (new KeyValue($this, $collection, $key))->purge();
+    }
+
+
 
 
     // Search
