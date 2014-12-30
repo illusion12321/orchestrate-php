@@ -65,6 +65,7 @@ class KeyValue extends AbstractObject
     public function setKey($key)
     {
         $this->key = $key;
+        $this->isDirty = true;
     }
 
 
@@ -77,6 +78,16 @@ class KeyValue extends AbstractObject
     }
 
     /**
+     * @param string $ref
+     */
+    public function setRef($ref)
+    {
+        $this->ref = $ref;
+        $this->isDirty = true;
+    }
+
+
+    /**
      * @return string
      */
     public function getValue()
@@ -87,6 +98,7 @@ class KeyValue extends AbstractObject
     public function setValue(array $value)
     {
         $this->value = $value;
+        $this->isDirty = true;
     }
 
     /**
