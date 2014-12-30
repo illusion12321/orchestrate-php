@@ -2,7 +2,6 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Application;
-use GuzzleHttp\Message\ResponseInterface;
 
 
 abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggregate
@@ -28,7 +27,7 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
 
     
     /**
-     * @var \GuzzleHttp\Message\ResponseInterface
+     * @var \GuzzleHttp\Message\Response
      */
     protected $response = null;
 
@@ -74,7 +73,7 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     }
 
     /**
-     * @return ResponseInterface
+     * @return Response
      */
     public function getResponse()
     {
@@ -142,7 +141,7 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
      */
     public function isError()
     {
-        return $this->statusCode >= 400 && $this->statusCode <= 599;
+        return !$this->statusCode || $this->statusCode >= 400 && $this->statusCode <= 599;
     }
 
 

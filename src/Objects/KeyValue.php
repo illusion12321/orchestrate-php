@@ -2,7 +2,6 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Application;
-use GuzzleHttp\Message\ResponseInterface;
 
 
 // TODO method to move object to another collection

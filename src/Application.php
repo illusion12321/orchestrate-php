@@ -5,7 +5,9 @@ use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Search;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 
 
 class Application
@@ -30,7 +32,7 @@ class Application
 	 */
 	protected $client;
 
-    
+
 
 	/**
 	 * @param string $apiKey
@@ -164,7 +166,7 @@ class Application
      * @param string|Url $url     HTTP URL to connect to
      * @param array      $options Array of options to apply to the request
      *
-     * @return \GuzzleHttp\Message\ResponseInterface
+     * @return \GuzzleHttp\Message\Response
      * @link http://docs.guzzlephp.org/clients.html#request-options
      */
     public function request($method, $url = null, array $options = [])
@@ -174,18 +176,40 @@ class Application
         try {
             $response = $this->getClient()->send($request);
         }
-        catch (ClientException $e)
-        {
+        catch (ClientException $e) {
+
+            // have Orchestrate error message
             $response = $e->getResponse();
         }
-        // TODO add a blank new Response($statusCode, $headers, $body, $options);
+        catch (ConnectException $e) {
+
+            // assemble the best possible error response
+            if ($e->hasResponse()) {
+                $response = $e->getResponse();
+            } else {
+                $response = new Response(
+                    0,
+                    ['Date' => gmdate('D, d M Y H:i:s').' GMT'],
+                    null,
+                    ['reason_phrase' => $e->getMessage()
+                ]);
+            }
+
+            if ($request = $e->getRequest()) {
+                $response->setEffectiveUrl($request->getUrl());
+            }
+
+        } catch (\Exception $e) {
+            $response = new Response(
+                500,
+                ['Date' => 'Thu, 24 Oct 2013 15:20:42 GMT'],
+                null,
+                ['reason_phrase' => 'Probably a Request Timeout'
+            ]);
+        }
 
         return $response;
     }
-
-
-
-
 
 
 

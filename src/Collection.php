@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-namespace andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Application;
 
 
 // TODO maybe convert to an Object, with proper array access, and item storage? – can work fine code-wise, but have to confirm a real world usage
