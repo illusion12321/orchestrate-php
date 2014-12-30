@@ -9,7 +9,7 @@ use GuzzleHttp\Message\ResponseInterface;
 // TODO method to move object to another application
 // TODO implement archival and tombstone properties like the ruby client
 
-
+// TODO review this isDirty naming
 
 class KeyValue extends AbstractObject
 {
@@ -51,23 +51,34 @@ class KeyValue extends AbstractObject
 
     // TODO maybe add setKey and setCollection after all
 
+    /**
+     * @return string
+     */
     public function getKey()
     {
         return $this->key;
     }
 
+    /**
+     * @param string $key
+     */
     public function setKey($key)
     {
         $this->key = $key;
     }
 
 
+    /**
+     * @return string
+     */
     public function getRef()
     {
         return $this->ref;
     }
 
-
+    /**
+     * @return string
+     */
     public function getValue()
     {
         return $this->value;
@@ -78,6 +89,9 @@ class KeyValue extends AbstractObject
         $this->value = $value;
     }
 
+    /**
+     * @return boolean
+     */
     public function isDirty()
     {
         return $this->isDirty;
@@ -347,7 +361,6 @@ class KeyValue extends AbstractObject
         unset($this->value[$offset]);
         $this->isDirty = true;
     }
-
     
 
     // Countable
@@ -356,14 +369,10 @@ class KeyValue extends AbstractObject
     {
         return count($this->value);
     }
-
     
 
     // IteratorAggregate
 
-    /**
-     * @return \ArrayIterator
-     */
     public function getIterator()
     {
         return new \ArrayIterator($this->value);

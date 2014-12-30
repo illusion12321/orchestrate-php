@@ -49,11 +49,6 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
 
     
 
-    
-    
-
-
-
     public function __construct(Application $application, $collection)
     {
         $this->application = $application;
@@ -61,14 +56,18 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     }
 
 
-
+    /**
+     * @return string
+     */
     public function getCollection()
     {
         return $this->collection;
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getBody()
     {
         return $this->body;
@@ -82,42 +81,65 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
         return $this->response;
     }
 
+    /**
+     * @return string
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
+    /**
+     * @return int
+     */
     public function getStatusCode()
     {
         return $this->statusCode;
     }
 
+    /**
+     * @return string
+     */
     public function getStatusMessage()
     {
         return $this->statusMessage;
     }
 
+    /**
+     * @return string
+     */
     public function getRequestId()
     {
         return $this->response ? $this->response->getHeader('X-ORCHESTRATE-REQ-ID') : '';
     }
 
+    /**
+     * @return string
+     */
     public function getRequestDate()
     {
         return $this->response ? $this->response->getHeader('Date') : '';
     }
 
+    /**
+     * @return string
+     */
     public function getRequestUrl()
     {
         return $this->response ? $this->response->getEffectiveUrl() : '';
     }
     
-
+    /**
+     * @return boolean
+     */
     public function isSuccess()
     {
         return !$this->isError();
     }
 
+    /**
+     * @return boolean
+     */
     public function isError()
     {
         return $this->statusCode >= 400 && $this->statusCode <= 599;

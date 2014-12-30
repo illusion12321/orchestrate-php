@@ -33,33 +33,51 @@ class Search extends AbstractObject
 
 
 
-
+    /**
+     * @param Application $application
+     * @param string $collection
+     */
     public function __construct(Application $application, $collection)
     {
         parent::__construct($application, $collection);
     }
 
 
+    /**
+     * @return array
+     */
     public function getResults()
     {
         return $this->results;
     }
 
+    /**
+     * @return int
+     */
     public function getCount()
     {
-        return $this->count();
+        return count($this);
     }
 
+    /**
+     * @return int
+     */
     public function getTotalCount()
     {
         return $this->totalCount;
     }
 
+    /**
+     * @return string
+     */
     public function getNextUrl()
     {
         return $this->nextUrl;
     }
 
+    /**
+     * @return string
+     */
     public function getPrevUrl()
     {
         return $this->prevUrl;
@@ -70,6 +88,13 @@ class Search extends AbstractObject
     // TODO review this function name, may be useful to change to 'search'
     // but still wait to the pagination methods, like getNext / getPrev
 
+    /**
+     * @param string $query
+     * @param string $sort
+     * @param int $limit
+     * @param int $offset
+     * @return Search self
+     */
     public function get($query, $sort='', $limit=10, $offset=0)
     {
         // define request options
@@ -100,7 +125,7 @@ class Search extends AbstractObject
             $this->prevUrl = '';
             $this->results = [];
         }
-        
+
         return $this;
     }
 
@@ -135,7 +160,6 @@ class Search extends AbstractObject
     }
 
 
-
     // Countable
 
     public function count()
@@ -146,9 +170,6 @@ class Search extends AbstractObject
 
     // IteratorAggregate
 
-    /**
-     * @return \ArrayIterator
-     */
     public function getIterator()
     {
         return new \ArrayIterator($this->results);
