@@ -13,24 +13,12 @@ This client follows very closely the Orchestrate API and naming conventions, so 
 
 Use [Composer](http://getcomposer.org).
 
-Install Composer Globally (Linux / Unix / OSX):
-
-```bash
-curl -sS https://getcomposer.org/installer | php
-mv composer.phar /usr/local/bin/composer
-```
-
-Run this Composer command to install the latest stable version of the client, in the current folder:
-
-```bash
-composer require andrefelipe/orchestrate-php
-```
-
-After installing, require Composer's autoloader and you're good to go:
-
-```php
-<?php
-require 'vendor/autoload.php';
+```json
+{
+    "require": {
+        "andrefelipe/orchestrate-php": "*@alpha"
+    }
+}
 ```
 
 
