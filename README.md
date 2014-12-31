@@ -11,22 +11,25 @@ This client follows very closely the Orchestrate API and naming conventions, so 
 
 ## Instalation
 
-Use [Composer](http://getcomposer.org):
+Use [Composer](http://getcomposer.org).
+
+Install Composer Globally (Linux / Unix / OSX):
 
 ```bash
-# Install Composer
 curl -sS https://getcomposer.org/installer | php
+mv composer.phar /usr/local/bin/composer
 ```
 
-Next, run the Composer command to install the latest stable version of the client:
+Run this Composer command to install the latest stable version of the client, in the current folder:
 
 ```bash
 composer require andrefelipe/orchestrate-php
 ```
 
-After installing, you need to require Composer's autoloader:
+After installing, require Composer's autoloader and you're good to go:
 
 ```php
+<?php
 require 'vendor/autoload.php';
 ```
 
@@ -36,20 +39,20 @@ require 'vendor/autoload.php';
 use andrefelipe\Orchestrate\Application;
 
 $application = new Application();
-// if you don't provide any parameters it will 
+// if you don't provide any parameters it will:
 // get the API key from an environment variable 'ORCHESTRATE_API_KEY'
 // use the default host 'https://api.orchestrate.io'
 // and the default API version 'v0'
 
-// you can also provide the values, in order: key, host, version
+// you can also provide the parameters, in order: apiKey, host, version
 $application = new Application(
-    $apiKey,
+    'your-api-key',
     'https://api.aws-eu-west-1.orchestrate.io/',
     'v0'
 );
 
 // check the success with Ping
-$application->ping(); // returns boolean
+$application->ping(); // (boolean)
 ```
 
 ## Getting Started
@@ -64,7 +67,7 @@ $application = new Application();
 $object = $application->get('collection_name', 'key'); // returns a KeyValue object
 $object = $application->put('collection_name', 'key', ['title' => 'My Title']);
 $object = $application->delete('collection_name', 'key');
-// you can name the var as '$client' to feel more like it
+// you can name the var as '$client' to feel more like a client
 ```
 
 2- **Collection** — which holds a collection name and provides the same client-like API, but with one level-deeper.
@@ -79,7 +82,7 @@ $object = $collection->put('key', ['title' => 'My Title']);
 $object = $collection->delete('key');
 ```
 
-3- **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API, the results and response status.
+3- **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API, as well as the results and response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -87,9 +90,10 @@ use andrefelipe\Orchestrate\Application;
 $application = new Application();
 $object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
 // you can now change the object as you like, then do the requests later
-$object->get();
-$object->put(['title' => 'My Title']);
-$object->delete();
+$object->get(); // the current stored key
+$object->get('20c14e8965d6cbb0'); // a specific ref
+$object->put(['title' => 'My Title']); // puts a new value
+$object->delete(); // delete the current ref
 ```
 
 Please note that the result of all operations, in any approach, are exact the same, they all return **Objects**. And ***Objects* holds the results as well as the response status.**
@@ -107,7 +111,7 @@ if ($object->isSuccess()) {
     //     [title] => My Title
     // )
 } else {
-    // in case if was an error, it would return results like these
+    // in case if was an error, it would return results like these:
 
     echo $object->getStatus(); // items_not_found
     // — the Orchestrate Error code
@@ -117,7 +121,7 @@ if ($object->isSuccess()) {
 
     echo $item->getStatusMessage(); // The requested items could not be found.
     // — the status message, in case of error, the Orchestrate message is used
-    // intead of the default HTTP status texts
+    // intead of the default HTTP Reason-Phrases
     
     print_r($item->getBody());
     // Array
@@ -136,17 +140,17 @@ if ($object->isSuccess()) {
     //         )
     //     [code] => items_not_found
     // )
-    // — the full body of the response, in this case the Orchestrate error
+    // — the full body of the response, in this case, the Orchestrate error
 
 }
 
 ```
 
-All objects implements [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
+> All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
 
 ```php
 
-// for KeyValue objects, the resulting value is acessed like:
+// for KeyValue objects, the Value is acessed like:
 
 $object = $application->get('collection_name', 'key');
 
@@ -161,8 +165,7 @@ if (count($object)) // 1 in this case
     }
 }
 
-// as intended you can change the value, then put back to Orchestrate
-
+// as intended you can change the Value, then put back to Orchestrate
 $object['file_url'] = 'http://myfile.jpg';
 $object->put();
 
@@ -173,21 +176,154 @@ if ($object->isSuccess()) {
 }
 
 // if you don't want to use the internal Array directly, you can always use:
-$values = $object->getValue();
+$value = $object->getValue();
 // it will return the internal Array that is being accessed
+// then you can change it as usual
+$value['profile'] = ['name' => 'The Name', 'age' => 10];
+// and send to Orchestrate with:
+$object->put($value);
+// or with:
+$object = $application->put('collection_name', $object->getKey(), $value);
+
+if ($object->isSuccess()) {}
 
 ```
 
-To sum how this client works:
+To sum, this is how this client works:
 - All requests are actually triggered from the **Objects**.
 - They prepare the request options and send to the **Application** HTTP client.
-- Then the **Objects** store HTTP response and process the results, according to each use case.
+- Then the **Objects** store the HTTP response and process the results, according to each use case.
 
 Let's go:
 
 
 ## Orchestrate API
 
+### Key/Value Get
+
+```php
+$object = $application->get('collection', 'key');
+// or
+$object = $collection->get('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->get();
+```
+
+### Key/Value Put (create/update by key)
+
+```php
+$object = $application->put('collection', 'key', ['title' => 'New Title']);
+// or
+$object = $collection->get('key', ['title' => 'New Title']);
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object['title'] = 'New Title';
+$object->put(); // puts the whole current value, only with the title changed
+$object->put(['title' => 'New Title']); // puts an entire new value
+```
+
+Conditional Put If-Match:
+```php
+// Stores the value for the key only if the value of the ref matches the current stored ref.
+
+$object = $application->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+// or
+$object = $collection->get('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
+$object->put(['title' => 'New Title'], true); // uses the current object Ref
+```
+
+Conditional Put If-None-Match:
+```php
+// Stores the value for the key if no key/value already exists.
+
+$object = $application->put('collection', 'key', ['title' => 'New Title'], false);
+// or
+$object = $collection->get('key', ['title' => 'New Title'], false);
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->put(['title' => 'New Title'], false);
+```
+
+### Key/Value Post (create & generate key)
+
+```php
+$object = $application->post('collection', ['title' => 'New Title']);
+// or
+$object = $collection->post(['title' => 'New Title']);
+// or
+$object = new KeyValue($application, 'collection');
+$object['title'] = 'New Title';
+$object->post(); // posts the current Value, if it has changed
+$object->post(['title' => 'New Title']); // posts a new value
+```
+
+### Key/Value Delete
+
+```php
+$object = $application->delete('collection', 'key');
+// or
+$object = $collection->delete('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->delete();
+$object->delete('20c14e8965d6cbb0'); // delete the specific ref
+```
+
+Conditional Delete If-Match:
+```php
+// The If-Match header specifies that the delete operation will succeed if and only if the ref value matches current stored ref.
+
+$object = $application->delete('collection', 'key', '20c14e8965d6cbb0');
+// or
+$object = $collection->delete('key', '20c14e8965d6cbb0');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+// first get or set a ref:
+// $object->get();
+// or $object->setRef('20c14e8965d6cbb0');
+$object->delete(true); // delete the current ref
+$object->delete('20c14e8965d6cbb0'); // delete a specific ref
+```
+
+Purge:
+```php
+// The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
+
+$object = $application->purge('collection', 'key');
+// or
+$object = $collection->purge('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->purge();
+```
+
+
+
+### Refs Get
+
+```php
+// Returns the specified version of a value.
+
+$object = $application->get('collection', 'key', '20c14e8965d6cbb0');
+// or
+$object = $collection->get('key', '20c14e8965d6cbb0');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->get('20c14e8965d6cbb0');
+```
+
+
+
+
+## Docs
+
+Please refer to the source code for now, while a proper documentation is made.
+
+Here is a sample of the Objects methods: 
 
 ### Key/Value
 ```php
@@ -195,22 +331,29 @@ $object = $application->get('collection', 'key');
 
 if ($object->isSuccess()) {
     
+    // get the object info
     $object->getKey(); // string
     $object->getRef(); // string
     $object->getValue(); // array
     
+    // working with the Value
     $object['my_property']; // direct array access to the Value
     foreach ($object as $key => $value) {} // iteratable
     $object['my_property'] = 'new value'; // set
     unset($object['my_property']); // unset
     
+    // some API methods
     $object->put(); // put the current value, if has changed, otherwise return
     $object->put(null); // same as above
     $object->put(['title' => 'new title']); // put a new value
+    $object->delete(); // delete the current ref
+    $object->delete('20c14e8965d6cbb0'); // delete the specific ref
+    $object->purge(); // permanently delete all refs and graph relations
 
-    $object->isDirty(); // (boolean) if the internal Array has changed
-    $object->isSuccess(); // (boolean) if the last request was sucessful
-    $object->isError(); // (boolean) if the last request was not sucessful
+    // booleans to check status
+    $object->hasChanged(); // if the internal Array has changed
+    $object->isSuccess(); // if the last request was sucessful
+    $object->isError(); // if the last request was not sucessful
     
     $object->getResponse(); // GuzzleHttp\Message\Response
     $object->getStatus(); // ok, created, items_not_found, etc
@@ -227,35 +370,6 @@ if ($object->isSuccess()) {
 
 }
 ```
-
-#### Key/Value Get
-
-```php
-$object = $application->get('collection', 'key');
-// or
-$object = $collection->get('key');
-// or
-$object = new KeyValue($application, 'collection', 'key');
-$object->get();
-```
-
-#### Key/Value Put (create/update by key)
-
-```php
-$object = $application->put('collection', 'key', ['title' => 'New Title']);
-// or
-$object = $collection->get('key', ['title' => 'New Title']);
-// or
-$object = new KeyValue($application, 'collection', 'key');
-$object['title'] = 'New title';
-$object->put(); // puts the whole current value, only with the title changed
-$object->put(['title' => 'New Title']); // puts an entire new value
-```
-
-
-## Docs
-
-Please refer to the source code for now, while a proper documentation is made.
 
 
 
