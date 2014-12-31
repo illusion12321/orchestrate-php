@@ -8,6 +8,8 @@ use andrefelipe\Orchestrate\Application;
 // TODO method to move object to another application
 // TODO implement archival and tombstone properties like the ruby client
 
+// TODO maybe move the hasChanged up to AbstractObject, then even the ArrayAccess etc
+
 
 class KeyValue extends AbstractObject
 {
@@ -26,7 +28,7 @@ class KeyValue extends AbstractObject
     /**
      * @var array
      */
-    protected $value = []; //TODO test, can be null?
+    protected $value = [];
     
     /**
      * @var boolean
@@ -47,7 +49,15 @@ class KeyValue extends AbstractObject
     }
 
 
-    // TODO maybe add setKey and setCollection after all
+    /**
+     * @param string $collection
+     */
+    public function setCollection($collection)
+    {
+        $this->collection = $collection;
+        $this->hasChanged = true;
+    }
+
 
     /**
      * @return string
@@ -136,7 +146,7 @@ class KeyValue extends AbstractObject
             $this->hasChanged = false;
         }
         else {
-            $this->value = []; //TODO teste can be null?
+            $this->value = [];
         }
 
         return $this;

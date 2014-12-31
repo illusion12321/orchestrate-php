@@ -63,6 +63,14 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
         return $this->collection;
     }
 
+    /**
+     * @param string $collection
+     */
+    public function setCollection($collection)
+    {
+        $this->collection = $collection;
+    }
+
 
     /**
      * @return array
@@ -151,7 +159,7 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     {
         // request
         $this->response = $this->application->request($method, $url, $options);
-
+        
         // set body
         $this->body = $this->response->json();
 
