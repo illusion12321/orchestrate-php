@@ -317,7 +317,7 @@ class Application
      */
     public function search($collection, $query, $sort='', $limit=10, $offset=0)
     {
-        return (new Search($this, $collection))->get($query, $sort, $limit, $offset);
+        return (new Search($this, $collection))->search($query, $sort, $limit, $offset);
     }
 
 

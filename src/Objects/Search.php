@@ -5,6 +5,7 @@ use andrefelipe\Orchestrate\Application;
 
 
 // TODO dynamic pagination (iterators, etc)
+// nextPage, prevPage ...
 
 
 class Search extends AbstractObject
@@ -83,10 +84,7 @@ class Search extends AbstractObject
         return $this->prevUrl;
     }
 
-
-
-    // TODO review this function name, may be useful to change to 'search'
-    // but still wait to the pagination methods, like getNext / getPrev
+    
 
     /**
      * @param string $query
@@ -95,7 +93,7 @@ class Search extends AbstractObject
      * @param int $offset
      * @return Search self
      */
-    public function get($query, $sort='', $limit=10, $offset=0)
+    public function search($query, $sort='', $limit=10, $offset=0)
     {
         // define request options
         $options = [
@@ -106,7 +104,7 @@ class Search extends AbstractObject
                 'offset' => $offset,
             ]
         ];
-
+        
         // request
         $this->request('GET', $this->collection, $options);
 
