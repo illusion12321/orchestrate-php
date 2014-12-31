@@ -146,7 +146,7 @@ if ($object->isSuccess()) {
 
 ```
 
-> All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
+All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
 
 ```php
 
@@ -223,10 +223,10 @@ $object->put(); // puts the whole current value, only with the title changed
 $object->put(['title' => 'New Title']); // puts an entire new value
 ```
 
-Conditional Put If-Match:
-```php
-// Stores the value for the key only if the value of the ref matches the current stored ref.
+**Conditional Put If-Match**:
+Stores the value for the key only if the value of the ref matches the current stored ref.
 
+```php
 $object = $application->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
 $object = $collection->get('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
@@ -236,10 +236,11 @@ $object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $object->put(['title' => 'New Title'], true); // uses the current object Ref
 ```
 
-Conditional Put If-None-Match:
-```php
-// Stores the value for the key if no key/value already exists.
 
+**Conditional Put If-None-Match**:
+Stores the value for the key if no key/value already exists.
+
+```php
 $object = $application->put('collection', 'key', ['title' => 'New Title'], false);
 // or
 $object = $collection->get('key', ['title' => 'New Title'], false);
@@ -247,6 +248,7 @@ $object = $collection->get('key', ['title' => 'New Title'], false);
 $object = new KeyValue($application, 'collection', 'key');
 $object->put(['title' => 'New Title'], false);
 ```
+
 
 ### Key/Value Post (create & generate key)
 
@@ -273,7 +275,8 @@ $object->delete();
 $object->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
 
-Conditional Delete If-Match:
+**Conditional Delete If-Match**:
+
 — The If-Match header specifies that the delete operation will succeed if and only if the ref value matches current stored ref.
 
 ```php
@@ -289,8 +292,8 @@ $object->delete(true); // delete the current ref
 $object->delete('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
-Purge:
-###### The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
+**Purge**:
+The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
 
 ```php
 $object = $application->purge('collection', 'key');
@@ -303,11 +306,10 @@ $object->purge();
 
 
 
-### Refs Get
+### Refs Get:
+Returns the specified version of a value.
 
 ```php
-// Returns the specified version of a value.
-
 $object = $application->get('collection', 'key', '20c14e8965d6cbb0');
 // or
 $object = $collection->get('key', '20c14e8965d6cbb0');
