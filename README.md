@@ -185,7 +185,9 @@ $object->put($value);
 // or with:
 $object = $application->put('collection_name', $object->getKey(), $value);
 
-if ($object->isSuccess()) {}
+if ($object->isSuccess()) {
+    // good
+}
 
 ```
 
@@ -339,7 +341,7 @@ $object = new Search($application, 'collection');
 $object->search('title:"The Title*"');
 ```
 
-All Search parameters are supported, and it includes Geo queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search)
+All Search parameters are supported, and it includes Geo queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
 ```php
 search($query, $sort='', $limit=10, $offset=0)
 ```
