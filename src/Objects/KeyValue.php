@@ -8,7 +8,6 @@ use andrefelipe\Orchestrate\Application;
 // TODO method to move object to another application
 // TODO implement archival and tombstone properties like the ruby client
 
-// TODO review this isDirty naming
 
 class KeyValue extends AbstractObject
 {
@@ -32,7 +31,7 @@ class KeyValue extends AbstractObject
     /**
      * @var boolean
      */
-    protected $isDirty = false;
+    protected $hasChanged = false;
 
 
 
@@ -64,7 +63,7 @@ class KeyValue extends AbstractObject
     public function setKey($key)
     {
         $this->key = $key;
-        $this->isDirty = true;
+        $this->hasChanged = true;
     }
 
 
@@ -82,7 +81,7 @@ class KeyValue extends AbstractObject
     public function setRef($ref)
     {
         $this->ref = $ref;
-        $this->isDirty = true;
+        $this->hasChanged = true;
     }
 
 
@@ -97,15 +96,15 @@ class KeyValue extends AbstractObject
     public function setValue(array $value)
     {
         $this->value = $value;
-        $this->isDirty = true;
+        $this->hasChanged = true;
     }
 
     /**
      * @return boolean
      */
-    public function isDirty()
+    public function hasChanged()
     {
-        return $this->isDirty;
+        return $this->hasChanged;
     }
 
 
@@ -134,7 +133,7 @@ class KeyValue extends AbstractObject
         if ($this->isSuccess()) {
             $this->value = $this->body;
             $this->setRefFromETag();
-            $this->isDirty = false;
+            $this->hasChanged = false;
         }
         else {
             $this->value = []; //TODO teste can be null?
@@ -154,7 +153,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         if ($value === null) {
-            if ($this->isDirty) {
+            if ($this->hasChanged) {
                 $value = $this->value;
             } else {
                 return $this;
@@ -187,7 +186,7 @@ class KeyValue extends AbstractObject
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
-            $this->isDirty = false;
+            $this->hasChanged = false;
         }
 
         // set value as input value, even if not success, so we can retry
@@ -205,7 +204,7 @@ class KeyValue extends AbstractObject
     public function post(array $value=null)
     {
         if ($value === null) {
-            if ($this->isDirty) {
+            if ($this->hasChanged) {
                 $value = $this->value;
             } else {
                 return $this;
@@ -217,7 +216,7 @@ class KeyValue extends AbstractObject
         
         // set values
         if ($this->isSuccess()) {
-            $this->isDirty = false;
+            $this->hasChanged = false;
             $this->key = null;
             $this->ref = null;
             $this->setKeyRefFromLocation();
@@ -260,7 +259,7 @@ class KeyValue extends AbstractObject
         // TODO confirm if the success body is array
 
         if ($this->isSuccess()) {
-            $this->isDirty = false;
+            $this->hasChanged = false;
         }
 
         return $this;
@@ -287,7 +286,7 @@ class KeyValue extends AbstractObject
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->ref = null;
-            $this->isDirty = false;
+            $this->hasChanged = false;
         }
 
         return $this;
@@ -364,13 +363,13 @@ class KeyValue extends AbstractObject
         } else {
             $this->value[$offset] = $value;
         }
-        $this->isDirty = true;
+        $this->hasChanged = true;
     }
 
     public function offsetUnset($offset)
     {
         unset($this->value[$offset]);
-        $this->isDirty = true;
+        $this->hasChanged = true;
     }
     
 
