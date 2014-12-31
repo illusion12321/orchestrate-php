@@ -274,9 +274,9 @@ $object->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
 
 Conditional Delete If-Match:
-```php
-// The If-Match header specifies that the delete operation will succeed if and only if the ref value matches current stored ref.
+— The If-Match header specifies that the delete operation will succeed if and only if the ref value matches current stored ref.
 
+```php
 $object = $application->delete('collection', 'key', '20c14e8965d6cbb0');
 // or
 $object = $collection->delete('key', '20c14e8965d6cbb0');
@@ -290,9 +290,9 @@ $object->delete('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
 Purge:
-```php
-// The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
+###### The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
 
+```php
 $object = $application->purge('collection', 'key');
 // or
 $object = $collection->purge('key');
