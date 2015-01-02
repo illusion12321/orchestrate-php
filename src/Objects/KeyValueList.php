@@ -10,16 +10,7 @@ use andrefelipe\Orchestrate\Application;
 
 class KeyValueList extends AbstractList
 {
-
-
-    // /**
-    //  * @param Application $application
-    //  * @param string $collection
-    //  */
-    // public function __construct(Application $application, $collection)
-    // {
-    //     parent::__construct($application, $collection);
-    // }
+    
 
 
     /**

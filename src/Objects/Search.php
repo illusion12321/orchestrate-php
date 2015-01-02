@@ -8,81 +8,9 @@ use andrefelipe\Orchestrate\Application;
 // nextPage, prevPage ...
 
 
-class Search extends AbstractObject
+class Search extends AbstractList
 {
         
-
-    /**
-     * @var int
-     */
-    protected $totalCount = 0;
-
-    /**
-     * @var string
-     */
-    protected $nextUrl = '';
-
-    /**
-     * @var string
-     */
-    protected $prevUrl = '';
-
-    /**
-     * @var array
-     */
-    protected $results = [];
-
-
-
-    /**
-     * @param Application $application
-     * @param string $collection
-     */
-    public function __construct(Application $application, $collection)
-    {
-        parent::__construct($application, $collection);
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getResults()
-    {
-        return $this->results;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCount()
-    {
-        return count($this);
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalCount()
-    {
-        return $this->totalCount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNextUrl()
-    {
-        return $this->nextUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrevUrl()
-    {
-        return $this->prevUrl;
-    }
 
     
 
@@ -128,51 +56,6 @@ class Search extends AbstractObject
     }
 
     
-
-
-
-    // ArrayAccess
-
-    public function offsetExists($offset)
-    {
-        return isset($this->results[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->results[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_null($offset)) {
-            $this->results[] = $value;
-        } else {
-            $this->results[$offset] = $value;
-        }
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->results[$offset]);
-    }
-
-
-    // Countable
-
-    public function count()
-    {
-        return count($this->results);
-    }
-
-
-    // IteratorAggregate
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->results);
-    }
-
 
 
 
