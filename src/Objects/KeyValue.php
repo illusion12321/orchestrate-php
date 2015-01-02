@@ -8,10 +8,9 @@ use andrefelipe\Orchestrate\Application;
 // TODO method to move object to another application
 // TODO implement archival and tombstone properties like the ruby client
 
-// TODO maybe move the hasChanged up to AbstractObject, then even the ArrayAccess etc
+// TODO maybe move the ArrayAccess up to AbstractObject
 
-
-class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \IteratorAggregate
+class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregate, \Countable
 {
         
     /**
@@ -24,16 +23,17 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
      */
     protected $ref = null;
 
+    /**
+     * @var int
+     */
+    protected $refTime = 0;
+
 
     /**
      * @var array
      */
     protected $value = [];
-    
-    /**
-     * @var boolean
-     */
-    protected $hasChanged = false;
+
 
 
 
@@ -49,14 +49,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
     }
 
 
-    /**
-     * @param string $collection
-     */
-    public function setCollection($collection)
-    {
-        $this->collection = $collection;
-        $this->hasChanged = true;
-    }
 
 
     /**
@@ -73,7 +65,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
     public function setKey($key)
     {
         $this->key = $key;
-        $this->hasChanged = true;
     }
 
 
@@ -91,8 +82,16 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
     public function setRef($ref)
     {
         $this->ref = $ref;
-        $this->hasChanged = true;
     }
+
+    /**
+     * @return string
+     */
+    public function getRefTime()
+    {
+        return $this->refTime;
+    }
+
 
 
     /**
@@ -106,18 +105,59 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
     public function setValue(array $value)
     {
         $this->value = $value;
-        $this->hasChanged = true;
     }
 
-    /**
-     * @return boolean
-     */
-    public function hasChanged()
+
+    public function reset()
     {
-        return $this->hasChanged;
+        parent::reset();
+        $this->key = null;
+        $this->ref = null;
+        $this->refTime = 0;
+        $this->value = [];
     }
 
 
+
+    public function init(array $values)
+    {
+        $this->reset();
+        
+        if (empty($values))
+            return;
+
+        if (!empty($values['path'])) {
+            $values = array_merge($values, $values['path']);
+        }
+
+        foreach ($values as $key => $value) {
+            
+            if ($key === 'collection')
+                $this->collection = $value;
+
+            if ($key === 'key')
+                $this->key = $value;
+
+            if ($key === 'ref')
+                $this->ref = $value;
+
+            if ($key === 'reftime')
+                $this->reftime = (int) $value;
+
+            if ($key === 'value')
+                $this->value = (array) $value;
+        }
+
+        return $this;
+    }
+
+
+
+
+
+
+
+    // API
 
 
 
@@ -126,7 +166,8 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
      */
     public function get($ref=null)
     {
-        // require a key to be set
+        // required values
+        $this->noCollectionException();
         $this->noKeyException();
 
         // define request options
@@ -143,7 +184,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
         if ($this->isSuccess()) {
             $this->value = $this->body;
             $this->setRefFromETag();
-            $this->hasChanged = false;
         }
         else {
             $this->value = [];
@@ -159,15 +199,12 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
      */
     public function put(array $value=null, $ref=null)
     {
-        // require a key to be set
+        // required values
+        $this->noCollectionException();
         $this->noKeyException();
 
         if ($value === null) {
-            if ($this->hasChanged) {
-                $value = $this->value;
-            } else {
-                return $this;
-            }
+            $value = $this->value;
         }
 
         // define request options
@@ -196,7 +233,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
-            $this->hasChanged = false;
         }
 
         // set value as input value, even if not success, so we can retry
@@ -213,12 +249,11 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
      */
     public function post(array $value=null)
     {
+        // required values
+        $this->noCollectionException();
+
         if ($value === null) {
-            if ($this->hasChanged) {
-                $value = $this->value;
-            } else {
-                return $this;
-            }
+            $value = $this->value;
         }
 
         // request
@@ -226,7 +261,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
         
         // set values
         if ($this->isSuccess()) {
-            $this->hasChanged = false;
             $this->key = null;
             $this->ref = null;
             $this->setKeyRefFromLocation();
@@ -246,7 +280,8 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
      */
     public function delete($ref=null)
     {
-        // require a key to be set
+        // required values
+        $this->noCollectionException();
         $this->noKeyException();
 
         // define request options
@@ -265,11 +300,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
 
         // request
         $this->request('DELETE', $path, $options);
-        
-        if ($this->isSuccess()) {
-            $this->hasChanged = false;
-        }
-        
+
         return $this;
     }
 
@@ -281,7 +312,8 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
      */
     public function purge()
     {
-        // require a key to be set
+        // required values
+        $this->noCollectionException();
         $this->noKeyException();
 
         // define request options
@@ -294,7 +326,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->ref = null;
-            $this->hasChanged = false;
         }
 
         return $this;
@@ -312,6 +343,14 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
 
 
     // helpers
+
+    private function noCollectionException()
+    {
+        if (!$this->collection) {
+            throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
+        }
+    }
+
     private function noKeyException()
     {
         if (!$this->key) {
@@ -366,18 +405,16 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \Iter
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
-            $this->value[] = $value;
+        if (is_null($offset) || (int) $offset === $offset) {
+           throw new \RuntimeException('Sorry, indexed arrays not allowed on KeyValue objects.');
         } else {
             $this->value[$offset] = $value;
         }
-        $this->hasChanged = true;
     }
 
     public function offsetUnset($offset)
     {
         unset($this->value[$offset]);
-        $this->hasChanged = true;
     }
     
 
