@@ -203,6 +203,15 @@ abstract class AbstractObject
 
 
 
+    public function reset()
+    {
+        $this->response = null;
+        $this->body = [];
+        $this->status = '';
+        $this->statusCode = 0;
+        $this->statusMessage = '';        
+    }
+
 
 
     
