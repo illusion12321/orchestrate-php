@@ -179,10 +179,8 @@ if ($object->isSuccess()) {
 
 ```
 
-To sum, this is how this client works:
-- All requests are actually triggered from the **Objects**.
-- They prepare the request options and send to the **Application** HTTP client.
-- Then the **Objects** store the HTTP response and process the results, according to each use case.
+
+
 
 Let's go:
 
@@ -367,7 +365,6 @@ if ($object->isSuccess()) {
     $object->purge(); // permanently delete all refs and graph relations
 
     // booleans to check status
-    $object->hasChanged(); // if the internal Array has changed
     $object->isSuccess(); // if the last request was sucessful
     $object->isError(); // if the last request was not sucessful
     
