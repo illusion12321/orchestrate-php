@@ -11,6 +11,11 @@ class AbstractList extends AbstractObject
     /**
      * @var int
      */
+    protected $count = 0;
+
+    /**
+     * @var int
+     */
     protected $totalCount = 0;
 
     /**
@@ -40,13 +45,13 @@ class AbstractList extends AbstractObject
     {
         return $this->results;
     }
-
+    
     /**
      * @return int
      */
     public function getCount()
     {
-        return count($this);
+        return $this->count;
     }
 
     /**
@@ -74,23 +79,27 @@ class AbstractList extends AbstractObject
     }
 
 
+    public function reset()
+    {
+        parent::reset();
+        $this->count = 0;
+        $this->totalCount = 0;
+        $this->nextUrl = '';
+        $this->prevUrl = '';
+        $this->results = [];
+    }
+
+
+
 
     public function next()
     {
         $nextUrl = $this->nextUrl;
 
-        $this->response = null;
-        $this->status = '';
-        $this->statusCode = 0;
-        $this->statusMessage = '';
-        $this->body = [];
+        // reset object
+        $this->reset();
 
-        $this->totalCount = 0;
-        $this->nextUrl = '';
-        $this->prevUrl = '';
-        $this->results = [];
-
-
+        // load next set of values
         if ($nextUrl) {
 
             // remove version and slashes at the beginning
@@ -98,15 +107,6 @@ class AbstractList extends AbstractObject
 
             // request
             $this->request('GET', $url);
-
-            // set values
-            if ($this->isSuccess()) {
-                    
-                $this->results = (array) $this->body['results'];
-                $this->totalCount = !empty($this->body['total_count']) ? (int) $this->body['total_count'] : 0;
-                $this->nextUrl = !empty($this->body['next']) ? $this->body['next'] : '';
-                $this->prevUrl = !empty($this->body['prev']) ? $this->body['prev'] : '';
-            }
         }       
 
         return $this;
@@ -114,7 +114,35 @@ class AbstractList extends AbstractObject
 
 
 
+    protected function request($method, $url = null, array $options = [])
+    {
+        $this->reset();
+        parent::request($method, $url, $options);
 
+        if ($this->isSuccess()) {
+            
+            $this->results = !empty($this->body['results'])
+                ? array_map([$this, 'createKeyValue'], $this->body['results'])
+                : [];
+            $this->count = !empty($this->body['count']) ? (int) $this->body['count'] : 0;
+            $this->totalCount = !empty($this->body['total_count']) ? (int) $this->body['total_count'] : 0;
+            $this->nextUrl = !empty($this->body['next']) ? $this->body['next'] : '';
+            $this->prevUrl = !empty($this->body['prev']) ? $this->body['prev'] : '';
+
+        }
+    }
+
+    private function createKeyValue(array $values)
+    {
+        return (new KeyValue($this->application, $this->collection))->init($values);
+    }
+
+
+
+
+
+
+    
 
 
 
@@ -133,18 +161,12 @@ class AbstractList extends AbstractObject
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
-            $this->results[] = $value;
-        } else {
-            $this->results[$offset] = $value;
-        }
-        $this->hasChanged = true;
+        throw new \RuntimeException('You cannot mutate a list\'s data, only it\'s children, the KeyValue objects.');
     }
 
     public function offsetUnset($offset)
     {
-        unset($this->results[$offset]);
-        $this->hasChanged = true;
+        throw new \RuntimeException('You cannot mutate a list\'s data, only it\'s children, the KeyValue objects.');
     }
 
 
