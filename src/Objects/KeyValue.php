@@ -11,7 +11,7 @@ use andrefelipe\Orchestrate\Application;
 // TODO maybe move the hasChanged up to AbstractObject, then even the ArrayAccess etc
 
 
-class KeyValue extends AbstractObject
+class KeyValue extends AbstractObject implements \ArrayAccess, \Countable, \IteratorAggregate
 {
         
     /**
@@ -266,12 +266,10 @@ class KeyValue extends AbstractObject
         // request
         $this->request('DELETE', $path, $options);
         
-        // TODO confirm if the success body is array
-
         if ($this->isSuccess()) {
             $this->hasChanged = false;
         }
-
+        
         return $this;
     }
 

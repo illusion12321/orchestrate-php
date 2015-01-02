@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Application;
 
 
-abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggregate
+abstract class AbstractObject
 {
     
 
@@ -48,12 +48,29 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
 
     
 
+
     public function __construct(Application $application, $collection)
     {
         $this->application = $application;
         $this->collection = $collection;
     }
 
+
+    /**
+     * @return Application
+     */
+    public function getApplication()
+    {
+        return $this->application;
+    }
+
+    /**
+     * @param Application $application
+     */
+    public function setApplication(Application $application)
+    {
+        $this->application = $application;
+    }
 
     /**
      * @return string
@@ -89,6 +106,8 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
     }
 
     /**
+     * Always lowercase, spaces as underline.
+     * 
      * @return string
      */
     public function getStatus()
@@ -169,6 +188,8 @@ abstract class AbstractObject implements \ArrayAccess, \Countable, \IteratorAggr
         $this->statusCode = $this->response->getStatusCode();
 
         if ($this->isError()) {
+
+            // try to get the Orchestrate error messages
 
             if (isset($this->body['code'])) {
                 $this->status = $this->body['code'];
