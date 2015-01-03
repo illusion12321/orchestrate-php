@@ -28,24 +28,13 @@ class AbstractList extends AbstractObject
      */
     protected $prevUrl = '';
 
-    /**
-     * @var array
-     */
-    protected $results = [];
-
 
 
     // no need for constructor
 
 
-    /**
-     * @return array
-     */
-    public function getResults()
-    {
-        return $this->results;
-    }
     
+
     /**
      * @return int
      */
@@ -86,7 +75,7 @@ class AbstractList extends AbstractObject
         $this->totalCount = 0;
         $this->nextUrl = '';
         $this->prevUrl = '';
-        $this->results = [];
+        $this->data = [];
     }
 
 
@@ -121,7 +110,7 @@ class AbstractList extends AbstractObject
 
         if ($this->isSuccess()) {
             
-            $this->results = !empty($this->body['results'])
+            $this->data = !empty($this->body['results'])
                 ? array_map([$this, 'createKeyValue'], $this->body['results'])
                 : [];
             $this->count = !empty($this->body['count']) ? (int) $this->body['count'] : 0;
@@ -142,22 +131,12 @@ class AbstractList extends AbstractObject
 
 
 
-    
 
 
 
 
-    // ArrayAccess
 
-    public function offsetExists($offset)
-    {
-        return isset($this->results[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->results[$offset];
-    }
+    // override ArrayAccess
 
     public function offsetSet($offset, $value)
     {
@@ -169,21 +148,6 @@ class AbstractList extends AbstractObject
         throw new \RuntimeException('You cannot mutate a list\'s data, only it\'s children, the KeyValue objects.');
     }
 
-
-    // Countable
-
-    public function count()
-    {
-        return count($this->results);
-    }
-
-
-    // IteratorAggregate
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->results);
-    }
 
 
 

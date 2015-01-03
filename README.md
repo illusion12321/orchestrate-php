@@ -93,7 +93,7 @@ $application = new Application();
 $object = $application->get('collection_name', 'key');
 
 if ($object->isSuccess()) {
-    print_r($object->getValue());
+    print_r($object->toArray());
     // Array
     // (
     //     [title] => My Title
@@ -164,7 +164,7 @@ if ($object->isSuccess()) {
 }
 
 // if you don't want to use the internal Array directly, you can always use:
-$value = $object->getValue();
+$value = $object->toArray();
 // it will return the internal Array that is being accessed
 // then you can change it as usual
 $value['profile'] = ['name' => 'The Name', 'age' => 10];
@@ -348,7 +348,7 @@ if ($object->isSuccess()) {
     // get the object info
     $object->getKey(); // string
     $object->getRef(); // string
-    $object->getValue(); // array
+    $object->toArray(); // array
     
     // working with the Value
     $object['my_property']; // direct array access to the Value
@@ -378,7 +378,7 @@ if ($object->isSuccess()) {
     $object->getRequestUrl(); // the effective URL that resulted in this response
     
     $object->getBody(); // array of the HTTP response body
-    // if success is the same as $object->getValue()
+    // if success is the same as $object->toArray()
     // if error you can read the response error body
 
 }
@@ -393,8 +393,8 @@ $object = $application->search('collection', 'title:"The Title*"');
 if ($object->isSuccess()) {
     
     // get the object info
+    $object->toArray(); // array of the search results
     $object->getBody(); // array of the full HTTP response body
-    $object->getResults(); // array of only the 'results' index
 
     // pagination
     $object->getNextUrl(); // string

@@ -10,7 +10,7 @@ use andrefelipe\Orchestrate\Application;
 
 // TODO maybe move the ArrayAccess up to AbstractObject
 
-class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregate, \Countable
+class KeyValue extends AbstractObject
 {
         
     /**
@@ -28,11 +28,6 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
      */
     protected $refTime = 0;
 
-
-    /**
-     * @var array
-     */
-    protected $value = [];
 
 
 
@@ -85,7 +80,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getRefTime()
     {
@@ -94,17 +89,10 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
 
 
 
-    /**
-     * @return string
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
 
     public function setValue(array $value)
     {
-        $this->value = $value;
+        $this->data = $value;
     }
 
 
@@ -114,7 +102,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
         $this->key = null;
         $this->ref = null;
         $this->refTime = 0;
-        $this->value = [];
+        $this->data = [];
     }
 
 
@@ -142,10 +130,10 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
                 $this->ref = $value;
 
             if ($key === 'reftime')
-                $this->reftime = (int) $value;
+                $this->refTime = (int) $value;
 
             if ($key === 'value')
-                $this->value = (array) $value;
+                $this->data = (array) $value;
         }
 
         return $this;
@@ -182,11 +170,11 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
 
         // set values
         if ($this->isSuccess()) {
-            $this->value = $this->body;
+            $this->data = $this->body;
             $this->setRefFromETag();
         }
         else {
-            $this->value = [];
+            $this->data = [];
         }
 
         return $this;
@@ -204,7 +192,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
         $this->noKeyException();
 
         if ($value === null) {
-            $value = $this->value;
+            $value = $this->data;
         }
 
         // define request options
@@ -236,7 +224,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
         }
 
         // set value as input value, even if not success, so we can retry
-        $this->value = $value;
+        $this->data = $value;
 
 
         return $this;
@@ -253,7 +241,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
         $this->noCollectionException();
 
         if ($value === null) {
-            $value = $this->value;
+            $value = $this->data;
         }
 
         // request
@@ -267,7 +255,7 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
         }
 
         // set value as input value, even if not success, so we can retry
-        $this->value = $value;
+        $this->data = $value;
 
         return $this;
     }
@@ -391,47 +379,18 @@ class KeyValue extends AbstractObject implements \ArrayAccess, \IteratorAggregat
 
 
 
-    // ArrayAccess
-
-    public function offsetExists($offset)
-    {
-        return isset($this->value[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->value[$offset];
-    }
+    // override ArrayAccess
 
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || (int) $offset === $offset) {
-           throw new \RuntimeException('Sorry, indexed arrays not allowed on KeyValue objects.');
+           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of KeyValue objects.');
         } else {
-            $this->value[$offset] = $value;
+            $this->data[$offset] = $value;
         }
     }
 
-    public function offsetUnset($offset)
-    {
-        unset($this->value[$offset]);
-    }
-    
 
-    // Countable
-
-    public function count()
-    {
-        return count($this->value);
-    }
-    
-
-    // IteratorAggregate
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->value);
-    }
 
 
 

@@ -36,22 +36,6 @@ class Search extends AbstractList
         // request
         $this->request('GET', $this->collection, $options);
 
-        // set values
-        if ($this->isSuccess()) {
-                
-            $this->results = (array) $this->body['results'];
-            $this->totalCount = (int) $this->body['total_count'];
-            $this->nextUrl = !empty($this->body['next']) ? $this->body['next'] : '';
-            $this->prevUrl = !empty($this->body['prev']) ? $this->body['prev'] : '';
-
-        } else {
-
-            $this->totalCount = 0;
-            $this->nextUrl = '';
-            $this->prevUrl = '';
-            $this->results = [];
-        }
-
         return $this;
     }
 

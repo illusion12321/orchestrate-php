@@ -2,10 +2,12 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Application;
+use GuzzleHttp\HasDataTrait;
+use GuzzleHttp\ToArrayInterface;
 
-
-abstract class AbstractObject
+abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
+    use HasDataTrait;
     
 
     /**
@@ -214,6 +216,14 @@ abstract class AbstractObject
 
 
 
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->data;
+    }
     
 
 }
