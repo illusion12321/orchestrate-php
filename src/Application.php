@@ -318,6 +318,11 @@ class Application
     // Refs
 
     /**
+     * @param string $collection
+     * @param string $key
+     * @param int $limit
+     * @param int $offset
+     * @param boolean $values
      * @return Refs
      */
     public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
@@ -329,6 +334,11 @@ class Application
     // Events
 
     /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $limit
+     * @param array $range
      * @return Events
      */
     public function listEvents($collection, $key, $type, $limit=10, array $range=null)

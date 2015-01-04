@@ -55,35 +55,6 @@ class Collection extends AbstractList
         return $this;
     }
 
-    /**
-     * @param string $query
-     * @param string $sort
-     * @param int $limit
-     * @param int $offset
-     * @return Collection self
-     */
-    public function search($query, $sort='', $limit=10, $offset=0)
-    {
-        // required values
-        $this->noCollectionException();
-
-        // define request options
-        $parameters = [
-            'query' => $query,
-            'limit'=> $limit,
-        ];
-
-        if ($sort)
-            $parameters['sort'] = $sort;
-
-        if ($offset)
-            $parameters['offset'] = $offset;
-        
-        // request
-        $this->request('GET', $this->collection, ['query' => $parameters]);
-
-        return $this;
-    }
 
 
 
@@ -144,6 +115,10 @@ class Collection extends AbstractList
     // Refs
     
     /**
+     * @param string $key
+     * @param int $limit
+     * @param int $offset
+     * @param boolean $values
      * @return Refs
      */
     public function listRefs($key, $limit=10, $offset=0, $values=false)
@@ -155,6 +130,10 @@ class Collection extends AbstractList
     // Events
 
     /**
+     * @param string $key
+     * @param string $type
+     * @param int $limit
+     * @param array $range
      * @return Events
      */
     public function listEvents($key, $type, $limit=10, array $range=null)
@@ -162,7 +141,19 @@ class Collection extends AbstractList
         return $this->application->listEvents($this->collection, $key, $type, $limit, $range);
     }
 
-
     
+    // Search
+
+    /**
+     * @param string $query
+     * @param string $sort
+     * @param int $limit
+     * @param int $offset
+     * @return Search
+     */
+    public function search($query, $sort='', $limit=10, $offset=0)
+    {
+        return $this->application->search($this->collection, $query, $sort, $limit, $offset);
+    }
 
 }

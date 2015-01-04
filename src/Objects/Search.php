@@ -4,14 +4,8 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Application;
 
 
-// TODO dynamic pagination (iterators, etc)
-// nextPage, prevPage ...
-
-
 class Search extends AbstractList
 {
-        
-
     
 
     /**
@@ -43,8 +37,7 @@ class Search extends AbstractList
 
         return $this;
     }
-
-    
+   
 
 
 

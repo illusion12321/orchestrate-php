@@ -29,13 +29,4 @@ getStatic()
 
 - check the 'archival' property of the ruby client
 
-- method to move object to another Collection and Application ?
-
-
-!!!!!! matar o Search object???
-!!!!! arrancar os cross-object do Collection ????
-!!!! com isso voltar todos os inner methods de listEvents listRefs para get!
-
-
-!!! 
-ver se eu consigo implementar o reset em todos os request do KeyValue tambem
+- method to move KeyValue to another Collection and Application ?

@@ -59,7 +59,7 @@ $object = $application->delete('collection_name', 'key');
 // you can name the var as '$client' to feel more like a client
 ```
 
-2- **Objects** — the actual `Collection`, `KeyValue`, `Refs` and `Search` objects, which provides a object-like API, as well as the results and response status.
+2- **Objects** — the actual `Collection`, `KeyValue`, `Refs`, `Events`, `Event` and `Search` objects, which provides a object-like API, as well as the results and response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
