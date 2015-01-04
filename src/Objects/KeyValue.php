@@ -347,12 +347,21 @@ class KeyValue extends AbstractObject
 
     // Cross-object API
 
+
+    /**
+     * @return Relations
+     */
+    public function listRelations(array $kind, $limit=10, $offset=0)
+    {
+        return (new Relations($this->application, $this->collection, $this->key))->getRelations($kind, $limit, $offset);
+    }
+
     /**
      * @return Refs
      */
     public function listRefs($limit=10, $offset=0, $values=false)
     {
-        return (new Refs($this, $this->collection, $this->key))->listRefs($limit, $offset, $values);
+        return (new Refs($this->application, $this->collection, $this->key))->listRefs($limit, $offset, $values);
     }
 
 
@@ -361,7 +370,7 @@ class KeyValue extends AbstractObject
      */
     public function listEvents($type, $limit=10, array $range=null)
     {
-        return (new Events($this, $this->collection, $this->key, $type))->listEvents($limit, $range);
+        return (new Events($this->application, $this->collection, $this->key, $type))->listEvents($limit, $range);
     }
 
 
