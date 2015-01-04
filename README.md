@@ -59,19 +59,29 @@ $object = $application->delete('collection_name', 'key');
 // you can name the var as '$client' to feel more like a client
 ```
 
-2- **Objects** — the actual `Collection`, `KeyValue`, `Refs`, `Events`, `Event` and `Search` objects, which provides a object-like API, as well as the results and response status.
+2- **Collection** — which holds a collection name and provides the same client-like API, but with one level-deeper.
 
 ```php
 use andrefelipe\Orchestrate\Application;
-use andrefelipe\Orchestrate\Objects\Collection;
-use andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Collection;
 
 $application = new Application();
 
 $collection = new Collection($application, 'collection_name');
-$collection->listCollection();
-$collection->deleteCollection();
+
 $object = $collection->get('key');
+$object = $collection->put('key', ['title' => 'My Title']);
+$object = $collection->delete('key');
+```
+
+3- **Objects** — the actual `KeyValue(s)`, `Refs`, `Event(s)` and `Search` objects, which provides a object-like API, as well as the results and response status.
+
+```php
+use andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Collection;
+use andrefelipe\Orchestrate\Objects\KeyValue;
+
+$application = new Application();
 
 $object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
 // you can now change the object as you like, then do the requests later
@@ -205,6 +215,13 @@ Let's go:
 ## Orchestrate API
 
 
+### Application Ping:
+
+```php
+$application->ping() // returns boolean;
+```
+
+
 ### Collection Delete:
 
 ```php
@@ -231,7 +248,7 @@ $object->get();
 ```php
 $object = $application->put('collection', 'key', ['title' => 'New Title']);
 // or
-$object = $collection->get('key', ['title' => 'New Title']);
+$object = $collection->put('key', ['title' => 'New Title']);
 // or
 $object = new KeyValue($application, 'collection', 'key');
 $object['title'] = 'New Title';
@@ -278,7 +295,7 @@ $object = $collection->post(['title' => 'New Title']);
 // or
 $object = new KeyValue($application, 'collection');
 $object['title'] = 'New Title';
-$object->post(); // posts the current Value, if it has changed
+$object->post(); // posts the current Value
 $object->post(['title' => 'New Title']); // posts a new value
 ```
 
@@ -335,9 +352,12 @@ $object->purge();
 $object = $application->listCollection('collection');
 // or
 $collection = new Collection($application, 'collection');
-$collection->listCollection();
+$object = $collection->listCollection();
+//or
+$object = new KeyValues($application, 'collection');
+$object->listCollection();
 
-$collection->next(); // loads next set of results
+$object->next(); // loads next set of results
 ```
 
 
@@ -393,22 +413,22 @@ search($query, $sort='', $limit=10, $offset=0)
 ### Event Get
 
 ```php
-$object = $application->get('collection', 'key');
+$object = $application->getEvent('collection', 'key', 'type', 1400684480732, 1);
 // or
-$object = $collection->get('key');
+$object = $collection->getEvent('key', 'type', 1400684480732, 1);
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
 $object->get();
 ```
 
 ### Event Put (create/update by key)
 
 ```php
-$object = $application->put('collection', 'key', ['title' => 'New Title']);
+$object = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title']);
 // or
-$object = $collection->get('key', ['title' => 'New Title']);
+$object = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title']);
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
 $object['title'] = 'New Title';
 $object->put(); // puts the whole current value, only with the title changed
 $object->put(['title' => 'New Title']); // puts an entire new value
@@ -420,52 +440,41 @@ $object->put(['title' => 'New Title']); // puts an entire new value
 Stores the value for the key only if the value of the ref matches the current stored ref.
 
 ```php
-$object = $application->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+$object = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
-$object = $collection->get('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+$object = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object['title'] = 'New Title';
 $object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $object->put(['title' => 'New Title'], true); // uses the current object Ref
-```
-
-
-**Conditional Put If-None-Match**:
-
-Stores the value for the key if no key/value already exists.
-
-```php
-$object = $application->put('collection', 'key', ['title' => 'New Title'], false);
-// or
-$object = $collection->get('key', ['title' => 'New Title'], false);
-// or
-$object = new KeyValue($application, 'collection', 'key');
-$object->put(['title' => 'New Title'], false);
 ```
 
 
 ### Event Post (create & generate key)
 
 ```php
-$object = $application->post('collection', ['title' => 'New Title']);
+$object = $application->postEvent('collection', 'key', 'type', ['title' => 'New Title']);
 // or
-$object = $collection->post(['title' => 'New Title']);
+$object = $collection->postEvent('key', 'type', ['title' => 'New Title']);
 // or
-$object = new KeyValue($application, 'collection');
+$object = new Event($application, 'collection', 'key', 'type');
 $object['title'] = 'New Title';
-$object->post(); // posts the current Value, if it has changed
+$object->post(); // posts the current Value
 $object->post(['title' => 'New Title']); // posts a new value
+$object->post(['title' => 'New Title'], 1400684480732); // optional timestamp
+$object->post(['title' => 'New Title'], true); // use stored timestamp
 ```
 
 
 ### Event Delete
 
 ```php
-$object = $application->delete('collection', 'key');
+$object = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 1);
 // or
-$object = $collection->delete('key');
+$object = $collection->deleteEvent('key', 'type', 1400684480732, 1);
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
 $object->delete();
 $object->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
@@ -476,11 +485,11 @@ $object->delete('20c14e8965d6cbb0'); // delete the specific ref
 The If-Match header specifies that the delete operation will succeed if and only if the ref value matches current stored ref.
 
 ```php
-$object = $application->delete('collection', 'key', '20c14e8965d6cbb0');
+$object = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
 // or
-$object = $collection->delete('key', '20c14e8965d6cbb0');
+$object = $collection->deleteEvent('key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
 // first get or set a ref:
 // $object->get();
 // or $object->setRef('20c14e8965d6cbb0');
@@ -491,16 +500,32 @@ $object->delete('20c14e8965d6cbb0'); // delete a specific ref
 
 **Purge**:
 
-The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
+The Event object and all of its ref history will be permanently deleted. This operation cannot be undone.
 
 ```php
-$object = $application->purge('collection', 'key');
+$object = $application->purgeEvent('collection', 'key', 'type', 1400684480732, 1);
 // or
-$object = $collection->purge('key');
+$object = $collection->purgeEvent('key', 'type', 1400684480732, 1);
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
 $object->purge();
 ```
+
+
+### Event List:
+
+```php
+$object = $application->listEvents('collection', 'key', 'type');
+// or
+$collection = new Collection($application, 'collection');
+$object = $collection->listEvents('key', 'type');
+//or
+$object = new Events($application, 'collection', 'key', 'type');
+$object->listEvents();
+
+$object->next(); // loads next set of results
+```
+
 
 
 

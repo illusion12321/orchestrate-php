@@ -120,7 +120,85 @@ class Collection
     }
 
 
+    // Search
+
+    /**
+     * @param string $query
+     * @param string $sort
+     * @param int $limit
+     * @param int $offset
+     * @return Search
+     */
+    public function search($query, $sort='', $limit=10, $offset=0)
+    {
+        return $this->application->search($this->collection, $query, $sort, $limit, $offset);
+    }
+
+
     // Events
+
+    /**
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @return Event
+     */
+    public function getEvent($key, $type, $timestamp, $ordinal)
+    {
+        return $this->application->getEvent($this->collection, $key, $type, $timestamp, $ordinal);
+    }
+
+    /**
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @param array $value
+     * @param string $ref
+     * @return Event
+     */
+    public function putEvent($key, $type, $timestamp, $ordinal, array $value, $ref=null)
+    {
+        return $this->application->putEvent($this->collection, $key, $type, $timestamp, $ordinal, $value, $ref);
+    }
+
+    /**
+     * @param string $key
+     * @param string $type
+     * @param array $value
+     * @param int $timestamp
+     * @return Event
+     */
+    public function postEvent($key, $type, array $value, $timestamp=0)
+    {
+        return $this->application->postEvent($this->collection, $key, $type, $value, $timestamp);
+    }
+
+    /**
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @param string $ref
+     * @return Event
+     */
+    public function deleteEvent($key, $type, $timestamp, $ordinal, $ref=null)
+    {
+        return $this->application->deleteEvent($this->collection, $key, $type, $timestamp, $ordinal, $ref);
+    }
+
+   /**
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @return Event
+     */
+    public function purgeEvent($key, $type, $timestamp, $ordinal)
+    {
+        return $this->application->purgeEvent($this->collection, $key, $type, $timestamp, $ordinal);
+    }
 
     /**
      * @param string $key
@@ -135,18 +213,6 @@ class Collection
     }
 
     
-    // Search
-
-    /**
-     * @param string $query
-     * @param string $sort
-     * @param int $limit
-     * @param int $offset
-     * @return Search
-     */
-    public function search($query, $sort='', $limit=10, $offset=0)
-    {
-        return $this->application->search($this->collection, $query, $sort, $limit, $offset);
-    }
+    
 
 }

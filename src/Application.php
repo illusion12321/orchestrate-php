@@ -5,6 +5,7 @@ use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\KeyValues;
 use andrefelipe\Orchestrate\Objects\Refs;
+use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Search;
 use GuzzleHttp\ClientInterface;
@@ -228,6 +229,7 @@ class Application
     // https://orchestrate.io/docs/apiref
 
 
+
     // Application
 
     /**
@@ -238,6 +240,7 @@ class Application
     	$response = $this->request('HEAD');
     	return $response->getStatusCode() === 200;
     }
+
 
     // Collection
 

@@ -4,6 +4,7 @@
 
 - Implemented List, Refs and Events
 - Added pagination methods for all List operations (search, events, refs)
+- Cleaner file structure
 
 ## 0.1.0-alpha - 2014-12-31
 

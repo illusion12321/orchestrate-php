@@ -1,6 +1,6 @@
 # TODO and IDEAS
 
-- Reconsider the naming of the method 'listCollection' — maybe even turn all listEvents, listRefs, to 'get', or 'getList' — and then 'Search->search' to 'Search->query'
+- Reconsider the naming of the method 'listCollection' — maybe even turn all listEvents, listRefs, to 'get', or 'getList' — and then 'Search->search' to 'Search->query' or even 'Search->collection'
 
 - Study the possibility of turning all objects to resources like: $application['collection']['key'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
