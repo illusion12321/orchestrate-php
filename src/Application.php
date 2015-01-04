@@ -1,8 +1,9 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\Collection;
+use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Objects\KeyValueList;
 use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Search;
@@ -223,7 +224,6 @@ class Application
 
 
 
-
     // -------------------- Orchestrate API --------------------
     // https://orchestrate.io/docs/apiref
 
@@ -235,22 +235,14 @@ class Application
      */
     public function ping()
     {
-    	$response = $this->getClient()->head();
+    	$response = $this->request('HEAD');
     	return $response->getStatusCode() === 200;
     }
 
     // Collection
 
     /**
-     * @return Collection
-     */
-    public function listCollection($collection, $limit=10, array $range=null)
-    {
-        return (new Collection($this, $collection))->listCollection($limit, $range);
-    }
-
-    /**
-     * @return Collection
+     * @return boolean
      */
     public function deleteCollection($collection)
     {
@@ -314,6 +306,17 @@ class Application
         return (new KeyValue($this, $collection, $key))->purge();
     }
 
+    /**
+     * @param string $collection
+     * @param int $limit
+     * @param array $range
+     * @return KeyValueList
+     */
+    public function listCollection($collection, $limit=10, array $range=null)
+    {
+        return (new KeyValueList($this, $collection))->listCollection($limit, $range);
+    }
+    
 
     // Refs
 
@@ -328,22 +331,6 @@ class Application
     public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
     {
         return (new Refs($this, $collection, $key))->listRefs($limit, $offset, $values);
-    }
-
-
-    // Events
-
-    /**
-     * @param string $collection
-     * @param string $key
-     * @param string $type
-     * @param int $limit
-     * @param array $range
-     * @return Events
-     */
-    public function listEvents($collection, $key, $type, $limit=10, array $range=null)
-    {
-        return (new Events($this, $collection, $key, $type))->listEvents($limit, $range);
     }
 
 
@@ -363,6 +350,88 @@ class Application
     }
 
 
+    // Events
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @return Event
+     */
+    public function getEvent($collection, $key, $type, $timestamp, $ordinal)
+    {
+        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->get();
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @param array $value
+     * @param string $ref
+     * @return Event
+     */
+    public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref=null)
+    {
+        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->put($value, $ref);
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param array $value
+     * @param int $timestamp
+     * @return Event
+     */
+    public function postEvent($collection, $key, $type, array $value, $timestamp=0)
+    {
+        return (new Event($this, $collection, $key, $type))->post($value, $timestamp);
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @param string $ref
+     * @return Event
+     */
+    public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref=null)
+    {
+        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->delete($ref);
+    }
+
+   /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     * @return Event
+     */
+    public function purgeEvent($collection, $key, $type, $timestamp, $ordinal)
+    {
+        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->purge();
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $limit
+     * @param array $range
+     * @return Events
+     */
+    public function listEvents($collection, $key, $type, $limit=10, array $range=null)
+    {
+        return (new Events($this, $collection, $key, $type))->listEvents($limit, $range);
+    }
 
 
     

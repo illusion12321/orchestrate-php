@@ -1,48 +1,25 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects;
+namespace andrefelipe\Orchestrate;
+
+use andrefelipe\Orchestrate\Objects\ApplicationTrait;
+use andrefelipe\Orchestrate\Objects\CollectionTrait;
 
 
-class Collection extends AbstractList
+class Collection
 {
+    use ApplicationTrait, CollectionTrait;
 
 
-    // Collection
-
-    /**
-     * @param int $limit
-     * @param array $range
-     * @return Collection self
-     */
-    public function listCollection($limit=10, array $range=null)
+    public function __construct(Application $application, $collection)
     {
-        // required values
-        $this->noCollectionException();
-
-        // define request options
-        $parameters = ['limit' => $limit];
-
-        if ($range) {
-            if (isset($range['start']))
-                $parameters['startKey'] = $range['start'];
-
-            if (isset($range['after']))
-                $parameters['afterKey'] = $range['after'];
-
-            if (isset($range['before']))
-                $parameters['beforeKey'] = $range['before'];
-
-            if (isset($range['end']))
-                $parameters['endKey'] = $range['end'];
-        }        
-
-        // request
-        $this->request('GET', $this->collection, ['query' => $parameters]);
-        
-        return $this;
+        $this->application = $application;
+        $this->collection = $collection;
     }
 
+
+
     /**
-     * @return Collection self
+     * @return boolean
      */
     public function deleteCollection()
     {
@@ -50,10 +27,16 @@ class Collection extends AbstractList
         $this->noCollectionException();
 
         // request
-        $this->request('DELETE', $this->collection, ['query' => ['force' => 'true']]);
-        
-        return $this;
+        $response = $this->application->request(
+            'DELETE',
+            $this->collection,
+            ['query' => ['force' => 'true']]
+        );
+
+        return $response->getStatusCode() === 200;
     }
+
+
 
 
 
@@ -109,6 +92,16 @@ class Collection extends AbstractList
     public function purge($key)
     {
         return $this->application->purge($this->collection, $key);
+    }
+
+    /**
+     * @param int $limit
+     * @param array $range
+     * @return KeyValueList
+     */
+    public function listCollection($limit=10, array $range=null)
+    {
+        return $this->application->listCollection($this->collection, $limit, $range);
     }
 
 

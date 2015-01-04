@@ -71,8 +71,8 @@ $application = new Application();
 $collection = new Collection($application, 'collection_name');
 $collection->listCollection();
 $collection->deleteCollection();
-
 $object = $collection->get('key');
+
 $object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
 // you can now change the object as you like, then do the requests later
 $object->get(); // the current stored key
@@ -204,16 +204,6 @@ Let's go:
 
 ## Orchestrate API
 
-### Collection List:
-
-```php
-$object = $application->listCollection('collection');
-// or
-$collection = new Collection($application, 'collection');
-$collection->listCollection();
-
-$collection->next(); // loads next set of results
-```
 
 ### Collection Delete:
 
@@ -339,6 +329,19 @@ $object->purge();
 
 
 
+### Key/Value List:
+
+```php
+$object = $application->listCollection('collection');
+// or
+$collection = new Collection($application, 'collection');
+$collection->listCollection();
+
+$collection->next(); // loads next set of results
+```
+
+
+
 ### Refs Get:
 
 Returns the specified version of a value.
@@ -382,6 +385,124 @@ All Search parameters are supported, and it includes Geo queries. Please refer t
 ```php
 search($query, $sort='', $limit=10, $offset=0)
 ```
+
+
+
+
+
+### Event Get
+
+```php
+$object = $application->get('collection', 'key');
+// or
+$object = $collection->get('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->get();
+```
+
+### Event Put (create/update by key)
+
+```php
+$object = $application->put('collection', 'key', ['title' => 'New Title']);
+// or
+$object = $collection->get('key', ['title' => 'New Title']);
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object['title'] = 'New Title';
+$object->put(); // puts the whole current value, only with the title changed
+$object->put(['title' => 'New Title']); // puts an entire new value
+```
+
+
+**Conditional Put If-Match**:
+
+Stores the value for the key only if the value of the ref matches the current stored ref.
+
+```php
+$object = $application->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+// or
+$object = $collection->get('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
+$object->put(['title' => 'New Title'], true); // uses the current object Ref
+```
+
+
+**Conditional Put If-None-Match**:
+
+Stores the value for the key if no key/value already exists.
+
+```php
+$object = $application->put('collection', 'key', ['title' => 'New Title'], false);
+// or
+$object = $collection->get('key', ['title' => 'New Title'], false);
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->put(['title' => 'New Title'], false);
+```
+
+
+### Event Post (create & generate key)
+
+```php
+$object = $application->post('collection', ['title' => 'New Title']);
+// or
+$object = $collection->post(['title' => 'New Title']);
+// or
+$object = new KeyValue($application, 'collection');
+$object['title'] = 'New Title';
+$object->post(); // posts the current Value, if it has changed
+$object->post(['title' => 'New Title']); // posts a new value
+```
+
+
+### Event Delete
+
+```php
+$object = $application->delete('collection', 'key');
+// or
+$object = $collection->delete('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->delete();
+$object->delete('20c14e8965d6cbb0'); // delete the specific ref
+```
+
+
+**Conditional Delete If-Match**:
+
+The If-Match header specifies that the delete operation will succeed if and only if the ref value matches current stored ref.
+
+```php
+$object = $application->delete('collection', 'key', '20c14e8965d6cbb0');
+// or
+$object = $collection->delete('key', '20c14e8965d6cbb0');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+// first get or set a ref:
+// $object->get();
+// or $object->setRef('20c14e8965d6cbb0');
+$object->delete(true); // delete the current ref
+$object->delete('20c14e8965d6cbb0'); // delete a specific ref
+```
+
+
+**Purge**:
+
+The KV object and all of its ref history will be permanently deleted. This operation cannot be undone.
+
+```php
+$object = $application->purge('collection', 'key');
+// or
+$object = $collection->purge('key');
+// or
+$object = new KeyValue($application, 'collection', 'key');
+$object->purge();
+```
+
+
 
 
 ## Docs

@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 
 abstract class AbstractList extends AbstractObject
 {
-        
+    
 
     /**
      * @var int

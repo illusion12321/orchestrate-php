@@ -7,26 +7,14 @@ use GuzzleHttp\ToArrayInterface;
 
 abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
-    use HasDataTrait;
+    use ApplicationTrait, CollectionTrait, HasDataTrait;
     
-
-    /**
-     * @var \andrefelipe\Orchestrate\Application
-     */
-    protected $application;
-
-    /**
-     * @var string
-     */
-    protected $collection;
+    
 
     /**
      * @var array
      */
     protected $body = [];
-
-
-
     
     /**
      * @var \GuzzleHttp\Message\Response
@@ -58,37 +46,8 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
     }
 
 
-    /**
-     * @return Application
-     */
-    public function getApplication()
-    {
-        return $this->application;
-    }
+    
 
-    /**
-     * @param Application $application
-     */
-    public function setApplication(Application $application)
-    {
-        $this->application = $application;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCollection()
-    {
-        return $this->collection;
-    }
-
-    /**
-     * @param string $collection
-     */
-    public function setCollection($collection)
-    {
-        $this->collection = $collection;
-    }
 
 
     /**
@@ -226,17 +185,6 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
     }
 
 
-
-    
-
-    // helpers
-
-    protected function noCollectionException()
-    {
-        if (!$this->collection) {
-            throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
-        }
-    }
 
     
 
