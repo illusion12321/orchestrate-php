@@ -3,7 +3,7 @@ namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
-use andrefelipe\Orchestrate\Objects\KeyValueList;
+use andrefelipe\Orchestrate\Objects\KeyValues;
 use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Search;
@@ -310,11 +310,11 @@ class Application
      * @param string $collection
      * @param int $limit
      * @param array $range
-     * @return KeyValueList
+     * @return KeyValues
      */
     public function listCollection($collection, $limit=10, array $range=null)
     {
-        return (new KeyValueList($this, $collection))->listCollection($limit, $range);
+        return (new KeyValues($this, $collection))->listCollection($limit, $range);
     }
     
 

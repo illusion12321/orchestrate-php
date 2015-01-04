@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects;
+namespace andrefelipe\Orchestrate\Objects\Common;
 
 
 abstract class AbstractList extends AbstractObject

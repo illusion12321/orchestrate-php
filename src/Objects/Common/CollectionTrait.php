@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects;
+namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
  * Trait that implements the Collection methods

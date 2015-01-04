@@ -1,8 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\ApplicationTrait;
-use andrefelipe\Orchestrate\Objects\CollectionTrait;
+use andrefelipe\Orchestrate\Objects\Common\ApplicationTrait;
+use andrefelipe\Orchestrate\Objects\Common\CollectionTrait;
 
 
 class Collection
@@ -97,7 +97,7 @@ class Collection
     /**
      * @param int $limit
      * @param array $range
-     * @return KeyValueList
+     * @return KeyValues
      */
     public function listCollection($limit=10, array $range=null)
     {

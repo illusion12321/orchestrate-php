@@ -1,17 +1,17 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Objects\Common\AbstractList;
 
 
-class KeyValueList extends AbstractList
+class KeyValues extends AbstractList
 {
     
 
     /**
      * @param int $limit
      * @param array $range
-     * @return KeyValueList self
+     * @return KeyValues self
      */
     public function listCollection($limit=10, array $range=null)
     {

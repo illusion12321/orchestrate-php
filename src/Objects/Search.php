@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Objects\Common\AbstractList;
 
 
 class Search extends AbstractList

@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Application;
-
+use andrefelipe\Orchestrate\Objects\Common\AbstractList;
+use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
+use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
 
 class Events extends AbstractList
 {

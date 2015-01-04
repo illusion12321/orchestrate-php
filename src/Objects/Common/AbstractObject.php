@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects;
+namespace andrefelipe\Orchestrate\Objects\Common;
 
 use andrefelipe\Orchestrate\Application;
 use GuzzleHttp\HasDataTrait;
