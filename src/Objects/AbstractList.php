@@ -32,9 +32,36 @@ abstract class AbstractList extends AbstractObject
 
 
     
+    /**
+     * @return array
+     */
     public function getResults()
     {
         return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $result = [
+            'count' => count($this->data),
+            'total_count' => $this->totalCount,
+            'results' => [],
+        ];
+
+        foreach ($this->data as $object) {
+            $result['results'][] = $object->toArray();
+        }
+
+        if ($this->nextUrl)
+            $result['next'] = $this->nextUrl;
+
+        if ($this->prevUrl)
+            $result['prev'] = $this->prevUrl;
+
+        return $result;
     }
 
 
