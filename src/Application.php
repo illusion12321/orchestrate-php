@@ -4,6 +4,7 @@ namespace andrefelipe\Orchestrate;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Refs;
+use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Search;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\Response;
@@ -322,6 +323,17 @@ class Application
     public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
     {
         return (new Refs($this, $collection, $key))->listRefs($limit, $offset, $values);
+    }
+
+
+    // Events
+
+    /**
+     * @return Events
+     */
+    public function listEvents($collection, $key, $type, $limit=10, $startEvent='', $afterEvent='', $beforeEvent='', $endEvent='')
+    {
+        return (new Events($this, $collection, $key))->listEvents($type, $limit, $startEvent, $afterEvent, $beforeEvent, $endEvent);
     }
 
 

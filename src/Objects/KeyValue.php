@@ -399,6 +399,15 @@ class KeyValue extends AbstractObject
     }
 
 
+    /**
+     * @return Events
+     */
+    public function listEvents($type, $limit=10, $startEvent='', $afterEvent='', $beforeEvent='', $endEvent='')
+    {
+        return (new Events($this, $this->collection, $this->key))->listEvents($type, $limit, $startEvent, $afterEvent, $beforeEvent, $endEvent);
+    }
+
+
 
 
 

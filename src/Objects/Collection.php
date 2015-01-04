@@ -120,6 +120,17 @@ class Collection extends AbstractList
     }
 
 
+    // Events
+
+    /**
+     * @return Events
+     */
+    public function listEvents($key, $type, $limit=10, $startEvent='', $afterEvent='', $beforeEvent='', $endEvent='')
+    {
+        return (new Events($this, $this->collection, $key))->listEvents($type, $limit, $startEvent, $afterEvent, $beforeEvent, $endEvent);
+    }
+
+
     // Search
 
     /**
