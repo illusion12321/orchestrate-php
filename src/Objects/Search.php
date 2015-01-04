@@ -23,6 +23,9 @@ class Search extends AbstractList
      */
     public function search($query, $sort='', $limit=10, $offset=0)
     {
+        // required values
+        $this->noCollectionException();
+
         // define request options
         $parameters = [
             'query' => $query,

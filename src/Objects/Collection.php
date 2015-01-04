@@ -18,6 +18,9 @@ class Collection extends AbstractList
      */
     public function listCollection($limit=10, $startKey='', $afterKey='', $beforeKey='', $endKey='')
     {
+        // required values
+        $this->noCollectionException();
+
         // define request options
         $parameters = ['limit' => $limit];
 
@@ -44,6 +47,9 @@ class Collection extends AbstractList
      */
     public function deleteCollection()
     {
+        // required values
+        $this->noCollectionException();
+
         // request
         $this->request('DELETE', $this->collection, ['query' => ['force' => 'true']]);
         

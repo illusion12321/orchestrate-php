@@ -390,7 +390,13 @@ class KeyValue extends AbstractObject
 
 
 
-
+    /**
+     * @return Refs
+     */
+    public function listRefs($limit=10, $offset=0, $values=false)
+    {
+        return (new Refs($this, $this->collection, $this->key))->listRefs($limit, $offset, $values);
+    }
 
 
 
