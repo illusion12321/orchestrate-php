@@ -2,6 +2,7 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 use andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Objects\Event;
 
 
 abstract class AbstractList extends AbstractObject
@@ -53,7 +54,7 @@ abstract class AbstractList extends AbstractObject
             'results' => [],
         ];
 
-        foreach ($this->data as $object) {
+        foreach ($this->getResults() as $object) {
             $result['results'][] = $object->toArray();
         }
 
@@ -145,21 +146,32 @@ abstract class AbstractList extends AbstractObject
 
 
 
-    protected function request($method, $url = null, array $options = [])
+    protected function request($method, $url = null, array $options = [], $childrenClass='KeyValue')
     {
         $this->reset();
         parent::request($method, $url, $options);
 
         if ($this->isSuccess()) {
             
-            $this->data = !empty($this->body['results'])
-                ? array_map([$this, 'createKeyValue'], $this->body['results'])
-                : [];
-            $this->count = !empty($this->body['count']) ? (int) $this->body['count'] : 0;
-            $this->totalCount = !empty($this->body['total_count']) ? (int) $this->body['total_count'] : 0;
-            $this->nextUrl = !empty($this->body['next']) ? $this->body['next'] : '';
-            $this->prevUrl = !empty($this->body['prev']) ? $this->body['prev'] : '';
+            if (!empty($this->body['results'])) {
+                $this->data = array_map([$this, 'create'.$childrenClass], $this->body['results']);
+            }
 
+            if (!empty($this->body['count'])) {
+                $this->count = (int) $this->body['count'];
+            }
+
+            if (!empty($this->body['total_count'])) {
+                $this->totalCount = (int) $this->body['total_count'];
+            }
+
+            if (!empty($this->body['next'])) {
+                $this->nextUrl = $this->body['next'];
+            }
+
+            if (!empty($this->body['prev'])) {
+                $this->prevUrl = $this->body['prev'];
+            }
         }
     }
 
@@ -167,6 +179,11 @@ abstract class AbstractList extends AbstractObject
     private function createKeyValue(array $values)
     {
         return (new KeyValue($this->application, $this->collection))->init($values);
+    }
+
+    private function createEvent(array $values)
+    {
+        return (new Event($this->application, $this->collection))->init($values);
     }
 
 

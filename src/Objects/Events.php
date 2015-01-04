@@ -53,7 +53,7 @@ class Events extends AbstractList
         }
 
         // request
-        $this->request('GET', $path, ['query' => $parameters]);
+        $this->request('GET', $path, ['query' => $parameters], 'Event');
         
         return $this;
     }
