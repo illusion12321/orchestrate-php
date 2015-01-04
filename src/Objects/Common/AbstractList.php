@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects\Common;
 
+use andrefelipe\Orchestrate\Objects\KeyValue;
+
 
 abstract class AbstractList extends AbstractObject
 {
