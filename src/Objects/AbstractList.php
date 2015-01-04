@@ -1,10 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
 
-
-class AbstractList extends AbstractObject
+abstract class AbstractList extends AbstractObject
 {
         
 
@@ -34,6 +32,11 @@ class AbstractList extends AbstractObject
 
 
     
+    public function getResults()
+    {
+        return $this->data;
+    }
+
 
     /**
      * @return int
@@ -83,20 +86,30 @@ class AbstractList extends AbstractObject
 
     public function next()
     {
-        $nextUrl = $this->nextUrl;
+        return $this->getUrl($this->nextUrl);
+    }
 
+    public function prev()
+    {
+        return $this->getUrl($this->prevUrl);
+    }
+
+
+
+    private function getUrl($url)
+    {
         // reset object
         $this->reset();
 
         // load next set of values
-        if ($nextUrl) {
+        if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($nextUrl, '/'.$this->application->getApiVersion().'/');
+            $url = ltrim($url, '/'.$this->application->getApiVersion().'/');
 
             // request
             $this->request('GET', $url);
-        }       
+        }
 
         return $this;
     }
@@ -120,6 +133,7 @@ class AbstractList extends AbstractObject
 
         }
     }
+
 
     private function createKeyValue(array $values)
     {

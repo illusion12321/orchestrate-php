@@ -28,6 +28,16 @@ class KeyValue extends AbstractObject
      */
     protected $refTime = 0;
 
+    /**
+     * @var float
+     */
+    protected $score = 0;
+
+    /**
+     * @var boolean
+     */
+    protected $tombstone = false;
+
 
 
 
@@ -87,13 +97,63 @@ class KeyValue extends AbstractObject
         return $this->refTime;
     }
 
+    /**
+     * @return float
+     */
+    public function getScore()
+    {
+        return $this->score;
+    }
 
+    /**
+     * @return boolean
+     */
+    public function isTombstone()
+    {
+        return $this->tombstone;
+    }
 
+    /**
+     * @return array
+     */
+    public function getValue()
+    {
+        return $this->data;
+    }
 
+    /**
+     * @param array $value
+     */
     public function setValue(array $value)
     {
         $this->data = $value;
     }
+    
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $result = [
+            'collection' => $this->collection,
+            'key' => $this->key,
+            'ref' => $this->ref,
+            'value' => $this->data,
+        ];
+
+        if ($this->refTime)
+            $result['reftime'] = $this->refTime;
+
+        if ($this->score)
+            $result['score'] = $this->score;
+
+        if ($this->tombstone)
+            $result['tombstone'] = $this->tombstone;
+
+
+        return $result;
+    }
+
 
 
     public function reset()
@@ -102,6 +162,8 @@ class KeyValue extends AbstractObject
         $this->key = null;
         $this->ref = null;
         $this->refTime = 0;
+        $this->score = 0;
+        $this->tombstone = false;
         $this->data = [];
     }
 
@@ -131,6 +193,12 @@ class KeyValue extends AbstractObject
 
             if ($key === 'reftime')
                 $this->refTime = (int) $value;
+
+            if ($key === 'score')
+                $this->score = (float) $value;
+
+            if ($key === 'tombstone')
+                $this->tombstone = (boolean) $value;
 
             if ($key === 'value')
                 $this->data = (array) $value;
@@ -331,20 +399,6 @@ class KeyValue extends AbstractObject
 
 
     // helpers
-
-    private function noCollectionException()
-    {
-        if (!$this->collection) {
-            throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
-        }
-    }
-
-    private function noKeyException()
-    {
-        if (!$this->key) {
-            throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
-        }
-    }
 
 
     private function setRefFromETag()

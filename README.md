@@ -58,24 +58,18 @@ $object = $application->delete('collection_name', 'key');
 // you can name the var as '$client' to feel more like a client
 ```
 
-2- **Collection** — which holds a collection name and provides the same client-like API, but with one level-deeper.
+2- **Objects** — the actual `Collection`, `KeyValue`, `Refs` and `Search` objects, which provides a object-like API, as well as the results and response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Objects\Collection;
+use andrefelipe\Orchestrate\Objects\KeyValue;
 
 $application = new Application();
-$collection = $application->collection('collection_name');
+$collection = new Collection($application, 'collection_name');
+$collection->listCollection();
+$collection->deleteCollection();
 $object = $collection->get('key');
-$object = $collection->put('key', ['title' => 'My Title']);
-$object = $collection->delete('key');
-```
-
-3- **Objects** — the actual `KeyValue` and `Search` objects, which provides a object-like API, as well as the results and response status.
-
-```php
-use andrefelipe\Orchestrate\Application;
-
-$application = new Application();
 $object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
 // you can now change the object as you like, then do the requests later
 $object->get(); // the current stored key
@@ -93,7 +87,7 @@ $application = new Application();
 $object = $application->get('collection_name', 'key');
 
 if ($object->isSuccess()) {
-    print_r($object->toArray());
+    print_r($object->getValue());
     // Array
     // (
     //     [title] => My Title
@@ -164,7 +158,7 @@ if ($object->isSuccess()) {
 }
 
 // if you don't want to use the internal Array directly, you can always use:
-$value = $object->toArray();
+$value = $object->getValue();
 // it will return the internal Array that is being accessed
 // then you can change it as usual
 $value['profile'] = ['name' => 'The Name', 'age' => 10];
@@ -177,6 +171,25 @@ if ($object->isSuccess()) {
     // good
 }
 
+
+// also all objects provide an additional method, toArray
+// which returns an Array representation of the object
+print_r($object->toArray());
+// Array
+// (
+//     [collection] => collection
+//     [key] => key
+//     [ref] => cbb48f9464612f20
+//     [value] => Array
+//         (
+//             [title] => My Title
+//         )
+//     [reftime] => 1400085084739 (if available)
+//     [score] => 1.0 (if available)
+//     [tombstone] => true (if available)
+// )
+
+
 ```
 
 
@@ -186,6 +199,18 @@ Let's go:
 
 
 ## Orchestrate API
+
+### List Collection:
+
+```php
+$object = $application->listCollection('collection');
+// or
+$collection = new Collection($application, 'collection');
+$collection->listCollection();
+
+$collection->next(); // loads next set of results
+```
+
 
 ### Key/Value Get
 
@@ -312,6 +337,19 @@ $object = $collection->get('key', '20c14e8965d6cbb0');
 // or
 $object = new KeyValue($application, 'collection', 'key');
 $object->get('20c14e8965d6cbb0');
+```
+
+### Refs List:
+
+Returns the specified version of a value.
+
+```php
+$object = $application->listRefs('collection', 'key');
+// or
+$object = $collection->listRefs('key');
+// or
+$object = new Refs($application, 'collection', 'key');
+$object->listRefs();
 ```
 
 

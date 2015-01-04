@@ -1,6 +1,7 @@
 # TODO and IDEAS
 
-- Talvez alguns métodos do KeyValue que estão lá não deveriam (o post) porque o objeto tem que ter os métodos para mexer com ele, não com o collection
+- Ver de voltar o getValue e fazer com que o toArray, retorne realmente uma represetação do objeto, por exemplo, path/value, etc
+Mas ai vai conflitar com o toArray do Search, que é os results.. ou voltar o getResults e getValue para não complicar tanto?
 
 
 - Maybe change the naming of Objects to Resources
@@ -14,7 +15,10 @@ setStatic() // enableStatic / disableStatic?
 getStatic()
 
 
-- The List results should be associative array? With the keys? (could be nice to have array_keys())
+- The List results should be associative array? With the keys? (could be nice to have array_keys()) -- confirm later, after the refs
 
 - Maybe (very) later apply a static Facade ? 'Orchestrate' (Application) ?
 
+- include a method 'refs' ou 'listRefs' inside the KeyValue object, as well as events?
+
+- add sort operations to List objects?

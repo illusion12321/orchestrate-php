@@ -1,8 +1,9 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Collection;
+use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Search;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\Response;
@@ -215,18 +216,8 @@ class Application
 
 
 
-    // -------------------- Orchestrate Objects --------------------
 
-    /**
-     * @return Collection
-     */
-    public function collection($collection)
-    {
-        return new Collection($this, $collection);
-    }
-
-
-
+    
 
 
 
@@ -236,6 +227,8 @@ class Application
     // https://orchestrate.io/docs/apiref
 
 
+    // Application
+
     /**
      * @return boolean
      */
@@ -244,6 +237,19 @@ class Application
     	$response = $this->getClient()->head();
     	return $response->getStatusCode() === 200;
     }
+
+    // Collection
+
+    /**
+     * @return Collection
+     */
+    public function listCollection($collection, $limit=10, $startKey='', $afterKey='', $beforeKey='', $endKey='')
+    {
+        return (new Collection($this, $collection))->listCollection($limit, $startKey, $afterKey, $beforeKey, $endKey);
+    }
+
+    // deleteCollection
+    // createCollection
 
 
     // Key/Value
@@ -303,6 +309,15 @@ class Application
     }
 
 
+    // Refs
+
+    /**
+     * @return Refs
+     */
+    public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
+    {
+        return (new Refs($this, $collection, $key))->listRefs($limit, $offset, $values);
+    }
 
 
     // Search

@@ -1,54 +1,46 @@
 <?php
-namespace andrefelipe\Orchestrate;
-
-use andrefelipe\Orchestrate\Application;
+namespace andrefelipe\Orchestrate\Objects;
 
 
-// TODO maybe convert to an Object, with proper array access, and item storage? – can work fine code-wise, but have to confirm a real world usage
-
-
-class Collection
+class Collection extends AbstractList
 {
 
-    /**
-     * @var Application
-     */
-    protected $application;
+
+    // Collection
 
     /**
-     * @var string
+     * @param int $limit
+     * @param string $startKey
+     * @param string $afterKey
+     * @param string $beforeKey
+     * @param string $endKey
+     * @return KeyValueList self
      */
-    protected $collection;
-
-
-    // idea
-    /**
-     * @var array of KeyValue
-     */
-    // protected $items;
-
-
-    /**
-     * @param Application $application
-     * @param string $collection
-     */
-    public function __construct(Application $application, $collection)
+    public function listCollection($limit=10, $startKey='', $afterKey='', $beforeKey='', $endKey='')
     {
-        $this->application = $application;
-        $this->collection = $collection;
+        // define request options
+        $parameters = ['limit' => $limit];
+
+        if ($startKey)
+            $parameters['startKey'] = $startKey;
+       
+        if ($afterKey)
+            $parameters['afterKey'] = $afterKey;
+
+        if ($beforeKey)
+            $parameters['beforeKey'] = $beforeKey;
+
+        if ($endKey)
+            $parameters['endKey'] = $endKey;
+
+        // request
+        $this->request('GET', $this->collection, ['query' => $parameters]);
+        
+        return $this;
     }
 
 
-    // public function getApplication()
-    // {
-    //     return $this->application;
-    // }
-
-    // public function getCollection()
-    // {
-    //     return $this->collection;
-    // }
-
+    // Key/Value
 
     /**
      * @param string $key
@@ -57,7 +49,7 @@ class Collection
      */
     public function get($key, $ref=null)
     {
-        return $this->application->get($collection, $key, $ref);
+        return $this->application->get($this->collection, $key, $ref);
     }
 
     /**
@@ -99,6 +91,20 @@ class Collection
         return $this->application->purge($this->collection, $key);
     }
 
+
+    // Refs
+    
+    /**
+     * @return Refs
+     */
+    public function listRefs($key, $limit=10, $offset=0, $values=false)
+    {
+        return $this->application->listRefs($this->collection, $key, $limit, $offset, $values);
+    }
+
+
+    // Search
+
     /**
      * @param string $query
      * @param string $sort
@@ -110,9 +116,5 @@ class Collection
     {
         return $this->application->search($this->collection, $query, $sort, $limit, $offset);
     }
-
-
-
-
 
 }

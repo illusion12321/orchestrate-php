@@ -174,6 +174,28 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
     }
 
 
+    
+    public function reset()
+    {
+        $this->response = null;
+        $this->body = [];
+        $this->status = '';
+        $this->statusCode = 0;
+        $this->statusMessage = '';        
+    }
+
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->data;
+    }
+    
+
+
+
 
 
     protected function request($method, $url = null, array $options = [])
@@ -205,25 +227,23 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
 
 
 
-    public function reset()
-    {
-        $this->response = null;
-        $this->body = [];
-        $this->status = '';
-        $this->statusCode = 0;
-        $this->statusMessage = '';        
-    }
-
-
-
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->data;
-    }
     
+
+    // helpers
+
+    protected function noCollectionException()
+    {
+        if (!$this->collection) {
+            throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
+        }
+    }
+
+    protected function noKeyException()
+    {
+        if (!$this->key) {
+            throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
+        }
+    }
+
 
 }

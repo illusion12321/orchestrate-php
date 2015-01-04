@@ -24,17 +24,19 @@ class Search extends AbstractList
     public function search($query, $sort='', $limit=10, $offset=0)
     {
         // define request options
-        $options = [
-            'query' => [
-                'query' => $query,
-                'sort' => $sort,
-                'limit'=> $limit,
-                'offset' => $offset,
-            ]
+        $parameters = [
+            'query' => $query,
+            'limit'=> $limit,
         ];
+
+        if ($sort)
+            $parameters['sort'] = $sort;
+
+        if ($offset)
+            $parameters['offset'] = $offset;
         
         // request
-        $this->request('GET', $this->collection, $options);
+        $this->request('GET', $this->collection, ['query' => $parameters]);
 
         return $this;
     }
