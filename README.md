@@ -52,6 +52,7 @@ We define our classes following the same convention as Orchestrate, so we have:
 use andrefelipe\Orchestrate\Application;
 
 $application = new Application();
+
 $object = $application->get('collection_name', 'key'); // returns a KeyValue object
 $object = $application->put('collection_name', 'key', ['title' => 'My Title']);
 $object = $application->delete('collection_name', 'key');
@@ -66,9 +67,11 @@ use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 
 $application = new Application();
+
 $collection = new Collection($application, 'collection_name');
 $collection->listCollection();
 $collection->deleteCollection();
+
 $object = $collection->get('key');
 $object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
 // you can now change the object as you like, then do the requests later
@@ -157,6 +160,7 @@ if ($object->isSuccess()) {
     echo $object->getStatusCode();  // 200
 }
 
+
 // if you don't want to use the internal Array directly, you can always use:
 $value = $object->getValue();
 // it will return the internal Array that is being accessed
@@ -200,7 +204,7 @@ Let's go:
 
 ## Orchestrate API
 
-### List Collection:
+### Collection List:
 
 ```php
 $object = $application->listCollection('collection');
@@ -386,6 +390,7 @@ if ($object->isSuccess()) {
     // get the object info
     $object->getKey(); // string
     $object->getRef(); // string
+    $object->getValue(); // array
     $object->toArray(); // array
     
     // working with the Value
@@ -431,7 +436,8 @@ $object = $application->search('collection', 'title:"The Title*"');
 if ($object->isSuccess()) {
     
     // get the object info
-    $object->toArray(); // array of the search results
+    $object->getResults(); // array of the search results
+    $object->toArray(); // array representation of the object
     $object->getBody(); // array of the full HTTP response body
 
     // pagination
@@ -439,6 +445,8 @@ if ($object->isSuccess()) {
     $object->getPrevUrl(); // string
     $object->getCount(); // available to match the syntax, but is exactly the same as count($object)
     $object->getTotalCount();
+    $object->next(); // loads next set of results
+    $object->prev(); // loads previous set of results, if available
     
     // working with the Results
     $object[0]; // direct array access to the Results

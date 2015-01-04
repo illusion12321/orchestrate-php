@@ -22,3 +22,5 @@ getStatic()
 - include a method 'refs' ou 'listRefs' inside the KeyValue object, as well as events?
 
 - add sort operations to List objects?
+
+- maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
