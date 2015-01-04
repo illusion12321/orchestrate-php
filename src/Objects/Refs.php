@@ -6,11 +6,7 @@ use andrefelipe\Orchestrate\Application;
 
 class Refs extends AbstractList
 {
-
-    /**
-     * @var string
-     */
-    protected $key;
+    use KeyTrait;
 
 
 
@@ -18,22 +14,6 @@ class Refs extends AbstractList
     public function __construct(Application $application, $collection, $key=null)
     {
         parent::__construct($application, $collection);
-        $this->key = $key;
-    }
-
-    /**
-     * @return string
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
-     * @param string $key
-     */
-    public function setKey($key)
-    {
         $this->key = $key;
     }
 
@@ -56,7 +36,7 @@ class Refs extends AbstractList
         $path = $this->collection.'/'.$this->key.'/refs/';
         
         $parameters = ['limit' => $limit];
-
+        
         if ($offset)
             $parameters['offset'] = $offset;
        

@@ -10,13 +10,10 @@ class Collection extends AbstractList
 
     /**
      * @param int $limit
-     * @param string $startKey
-     * @param string $afterKey
-     * @param string $beforeKey
-     * @param string $endKey
+     * @param array $range
      * @return Collection self
      */
-    public function listCollection($limit=10, $startKey='', $afterKey='', $beforeKey='', $endKey='')
+    public function listCollection($limit=10, array $range=null)
     {
         // required values
         $this->noCollectionException();
@@ -24,17 +21,19 @@ class Collection extends AbstractList
         // define request options
         $parameters = ['limit' => $limit];
 
-        if ($startKey)
-            $parameters['startKey'] = $startKey;
-       
-        if ($afterKey)
-            $parameters['afterKey'] = $afterKey;
+        if ($range) {
+            if (isset($range['start']))
+                $parameters['startKey'] = $range['start'];
 
-        if ($beforeKey)
-            $parameters['beforeKey'] = $beforeKey;
+            if (isset($range['after']))
+                $parameters['afterKey'] = $range['after'];
 
-        if ($endKey)
-            $parameters['endKey'] = $endKey;
+            if (isset($range['before']))
+                $parameters['beforeKey'] = $range['before'];
+
+            if (isset($range['end']))
+                $parameters['endKey'] = $range['end'];
+        }        
 
         // request
         $this->request('GET', $this->collection, ['query' => $parameters]);
@@ -56,6 +55,39 @@ class Collection extends AbstractList
         return $this;
     }
 
+    /**
+     * @param string $query
+     * @param string $sort
+     * @param int $limit
+     * @param int $offset
+     * @return Collection self
+     */
+    public function search($query, $sort='', $limit=10, $offset=0)
+    {
+        // required values
+        $this->noCollectionException();
+
+        // define request options
+        $parameters = [
+            'query' => $query,
+            'limit'=> $limit,
+        ];
+
+        if ($sort)
+            $parameters['sort'] = $sort;
+
+        if ($offset)
+            $parameters['offset'] = $offset;
+        
+        // request
+        $this->request('GET', $this->collection, ['query' => $parameters]);
+
+        return $this;
+    }
+
+
+
+    // Cross-object API
 
     // Key/Value
 
@@ -125,24 +157,12 @@ class Collection extends AbstractList
     /**
      * @return Events
      */
-    public function listEvents($key, $type, $limit=10, $startEvent='', $afterEvent='', $beforeEvent='', $endEvent='')
+    public function listEvents($key, $type, $limit=10, array $range=null)
     {
-        return (new Events($this, $this->collection, $key))->listEvents($type, $limit, $startEvent, $afterEvent, $beforeEvent, $endEvent);
+        return $this->application->listEvents($this->collection, $key, $type, $limit, $range);
     }
 
 
-    // Search
-
-    /**
-     * @param string $query
-     * @param string $sort
-     * @param int $limit
-     * @param int $offset
-     * @return Search
-     */
-    public function search($query, $sort='', $limit=10, $offset=0)
-    {
-        return $this->application->search($this->collection, $query, $sort, $limit, $offset);
-    }
+    
 
 }

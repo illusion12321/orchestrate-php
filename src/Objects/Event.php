@@ -4,20 +4,20 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Application;
 
 
-class KeyValue extends AbstractObject
+class Event extends AbstractObject
 {
-    use KeyTrait, RefTrait;
-    
+    use KeyTrait, RefTrait, TypeTrait;
+
 
     /**
      * @var int
      */
-    protected $refTime = 0;
+    protected $timestamp = 0;
 
     /**
-     * @var float
+     * @var int
      */
-    protected $score = 0;
+    protected $ordinal = 0;
 
     /**
      * @var boolean
@@ -27,35 +27,47 @@ class KeyValue extends AbstractObject
 
 
 
-
-
-    // TODO try to remove the Application parameter and simplify the others
-    // sometimes it's interesting to instantiate these objects directly, to populate with data then send
-
-
-    public function __construct(Application $application, $collection, $key=null)
+    public function __construct(Application $application, $collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
     {
         parent::__construct($application, $collection);
         $this->key = $key;
+        $this->type = $type;
+        $this->timestamp = $timestamp;
+        $this->ordinal = $ordinal;
     }
-
 
 
 
     /**
      * @return int
      */
-    public function getRefTime()
+    public function getTimestamp()
     {
-        return $this->refTime;
+        return $this->timestamp;
     }
 
     /**
-     * @return float
+     * @param int|string $timestamp
      */
-    public function getScore()
+    public function setTimestamp($timestamp)
     {
-        return $this->score;
+        $this->timestamp = is_string($timestamp) ? strtotime($timestamp) : (int) $timestamp;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrdinal()
+    {
+        return $this->ordinal;
+    }
+
+    /**
+     * @param int $ordinal
+     */
+    public function setOrdinal($ordinal)
+    {
+        $this->ordinal = (int) $ordinal;
     }
 
     /**
@@ -91,18 +103,14 @@ class KeyValue extends AbstractObject
             'collection' => $this->collection,
             'key' => $this->key,
             'ref' => $this->ref,
+            'type' => $this->type,
+            'timestamp' => $this->timestamp,
+            'ordinal' => $this->ordinal,
             'value' => $this->data,
         ];
 
-        if ($this->refTime)
-            $result['reftime'] = $this->refTime;
-
-        if ($this->score)
-            $result['score'] = $this->score;
-
         if ($this->tombstone)
             $result['tombstone'] = $this->tombstone;
-
 
         return $result;
     }
@@ -114,8 +122,9 @@ class KeyValue extends AbstractObject
         parent::reset();
         $this->key = null;
         $this->ref = null;
-        $this->refTime = 0;
-        $this->score = 0;
+        $this->type = null;
+        $this->timestamp = 0;
+        $this->ordinal = 0;
         $this->tombstone = false;
         $this->data = [];
     }
@@ -144,11 +153,14 @@ class KeyValue extends AbstractObject
             if ($key === 'ref')
                 $this->ref = $value;
 
-            if ($key === 'reftime')
-                $this->refTime = (int) $value;
+            if ($key === 'type')
+                $this->type = $value;
 
-            if ($key === 'score')
-                $this->score = (float) $value;
+            if ($key === 'timestamp')
+                $this->timestamp = (int) $value;
+
+            if ($key === 'ordinal')
+                $this->ordinal = (int) $value;
 
             if ($key === 'tombstone')
                 $this->tombstone = (boolean) $value;
@@ -169,32 +181,33 @@ class KeyValue extends AbstractObject
     // API
 
 
-
     /**
-     * @return KeyValue self
+     * @return Event self
      */
-    public function get($ref=null)
+    public function get()
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
+        $this->noTypeException();
+        $this->noTimestampException();
+        $this->noOrdinalException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
 
-        if ($ref) {
-            $path .= '/refs/'.trim($ref, '"');
-        }
-
+     
         // request
         $this->request('GET', $path);
 
         // set values
+        $this->ref = null;
+
         if ($this->isSuccess()) {
             $this->data = $this->body;
             $this->setRefFromETag();
         }
-        else {
+        else {            
             $this->data = [];
         }
 
@@ -204,20 +217,23 @@ class KeyValue extends AbstractObject
     
     
     /**
-     * @return KeyValue self
+     * @return Event self
      */
     public function put(array $value=null, $ref=null)
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
+        $this->noTypeException();
+        $this->noTimestampException();
+        $this->noOrdinalException();
 
         if ($value === null) {
             $value = $this->data;
         }
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
         $options = ['json' => $value];
 
         if ($ref) {
@@ -228,12 +244,6 @@ class KeyValue extends AbstractObject
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
-
-        } elseif ($ref === false) {
-
-            // set If-None-Match
-            $options['headers'] = ['If-None-Match' => '"*"'];
-
         }
 
         // request
@@ -247,32 +257,44 @@ class KeyValue extends AbstractObject
         // set value as input value, even if not success, so we can retry
         $this->data = $value;
 
-
         return $this;
     }
 
 
 
     /**
-     * @return KeyValue self
+     * @return Event self
      */
-    public function post(array $value=null)
+    public function post(array $value=null, $timestamp=0)
     {
         // required values
         $this->noCollectionException();
+        $this->noKeyException();
+        $this->noTypeException();
+
+        $path = $this->collection.'/'.$this->key.'/events/'.$this->type;
+
+        if ($timestamp === true) {
+            $timestamp = $this->timestamp;
+        }        
+        if ($timestamp) {
+            $path .= '/'.$timestamp;
+        }
 
         if ($value === null) {
             $value = $this->data;
         }
 
         // request
-        $this->request('POST', $this->collection, ['json' => $value]);
+        $this->request('POST', $path, ['json' => $value]);
         
         // set values
         if ($this->isSuccess()) {
-            $this->key = null;
             $this->ref = null;
-            $this->setKeyRefFromLocation();
+            $this->timestamp = 0;
+            $this->ordinal = 0;
+            $this->setRefFromETag();
+            $this->setTimestampFromLocation();
         }
 
         // set value as input value, even if not success, so we can retry
@@ -285,17 +307,20 @@ class KeyValue extends AbstractObject
 
 
     /**
-     * @return KeyValue self
+     * @return Event self
      */
     public function delete($ref=null)
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
+        $this->noTypeException();
+        $this->noTimestampException();
+        $this->noOrdinalException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
-        $options = [];
+        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $options = ['query' => ['purge' => 'true']];
 
         if ($ref) {
 
@@ -310,6 +335,11 @@ class KeyValue extends AbstractObject
         // request
         $this->request('DELETE', $path, $options);
 
+        // null ref if success, as it will never exist again
+        if ($this->isSuccess()) {
+            $this->ref = null;
+        }
+
         return $this;
     }
 
@@ -317,16 +347,19 @@ class KeyValue extends AbstractObject
 
 
     /**
-     * @return KeyValue self
+     * @return Event self
      */
     public function purge()
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
+        $this->noTypeException();
+        $this->noTimestampException();
+        $this->noOrdinalException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
         $options = ['query' => ['purge' => 'true']];
 
         // request
@@ -343,50 +376,44 @@ class KeyValue extends AbstractObject
 
 
 
-    // Cross-object API
-
-    /**
-     * @return Refs
-     */
-    public function listRefs($limit=10, $offset=0, $values=false)
-    {
-        return (new Refs($this, $this->collection, $this->key))->listRefs($limit, $offset, $values);
-    }
-
-
-    /**
-     * @return Events
-     */
-    public function listEvents($type, $limit=10, array $range=null)
-    {
-        return (new Events($this, $this->collection, $this->key, $type))->listEvents($limit, $range);
-    }
-
-
-
-
+    
 
 
 
     // helpers
 
-    
-    protected function setKeyRefFromLocation()
+    protected function setTimestampFromLocation()
     {
-        // Location: /v0/collection/key/refs/ad39c0f8f807bf40
+        // Location: /v0/collection/key/events/type/1398286518286/6
 
         $location = $this->response->getHeader('Location');
         if (!$location)
             $location = $this->response->getHeader('Content-Location');
 
         $location = explode('/', trim($location, '/'));
-        if (count($location) > 4)
-        {
-            $this->key = $location[2];
-            $this->ref = $location[4];
+        
+        if (isset($location[5])) {
+            $this->timestamp = (int) $location[5];
+        }
+
+        if (isset($location[6])) {
+            $this->ordinal = (int) $location[6];
+        }
+    }    
+
+    protected function noTimestampException()
+    {
+        if (!$this->timestamp) {
+            throw new \BadMethodCallException('There is no timestamp set yet. Please do so through setTimestamp() method.');
         }
     }
 
+    protected function noOrdinalException()
+    {
+        if (!$this->ordinal) {
+            throw new \BadMethodCallException('There is no ordinal set yet. Please do so through setOrdinal() method.');
+        }
+    }
 
 
 
@@ -400,7 +427,7 @@ class KeyValue extends AbstractObject
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || (int) $offset === $offset) {
-           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of KeyValue objects.');
+           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of Event objects.');
         } else {
             $this->data[$offset] = $value;
         }

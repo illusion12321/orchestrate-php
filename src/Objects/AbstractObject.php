@@ -238,12 +238,7 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
         }
     }
 
-    protected function noKeyException()
-    {
-        if (!$this->key) {
-            throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
-        }
-    }
+    
 
 
 }

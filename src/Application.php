@@ -244,9 +244,9 @@ class Application
     /**
      * @return Collection
      */
-    public function listCollection($collection, $limit=10, $startKey='', $afterKey='', $beforeKey='', $endKey='')
+    public function listCollection($collection, $limit=10, array $range=null)
     {
-        return (new Collection($this, $collection))->listCollection($limit, $startKey, $afterKey, $beforeKey, $endKey);
+        return (new Collection($this, $collection))->listCollection($limit, $range);
     }
 
     /**
@@ -331,9 +331,9 @@ class Application
     /**
      * @return Events
      */
-    public function listEvents($collection, $key, $type, $limit=10, $startEvent='', $afterEvent='', $beforeEvent='', $endEvent='')
+    public function listEvents($collection, $key, $type, $limit=10, array $range=null)
     {
-        return (new Events($this, $collection, $key))->listEvents($type, $limit, $startEvent, $afterEvent, $beforeEvent, $endEvent);
+        return (new Events($this, $collection, $key, $type))->listEvents($limit, $range);
     }
 
 
