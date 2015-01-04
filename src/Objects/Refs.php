@@ -44,7 +44,7 @@ class Refs extends AbstractList
      * @param int $limit
      * @param int $offset
      * @param boolean $values
-     * @return KeyValueList self
+     * @return Refs self
      */
     public function listRefs($limit=10, $offset=0, $values=false)
     {

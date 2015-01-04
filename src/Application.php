@@ -217,7 +217,7 @@ class Application
 
 
 
-    
+
 
 
 
@@ -248,8 +248,13 @@ class Application
         return (new Collection($this, $collection))->listCollection($limit, $startKey, $afterKey, $beforeKey, $endKey);
     }
 
-    // deleteCollection
-    // createCollection
+    /**
+     * @return Collection
+     */
+    public function deleteCollection($collection)
+    {
+        return (new Collection($this, $collection))->deleteCollection();
+    }
 
 
     // Key/Value

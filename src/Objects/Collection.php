@@ -14,7 +14,7 @@ class Collection extends AbstractList
      * @param string $afterKey
      * @param string $beforeKey
      * @param string $endKey
-     * @return KeyValueList self
+     * @return Collection self
      */
     public function listCollection($limit=10, $startKey='', $afterKey='', $beforeKey='', $endKey='')
     {
@@ -35,6 +35,17 @@ class Collection extends AbstractList
 
         // request
         $this->request('GET', $this->collection, ['query' => $parameters]);
+        
+        return $this;
+    }
+
+    /**
+     * @return Collection self
+     */
+    public function deleteCollection()
+    {
+        // request
+        $this->request('DELETE', $this->collection, ['query' => ['force' => 'true']]);
         
         return $this;
     }

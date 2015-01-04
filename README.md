@@ -215,6 +215,15 @@ $collection->listCollection();
 $collection->next(); // loads next set of results
 ```
 
+### Collection Delete:
+
+```php
+$object = $application->deleteCollection('collection');
+// or
+$collection = new Collection($application, 'collection');
+$collection->deleteCollection();
+```
+
 
 ### Key/Value Get
 
