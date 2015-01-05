@@ -91,6 +91,7 @@ class KeyValue extends AbstractObject
     public function toArray()
     {
         $result = [
+            'kind' => 'item',
             'collection' => $this->collection,
             'key' => $this->key,
             'ref' => $this->ref,
