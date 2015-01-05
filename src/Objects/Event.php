@@ -5,16 +5,17 @@ use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
+use andrefelipe\Orchestrate\Objects\Common\TimestampTrait;
 
 class Event extends AbstractObject
 {
-    use KeyTrait, RefTrait, TypeTrait;
+    use KeyTrait;
+    use RefTrait;
+    use TypeTrait;
+    use TimestampTrait;
 
 
-    /**
-     * @var int
-     */
-    protected $timestamp = 0;
+    
 
     /**
      * @var int
@@ -32,23 +33,7 @@ class Event extends AbstractObject
         $this->ordinal = $ordinal;
     }
 
-
-
-    /**
-     * @return int
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
-    }
-
-    /**
-     * @param int|string $timestamp
-     */
-    public function setTimestamp($timestamp)
-    {
-        $this->timestamp = is_string($timestamp) ? strtotime($timestamp) : (int) $timestamp;
-    }
+    
 
     /**
      * @return int
@@ -385,12 +370,7 @@ class Event extends AbstractObject
         }
     }    
 
-    protected function noTimestampException()
-    {
-        if (!$this->timestamp) {
-            throw new \BadMethodCallException('There is no timestamp set yet. Please do so through setTimestamp() method.');
-        }
-    }
+    
 
     protected function noOrdinalException()
     {

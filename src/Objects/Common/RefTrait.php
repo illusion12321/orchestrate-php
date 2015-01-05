@@ -32,8 +32,6 @@ trait RefTrait
     }
 
 
-    // helper
-
     protected function setRefFromETag()
     {
         if ($etag = $this->response->getHeader('ETag')) {

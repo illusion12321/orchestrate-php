@@ -4,11 +4,14 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
+use andrefelipe\Orchestrate\Objects\Common\TombstoneTrait;
 
 class KeyValue extends AbstractObject
 {
-    use KeyTrait, RefTrait;
-    
+    use KeyTrait;
+    use RefTrait;
+    use TombstoneTrait;
+
 
     /**
      * @var int
@@ -20,12 +23,7 @@ class KeyValue extends AbstractObject
      */
     protected $score = 0;
 
-    /**
-     * @var boolean
-     */
-    protected $tombstone = false;
-
-
+    
 
 
     public function __construct($collection, $key=null)
@@ -51,14 +49,6 @@ class KeyValue extends AbstractObject
     public function getScore()
     {
         return $this->score;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isTombstone()
-    {
-        return $this->tombstone;
     }
 
     /**

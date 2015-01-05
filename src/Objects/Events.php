@@ -7,7 +7,8 @@ use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
 
 class Events extends AbstractList
 {
-    use KeyTrait, TypeTrait;
+    use KeyTrait;
+    use TypeTrait;
 
 
 

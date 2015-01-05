@@ -6,7 +6,8 @@ use andrefelipe\Orchestrate\Objects\Common\CollectionTrait;
 
 class Collection
 {
-    use ApplicationTrait, CollectionTrait;
+    use ApplicationTrait;
+    use CollectionTrait;
 
 
     public function __construct($collection)
