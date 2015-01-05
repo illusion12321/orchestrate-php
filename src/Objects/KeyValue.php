@@ -5,6 +5,8 @@ use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\TombstoneTrait;
+use andrefelipe\Orchestrate\Bridge\GraphBridge;
+
 
 class KeyValue extends AbstractObject
 {
@@ -33,6 +35,16 @@ class KeyValue extends AbstractObject
     }
 
 
+    protected $graph = null;
+
+    public function graph()
+    {
+        if (!$this->graph) {
+            $this->graph = new GraphBridge($this);
+        }
+
+        return $this->graph;
+    }
 
 
     /**

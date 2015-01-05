@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate\Objects\Common;
 
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Event;
+use andrefelipe\Orchestrate\Objects\Relation;
 
 
 abstract class AbstractList extends AbstractObject
@@ -176,6 +177,7 @@ abstract class AbstractList extends AbstractObject
         }
     }
 
+    // This can be handled in a better way, just get it going for now
 
     private function createKeyValue(array $values)
     {
@@ -187,6 +189,13 @@ abstract class AbstractList extends AbstractObject
     private function createEvent(array $values)
     {
         return (new Event($this->collection))
+            ->setApplication($this->getApplication())
+            ->init($values);
+    }
+
+    private function createRelation(array $values)
+    {
+        return (new Relation($this->collection))
             ->setApplication($this->getApplication())
             ->init($values);
     }
