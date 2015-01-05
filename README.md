@@ -253,7 +253,7 @@ The current application is automatically set every time we create a `new Applica
 Application::setCurrent($application);
 ```
 
-This behaviour only affects when creating new `Objects` instances directly. When using the client API (via application or collection instances), they will always refer to the parent Application.
+This behaviour only affects when creating new `Objects` instances directly. When using the client API (via application or collection instances), they **will always refer to the parent Application**.
 
 
 Let's go:
@@ -266,7 +266,7 @@ Let's go:
 ### Application Ping:
 
 ```php
-$application->ping() // returns boolean;
+$application->ping() // returns boolean
 ```
 
 
@@ -517,6 +517,8 @@ $object->post(['title' => 'New Title'], true); // use stored timestamp
 
 ### Event Delete
 
+Warning: Orchestrate do not support full history of each event, so the delete operation have the purge=true parameter.
+
 ```php
 $object = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 1);
 // or
@@ -524,7 +526,6 @@ $object = $collection->deleteEvent('key', 'type', 1400684480732, 1);
 // or
 $object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object->delete();
-$object->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
 
 
@@ -543,20 +544,6 @@ $object = new Event('collection', 'key', 'type', 1400684480732, 1);
 // or $object->setRef('20c14e8965d6cbb0');
 $object->delete(true); // delete the current ref
 $object->delete('20c14e8965d6cbb0'); // delete a specific ref
-```
-
-
-**Purge**:
-
-The Event object and all of its ref history will be permanently deleted. This operation cannot be undone.
-
-```php
-$object = $application->purgeEvent('collection', 'key', 'type', 1400684480732, 1);
-// or
-$object = $collection->purgeEvent('key', 'type', 1400684480732, 1);
-// or
-$object = new Event('collection', 'key', 'type', 1400684480732, 1);
-$object->purge();
 ```
 
 

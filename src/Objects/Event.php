@@ -33,7 +33,7 @@ class Event extends AbstractObject
         $this->ordinal = $ordinal;
     }
 
-    
+
 
     /**
      * @return int
@@ -304,36 +304,6 @@ class Event extends AbstractObject
         // request
         $this->request('DELETE', $path, $options);
 
-        // null ref if success, as it will never exist again
-        if ($this->isSuccess()) {
-            $this->ref = null;
-        }
-
-        return $this;
-    }
-
-
-
-
-    /**
-     * @return Event self
-     */
-    public function purge()
-    {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-        $this->noTimestampException();
-        $this->noOrdinalException();
-
-        // define request options
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
-        $options = ['query' => ['purge' => 'true']];
-
-        // request
-        $this->request('DELETE', $path, $options);
-        
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->ref = null;
