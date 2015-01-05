@@ -5,9 +5,11 @@ use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\KeyValues;
 use andrefelipe\Orchestrate\Objects\Refs;
+use andrefelipe\Orchestrate\Objects\Search;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
-use andrefelipe\Orchestrate\Objects\Search;
+use andrefelipe\Orchestrate\Objects\Relation;
+use andrefelipe\Orchestrate\Objects\Relations;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
@@ -491,6 +493,56 @@ class Application
         return (new Events($collection, $key, $type))
             ->setApplication($this)
             ->listEvents($limit, $range);
+    }
+
+
+
+
+    // Graph
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $relation
+     * @param string $toCollection
+     * @param string $toKey
+     * @return Relation
+     */
+    public function putRelation($collection, $key, $relation, $toCollection, $toKey)
+    {
+        return (new Relation($collection, $key, $relation))
+            ->setApplication($this)
+            ->put($toCollection, $toKey);
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $relation
+     * @param string $toCollection
+     * @param string $toKey
+     * @return Relation
+     */
+    public function deleteRelation($collection, $key, $relation, $toCollection, $toKey)
+    {
+        return (new Relation($collection, $key, $relation))
+            ->setApplication($this)
+            ->delete($toCollection, $toKey);
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string|array $kind
+     * @param int $limit
+     * @param int $offset
+     * @return Relations
+     */
+    public function listRelations($collection, $key, $kind, $limit=10, $offset=0)
+    {
+        return (new Relations($collection, $key))
+            ->setApplication($this)
+            ->listRelations($kind, $limit, $offset);
     }
 
 
