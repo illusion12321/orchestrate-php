@@ -33,6 +33,7 @@ class KeyValue extends AbstractObject
 
     // TODO try to remove the Application parameter and simplify the others
     // sometimes it's interesting to instantiate these objects directly, to populate with data then send
+    // and Application rarelly changes, so it's a reasonable situation to call setApplication on the ones that need
 
 
     public function __construct(Application $application, $collection, $key=null)
@@ -343,17 +344,69 @@ class KeyValue extends AbstractObject
     }
 
 
+    // Graph
+
+    /**
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * @return KeyValue self
+     */
+    public function putRelation($kind, $toCollection, $toKey)
+    {
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
+
+        // define request options
+        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        
+        // request
+        $this->request('PUT', $path);
+        
+        return $this;
+    }
+
+    /**
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * @return KeyValue self
+     */
+    public function deleteRelation($kind, $toCollection, $toKey)
+    {
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
+
+        // define request options
+        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+
+        // request
+        $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
+        
+        return $this;
+    }
+
+
+
+
+
+
+
+
 
 
     // Cross-object API
-
+    // TODO still consider to remove these, it's confusing to sometimes return self, other times, completely different values
+    // I got myself sometimes read the success in the current KeyValue object
 
     /**
      * @return Relations
      */
-    public function listRelations(array $kind, $limit=10, $offset=0)
+    public function listRelations($kind, $limit=10, $offset=0)
     {
-        return (new Relations($this->application, $this->collection, $this->key))->getRelations($kind, $limit, $offset);
+        return (new Relations($this->application, $this->collection, $this->key))->listRelations($kind, $limit, $offset);
     }
 
     /**

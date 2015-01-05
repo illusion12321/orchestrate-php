@@ -4,8 +4,10 @@
 - Reconsider the naming of the method 'listCollection' to 'getValues'? — maybe even turn all listEvents, listRefs, to 'get', or 'getList' — and then 'Search->search' to 'Search->query' or even 'Search->collection'
 --- talvez get mesmo! ai no search query
 
+- Consider to move the putRelation and deleteRelation in its own object. Doesn't make a straight reason to create a KeyValue object just to put a relation, and sometimes suggest calling a get API before doing the putRelation
 
-- Study the possibility of turning all objects to resources like: $application['collection']['key'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
+
+- Study the advantages of turning all objects to resources like: $application['collection']['key'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
 - Try to remove the Application parameter and simplify the others
     // sometimes it's interesting to instantiate these objects directly, to populate with data then send

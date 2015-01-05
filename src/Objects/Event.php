@@ -27,7 +27,7 @@ class Event extends AbstractObject
      * @var boolean
      */
     protected $tombstone = false;
-
+    // TODO check if tombstone really exists for Events, if it does, turn into a trait
 
 
 

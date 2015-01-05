@@ -21,12 +21,12 @@ class Relations extends AbstractList
     
 
     /**
-     * @param array $kind
+     * @param string|array $kind
      * @param int $limit
      * @param int $offset
      * @return Relations self
      */
-    public function getRelations(array $kind, $limit=10, $offset=0)
+    public function listRelations($kind, $limit=10, $offset=0)
     {
         // required values
         $this->noCollectionException();
@@ -34,7 +34,7 @@ class Relations extends AbstractList
 
         // define request options
         $path = $this->collection.'/'.$this->key.'/relations/';
-        $path .= implode('/', $kind);
+        $path .= implode('/', (array) $kind);
 
         $parameters = ['limit' => $limit];
         
