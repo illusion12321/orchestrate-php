@@ -46,17 +46,17 @@ $application->ping(); // (boolean)
 ## Getting Started
 We define our classes following the same convention as Orchestrate, so we have:
 
-1- **Application** — which holds the Guzzle client, and provides a client-like API interface to Orchestrate.
+1- **Application** — which holds the HTTP client, and provides a client-like API interface to Orchestrate.
 
 ```php
 use andrefelipe\Orchestrate\Application;
 
 $application = new Application();
 
-$object = $application->get('collection_name', 'key'); // returns a KeyValue object
-$object = $application->put('collection_name', 'key', ['title' => 'My Title']);
-$object = $application->delete('collection_name', 'key');
-// you can name the var as '$client' to feel more like a client
+$object = $application->get('collection', 'key'); // returns a KeyValue object
+$object = $application->put('collection', 'key', ['title' => 'My Title']);
+$object = $application->delete('collection', 'key');
+// you can name the $application var as '$client' to feel more like a client
 ```
 
 2- **Collection** — which holds a collection name and provides the same client-like API, but with one level-deeper.
@@ -67,14 +67,22 @@ use andrefelipe\Orchestrate\Collection;
 
 $application = new Application();
 
-$collection = new Collection($application, 'collection_name');
+$collection = new Collection($application, 'collection');
 
 $object = $collection->get('key');
 $object = $collection->put('key', ['title' => 'My Title']);
 $object = $collection->delete('key');
 ```
 
-3- **Objects** — the actual `KeyValue(s)`, `Refs`, `Event(s)` and `Search` objects, which provides a object-like API, as well as the results and response status.
+3- **Objects** — the actual Orchestrate objects or list of objects, which provides a object-like API, as well as the results and response status:
+
+- `KeyValue` 
+- `KeyValues` 
+- `Refs` 
+- `Relations` 
+- `Event`
+- `Events`
+- `Search`
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -83,9 +91,8 @@ use andrefelipe\Orchestrate\Objects\KeyValue;
 
 $application = new Application();
 
-$object = new KeyValue($application, 'collection_name', 'key'); // no API calls yet
-// you can now change the object as you like, then do the requests later
-$object->get(); // the current stored key
+$object = new KeyValue($application, 'collection', 'key'); // no API calls yet
+$object->get(); // API call to get the current key
 $object->get('20c14e8965d6cbb0'); // a specific ref
 $object->put(['title' => 'My Title']); // puts a new value
 $object->delete(); // delete the current ref
@@ -97,7 +104,7 @@ Example:
 
 ```php
 $application = new Application();
-$object = $application->get('collection_name', 'key');
+$object = $application->get('collection', 'key');
 
 if ($object->isSuccess()) {
     print_r($object->getValue());
@@ -128,7 +135,7 @@ if ($object->isSuccess()) {
     //                 (
     //                     [0] => Array
     //                         (
-    //                             [collection] => collection_name
+    //                             [collection] => collection
     //                             [key] => key
     //                         )
     //                 )
@@ -147,7 +154,7 @@ All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arraya
 
 // for KeyValue objects, the Value is acessed like:
 
-$object = $application->get('collection_name', 'key');
+$object = $application->get('collection', 'key');
 
 if (count($object)) // 1 in this case
 {
@@ -179,7 +186,7 @@ $value['profile'] = ['name' => 'The Name', 'age' => 10];
 // and send to Orchestrate with:
 $object->put($value);
 // or with:
-$object = $application->put('collection_name', $object->getKey(), $value);
+$object = $application->put('collection', $object->getKey(), $value);
 
 if ($object->isSuccess()) {
     // good
@@ -252,7 +259,7 @@ $object = $collection->put('key', ['title' => 'New Title']);
 // or
 $object = new KeyValue($application, 'collection', 'key');
 $object['title'] = 'New Title';
-$object->put(); // puts the whole current value, only with the title changed
+$object->put(); // puts the whole current Value, only with the title changed
 $object->put(['title' => 'New Title']); // puts an entire new value
 ```
 
@@ -354,7 +361,7 @@ $object = $application->listCollection('collection');
 $collection = new Collection($application, 'collection');
 $object = $collection->listCollection();
 //or
-$object = new KeyValues($application, 'collection');
+$object = new KeyValues($application, 'collection'); // note the plural
 $object->listCollection();
 
 $object->next(); // loads next set of results
@@ -520,7 +527,7 @@ $object = $application->listEvents('collection', 'key', 'type');
 $collection = new Collection($application, 'collection');
 $object = $collection->listEvents('key', 'type');
 //or
-$object = new Events($application, 'collection', 'key', 'type');
+$object = new Events($application, 'collection', 'key', 'type'); // note the plural
 $object->listEvents();
 
 $object->next(); // loads next set of results
@@ -546,7 +553,8 @@ if ($object->isSuccess()) {
     $object->getKey(); // string
     $object->getRef(); // string
     $object->getValue(); // array
-    $object->toArray(); // array
+    $object->toArray(); // array representation of the object
+    $object->getBody(); // array of the HTTP response body
     
     // working with the Value
     $object['my_property']; // direct array access to the Value
@@ -574,10 +582,6 @@ if ($object->isSuccess()) {
     $object->getRequestId(); // Orchestrate request id, X-ORCHESTRATE-REQ-ID
     $object->getRequestDate(); // the HTTP Date header
     $object->getRequestUrl(); // the effective URL that resulted in this response
-    
-    $object->getBody(); // array of the HTTP response body
-    // if success is the same as $object->toArray()
-    // if error you can read the response error body
 
 }
 ```
