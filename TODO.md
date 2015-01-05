@@ -21,9 +21,7 @@
 
 - maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
 
-- check the 'archival' property of the ruby client
-
-- method to move KeyValue to another Collection and Application ?
+- method to move KeyValue to another Collection or Application ?
 
 - later test how the Abstract classes works on arguments, and implement some common interfaces for response, etc
 
