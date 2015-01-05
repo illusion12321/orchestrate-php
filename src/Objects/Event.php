@@ -23,12 +23,6 @@ class Event extends AbstractObject
      */
     protected $ordinal = 0;
 
-    /**
-     * @var boolean
-     */
-    protected $tombstone = false;
-    // TODO check if tombstone really exists for Events, if it does, turn into a trait
-
 
 
     public function __construct(Application $application, $collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
@@ -73,15 +67,7 @@ class Event extends AbstractObject
     {
         $this->ordinal = (int) $ordinal;
     }
-
-    /**
-     * @return boolean
-     */
-    public function isTombstone()
-    {
-        return $this->tombstone;
-    }
-
+    
     /**
      * @return array
      */
@@ -104,6 +90,7 @@ class Event extends AbstractObject
     public function toArray()
     {
         $result = [
+            'kind' => 'event',
             'collection' => $this->collection,
             'key' => $this->key,
             'ref' => $this->ref,
@@ -112,9 +99,6 @@ class Event extends AbstractObject
             'ordinal' => $this->ordinal,
             'value' => $this->data,
         ];
-
-        if ($this->tombstone)
-            $result['tombstone'] = $this->tombstone;
 
         return $result;
     }
@@ -129,7 +113,6 @@ class Event extends AbstractObject
         $this->type = null;
         $this->timestamp = 0;
         $this->ordinal = 0;
-        $this->tombstone = false;
         $this->data = [];
     }
 
@@ -165,9 +148,6 @@ class Event extends AbstractObject
 
             if ($key === 'ordinal')
                 $this->ordinal = (int) $value;
-
-            if ($key === 'tombstone')
-                $this->tombstone = (boolean) $value;
 
             if ($key === 'value')
                 $this->data = (array) $value;
