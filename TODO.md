@@ -1,7 +1,7 @@
 # TODO and IDEAS
 
 !!!
-- Reconsider the naming of the method 'listCollection' to 'getValues'? — maybe even turn all listEvents, listRefs, to 'get', or 'getList' — and then 'Search->search' to 'Search->query' or even 'Search->collection'
+- Reconsider the naming of the method 'listCollection' to 'getValues'? — maybe even turn all listEvents, listRefs, to 'get' — and then 'Search->search' to 'Search->query' or even 'Search->collection'
 --- talvez get mesmo! ai no search query
 
 - Consider to move the putRelation and deleteRelation in its own object. Doesn't make a straight reason to create a KeyValue object just to put a relation, and sometimes suggest calling a get API before doing the putRelation

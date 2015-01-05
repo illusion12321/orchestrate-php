@@ -234,7 +234,7 @@ print_r($object->toArray());
 
 ```
 
-Final note:
+**Final note:**
 
 The HTTP client is only available at the `Application` object, so all objects must reference to it in order to work. You can do so via:
 ```php
@@ -243,14 +243,14 @@ $object->setApplication($application);
 // where $application is an Application instance
 
 ```
-But that will be rarelly necessary as, when the application is not set, the objects will automatically try to reference to the last created instance of `Application`. The current instance can be check at:
+But that will be rarelly necessary as, when the application is not set, the objects will automatically try to reference to the last created instance of `Application`, which can be check at:
 ```php
 Application::getCurrent();
 ```
 
-The current application is automatically set every time we create a `new Application` instance. But you can change it via:
+The current application is automatically set every time we create a `new Application` instance, but you can change it via:
 ```php
-Application::setCurrent();
+Application::setCurrent($application);
 ```
 
 This behaviour only affects when creating new `Objects` instances directly. When using the client API (via application or collection instances), they will always refer to the parent Application.
