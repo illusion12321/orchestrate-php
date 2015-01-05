@@ -49,6 +49,7 @@ abstract class AbstractList extends AbstractObject
     public function toArray()
     {
         $result = [
+            'kind' => 'list',
             'count' => count($this->data),
             'total_count' => $this->totalCount,
             'results' => [],
@@ -135,7 +136,7 @@ abstract class AbstractList extends AbstractObject
         if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($url, '/'.$this->application->getApiVersion().'/');
+            $url = ltrim($url, '/'.$this->getApplication()->getApiVersion().'/');
 
             // request
             $this->request('GET', $url);
@@ -178,12 +179,16 @@ abstract class AbstractList extends AbstractObject
 
     private function createKeyValue(array $values)
     {
-        return (new KeyValue($this->application, $this->collection))->init($values);
+        return (new KeyValue($this->collection))
+            ->setApplication($this->getApplication())
+            ->init($values);
     }
 
     private function createEvent(array $values)
     {
-        return (new Event($this->application, $this->collection))->init($values);
+        return (new Event($this->collection))
+            ->setApplication($this->getApplication())
+            ->init($values);
     }
 
 

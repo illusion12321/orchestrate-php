@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
 use andrefelipe\Orchestrate\Objects\Common\AbstractList;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
@@ -12,9 +11,9 @@ class Events extends AbstractList
 
 
 
-    public function __construct(Application $application, $collection, $key=null, $type=null)
+    public function __construct($collection, $key=null, $type=null)
     {
-        parent::__construct($application, $collection);
+        parent::__construct($collection);
         $this->key = $key;
         $this->type = $type;
     }

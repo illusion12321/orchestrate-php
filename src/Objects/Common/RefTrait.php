@@ -27,6 +27,8 @@ trait RefTrait
     public function setRef($ref)
     {
         $this->ref = $ref;
+
+        return $this;
     }
 
 

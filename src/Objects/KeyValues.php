@@ -3,7 +3,6 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Common\AbstractList;
 
-
 class KeyValues extends AbstractList
 {
     

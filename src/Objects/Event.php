@@ -1,12 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
 use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
-
 
 class Event extends AbstractObject
 {
@@ -25,9 +23,9 @@ class Event extends AbstractObject
 
 
 
-    public function __construct(Application $application, $collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
+    public function __construct($collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
     {
-        parent::__construct($application, $collection);
+        parent::__construct($collection);
         $this->key = $key;
         $this->type = $type;
         $this->timestamp = $timestamp;
@@ -67,7 +65,7 @@ class Event extends AbstractObject
     {
         $this->ordinal = (int) $ordinal;
     }
-    
+
     /**
      * @return array
      */
@@ -91,12 +89,14 @@ class Event extends AbstractObject
     {
         $result = [
             'kind' => 'event',
-            'collection' => $this->collection,
-            'key' => $this->key,
-            'ref' => $this->ref,
-            'type' => $this->type,
-            'timestamp' => $this->timestamp,
-            'ordinal' => $this->ordinal,
+            'path' => [
+                'collection' => $this->collection,
+                'key' => $this->key,
+                'ref' => $this->ref,
+                'type' => $this->type,
+                'timestamp' => $this->timestamp,
+                'ordinal' => $this->ordinal,
+            ],
             'value' => $this->data,
         ];
 

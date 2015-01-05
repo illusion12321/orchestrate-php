@@ -1,20 +1,17 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
 use andrefelipe\Orchestrate\Objects\Common\AbstractList;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 
 class Relations extends AbstractList
 {
     use KeyTrait;
+    
 
-
-
-
-    public function __construct(Application $application, $collection, $key=null)
+    public function __construct($collection, $key=null)
     {
-        parent::__construct($application, $collection);
+        parent::__construct($collection);
         $this->key = $key;
     }
 

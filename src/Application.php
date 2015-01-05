@@ -16,6 +16,11 @@ use GuzzleHttp\Exception\ConnectException;
 
 class Application
 {
+    /**
+     * @var Application
+     */
+    private static $application;
+
 	/**
 	 * @var string
 	 */
@@ -47,12 +52,29 @@ class Application
         $this->setApiKey($apiKey);
         $this->setHost($host);
         $this->setApiVersion($apiVersion);
+
+        self::$application = $this;
 	}
 
 
+    // -------------------- Application --------------------
 
+    /**
+     * @return Application
+     */
+    public static function getCurrent()
+    {
+        return self::$application;
+    }
 
-    // -------------------- Http Client --------------------
+    /**
+     * @param Application $application
+     */
+    public static function setCurrent($application)
+    {
+        self::$application = $application;
+    }
+
 
     /**
      * @param string $key 
@@ -100,6 +122,11 @@ class Application
         $this->apiVersion = $version ? $version : 'v0';
     }
 
+
+
+
+
+    // -------------------- Http Client --------------------
 
     /**
      * @return ClientInterface
@@ -249,7 +276,9 @@ class Application
      */
     public function deleteCollection($collection)
     {
-        return (new Collection($this, $collection))->deleteCollection();
+        return (new Collection($collection))
+            ->setApplication($this)
+            ->deleteCollection();
     }
 
 
@@ -263,7 +292,9 @@ class Application
      */
     public function get($collection, $key, $ref=null)
     {
-        return (new KeyValue($this, $collection, $key))->get($ref);
+        return (new KeyValue($collection, $key))
+            ->setApplication($this)
+            ->get($ref);
     }
 
     /**
@@ -275,7 +306,9 @@ class Application
      */
     public function put($collection, $key, array $value, $ref=null)
     {
-        return (new KeyValue($this, $collection, $key))->put($value, $ref);
+        return (new KeyValue($collection, $key))
+            ->setApplication($this)
+            ->put($value, $ref);
     }
 
     /**
@@ -285,7 +318,9 @@ class Application
      */
     public function post($collection, array $value)
     {
-        return (new KeyValue($this, $collection))->post($value);
+        return (new KeyValue($collection))
+            ->setApplication($this)
+            ->post($value);
     }
 
     /**
@@ -296,7 +331,9 @@ class Application
      */
     public function delete($collection, $key, $ref=null)
     {
-        return (new KeyValue($this, $collection, $key))->delete($ref);
+        return (new KeyValue($collection, $key))
+            ->setApplication($this)
+            ->delete($ref);
     }
 
     /**
@@ -306,7 +343,9 @@ class Application
      */
     public function purge($collection, $key)
     {
-        return (new KeyValue($this, $collection, $key))->purge();
+        return (new KeyValue($collection, $key))
+            ->setApplication($this)
+            ->purge();
     }
 
     /**
@@ -317,7 +356,9 @@ class Application
      */
     public function listCollection($collection, $limit=10, array $range=null)
     {
-        return (new KeyValues($this, $collection))->listCollection($limit, $range);
+        return (new KeyValues($collection))
+            ->setApplication($this)
+            ->listCollection($limit, $range);
     }
     
 
@@ -333,7 +374,9 @@ class Application
      */
     public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
     {
-        return (new Refs($this, $collection, $key))->listRefs($limit, $offset, $values);
+        return (new Refs($collection, $key))
+            ->setApplication($this)
+            ->listRefs($limit, $offset, $values);
     }
 
 
@@ -349,7 +392,9 @@ class Application
      */
     public function search($collection, $query, $sort='', $limit=10, $offset=0)
     {
-        return (new Search($this, $collection))->search($query, $sort, $limit, $offset);
+        return (new Search($collection))
+            ->setApplication($this)
+            ->search($query, $sort, $limit, $offset);
     }
 
 
@@ -365,7 +410,9 @@ class Application
      */
     public function getEvent($collection, $key, $type, $timestamp, $ordinal)
     {
-        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->get();
+        return (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this)
+            ->get();
     }
 
     /**
@@ -380,7 +427,9 @@ class Application
      */
     public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref=null)
     {
-        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->put($value, $ref);
+        return (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this)
+            ->put($value, $ref);
     }
 
     /**
@@ -393,7 +442,9 @@ class Application
      */
     public function postEvent($collection, $key, $type, array $value, $timestamp=0)
     {
-        return (new Event($this, $collection, $key, $type))->post($value, $timestamp);
+        return (new Event($collection, $key, $type))
+            ->setApplication($this)
+            ->post($value, $timestamp);
     }
 
     /**
@@ -407,7 +458,9 @@ class Application
      */
     public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref=null)
     {
-        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->delete($ref);
+        return (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this)
+            ->delete($ref);
     }
 
    /**
@@ -420,7 +473,9 @@ class Application
      */
     public function purgeEvent($collection, $key, $type, $timestamp, $ordinal)
     {
-        return (new Event($this, $collection, $key, $type, $timestamp, $ordinal))->purge();
+        return (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this)
+            ->purge();
     }
 
     /**
@@ -433,7 +488,9 @@ class Application
      */
     public function listEvents($collection, $key, $type, $limit=10, array $range=null)
     {
-        return (new Events($this, $collection, $key, $type))->listEvents($limit, $range);
+        return (new Events($collection, $key, $type))
+            ->setApplication($this)
+            ->listEvents($limit, $range);
     }
 
 

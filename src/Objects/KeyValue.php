@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
 use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
@@ -29,16 +28,9 @@ class KeyValue extends AbstractObject
 
 
 
-
-
-    // TODO try to remove the Application parameter and simplify the others
-    // sometimes it's interesting to instantiate these objects directly, to populate with data then send
-    // and Application rarelly changes, so it's a reasonable situation to call setApplication on the ones that need
-
-
-    public function __construct(Application $application, $collection, $key=null)
+    public function __construct($collection, $key=null)
     {
-        parent::__construct($application, $collection);
+        parent::__construct($collection);
         $this->key = $key;
     }
 
@@ -92,22 +84,23 @@ class KeyValue extends AbstractObject
     {
         $result = [
             'kind' => 'item',
-            'collection' => $this->collection,
-            'key' => $this->key,
-            'ref' => $this->ref,
+            'path' => [
+                'collection' => $this->collection,
+                'key' => $this->key,
+                'ref' => $this->ref,
+            ],
             'value' => $this->data,
         ];
 
         if ($this->refTime)
-            $result['reftime'] = $this->refTime;
+            $result['path']['reftime'] = $this->refTime;
 
         if ($this->score)
-            $result['score'] = $this->score;
+            $result['path']['score'] = $this->score;
 
         if ($this->tombstone)
-            $result['tombstone'] = $this->tombstone;
-
-
+            $result['path']['tombstone'] = $this->tombstone;
+        
         return $result;
     }
 
@@ -407,7 +400,9 @@ class KeyValue extends AbstractObject
      */
     public function listRelations($kind, $limit=10, $offset=0)
     {
-        return (new Relations($this->application, $this->collection, $this->key))->listRelations($kind, $limit, $offset);
+        return (new Relations($this->collection, $this->key))
+            ->setApplication($this->getApplication())
+            ->listRelations($kind, $limit, $offset);
     }
 
     /**
@@ -415,7 +410,9 @@ class KeyValue extends AbstractObject
      */
     public function listRefs($limit=10, $offset=0, $values=false)
     {
-        return (new Refs($this->application, $this->collection, $this->key))->listRefs($limit, $offset, $values);
+        return (new Refs($this->collection, $this->key))
+            ->setApplication($this->getApplication())
+            ->listRefs($limit, $offset, $values);
     }
 
 
@@ -424,7 +421,9 @@ class KeyValue extends AbstractObject
      */
     public function listEvents($type, $limit=10, array $range=null)
     {
-        return (new Events($this->application, $this->collection, $this->key, $type))->listEvents($limit, $range);
+        return (new Events($this->collection, $this->key, $type))
+            ->setApplication($this->getApplication())
+            ->listEvents($limit, $range);
     }
 
 
@@ -464,7 +463,7 @@ class KeyValue extends AbstractObject
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset) || (int) $offset === $offset) {
+        if (is_null($offset) || is_int($offset)) {
            throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of KeyValue objects.');
         } else {
             $this->data[$offset] = $value;

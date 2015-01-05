@@ -1,13 +1,18 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects\Common;
 
-use andrefelipe\Orchestrate\Application;
 use GuzzleHttp\HasDataTrait;
 use GuzzleHttp\ToArrayInterface;
 
-abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \IteratorAggregate, \Countable
+abstract class AbstractObject implements
+    ToArrayInterface,
+    \ArrayAccess,
+    \IteratorAggregate,
+    \Countable
 {
-    use ApplicationTrait, CollectionTrait, HasDataTrait;
+    use ApplicationTrait;
+    use CollectionTrait;
+    use HasDataTrait;
     
     
 
@@ -39,9 +44,8 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
     
 
 
-    public function __construct(Application $application, $collection)
-    {
-        $this->application = $application;
+    public function __construct($collection)
+    {        
         $this->collection = $collection;
     }
 
@@ -97,7 +101,9 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
      */
     public function getRequestId()
     {
-        return $this->response ? $this->response->getHeader('X-ORCHESTRATE-REQ-ID') : '';
+        return $this->response
+            ? $this->response->getHeader('X-ORCHESTRATE-REQ-ID')
+            : '';
     }
 
     /**
@@ -105,7 +111,9 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
      */
     public function getRequestDate()
     {
-        return $this->response ? $this->response->getHeader('Date') : '';
+        return $this->response
+            ? $this->response->getHeader('Date')
+            : '';
     }
 
     /**
@@ -113,7 +121,9 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
      */
     public function getRequestUrl()
     {
-        return $this->response ? $this->response->getEffectiveUrl() : '';
+        return $this->response
+            ? $this->response->getEffectiveUrl()
+            : '';
     }
     
     /**
@@ -129,7 +139,8 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
      */
     public function isError()
     {
-        return !$this->statusCode || $this->statusCode >= 400 && $this->statusCode <= 599;
+        return !$this->statusCode
+            || ($this->statusCode >= 400 && $this->statusCode <= 599);
     }
 
 
@@ -142,15 +153,6 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
         $this->statusCode = 0;
         $this->statusMessage = '';        
     }
-
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->data;
-    }
     
 
 
@@ -160,7 +162,7 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
     protected function request($method, $url = null, array $options = [])
     {
         // request
-        $this->response = $this->application->request($method, $url, $options);
+        $this->response = $this->getApplication()->request($method, $url, $options);
         
         // set body
         $this->body = $this->response->json();
@@ -183,7 +185,7 @@ abstract class AbstractObject implements ToArrayInterface, \ArrayAccess, \Iterat
             }
         }
     }
-    
+
 
 
 }

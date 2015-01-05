@@ -4,15 +4,13 @@ namespace andrefelipe\Orchestrate;
 use andrefelipe\Orchestrate\Objects\Common\ApplicationTrait;
 use andrefelipe\Orchestrate\Objects\Common\CollectionTrait;
 
-
 class Collection
 {
     use ApplicationTrait, CollectionTrait;
 
 
-    public function __construct(Application $application, $collection)
+    public function __construct($collection)
     {
-        $this->application = $application;
         $this->collection = $collection;
     }
 
@@ -27,7 +25,7 @@ class Collection
         $this->noCollectionException();
 
         // request
-        $response = $this->application->request(
+        $response = $this->getApplication()->request(
             'DELETE',
             $this->collection,
             ['query' => ['force' => 'true']]
@@ -52,7 +50,8 @@ class Collection
      */
     public function get($key, $ref=null)
     {
-        return $this->application->get($this->collection, $key, $ref);
+        return $this->getApplication()
+            ->get($this->collection, $key, $ref);
     }
 
     /**
@@ -63,7 +62,8 @@ class Collection
      */
     public function put($key, array $value, $ref=null)
     {
-        return $this->application->put($this->collection, $key, $value, $ref);
+        return $this->getApplication()
+            ->put($this->collection, $key, $value, $ref);
     }
 
     /**
@@ -72,7 +72,8 @@ class Collection
      */
     public function post(array $value)
     {
-        return $this->application->post($this->collection, $value);
+        return $this->getApplication()
+            ->post($this->collection, $value);
     }
 
     /**
@@ -82,7 +83,8 @@ class Collection
      */
     public function delete($key, $ref=null)
     {
-        return $this->application->delete($this->collection, $key, $ref, $purge);
+        return $this->getApplication()
+            ->delete($this->collection, $key, $ref, $purge);
     }
 
     /**
@@ -91,7 +93,8 @@ class Collection
      */
     public function purge($key)
     {
-        return $this->application->purge($this->collection, $key);
+        return $this->getApplication()
+            ->purge($this->collection, $key);
     }
 
     /**
@@ -101,7 +104,8 @@ class Collection
      */
     public function listCollection($limit=10, array $range=null)
     {
-        return $this->application->listCollection($this->collection, $limit, $range);
+        return $this->getApplication()
+            ->listCollection($this->collection, $limit, $range);
     }
 
 
@@ -116,7 +120,8 @@ class Collection
      */
     public function listRefs($key, $limit=10, $offset=0, $values=false)
     {
-        return $this->application->listRefs($this->collection, $key, $limit, $offset, $values);
+        return $this->getApplication()
+            ->listRefs($this->collection, $key, $limit, $offset, $values);
     }
 
 
@@ -131,7 +136,8 @@ class Collection
      */
     public function search($query, $sort='', $limit=10, $offset=0)
     {
-        return $this->application->search($this->collection, $query, $sort, $limit, $offset);
+        return $this->getApplication()
+            ->search($this->collection, $query, $sort, $limit, $offset);
     }
 
 
@@ -146,7 +152,8 @@ class Collection
      */
     public function getEvent($key, $type, $timestamp, $ordinal)
     {
-        return $this->application->getEvent($this->collection, $key, $type, $timestamp, $ordinal);
+        return $this->getApplication()
+            ->getEvent($this->collection, $key, $type, $timestamp, $ordinal);
     }
 
     /**
@@ -160,7 +167,8 @@ class Collection
      */
     public function putEvent($key, $type, $timestamp, $ordinal, array $value, $ref=null)
     {
-        return $this->application->putEvent($this->collection, $key, $type, $timestamp, $ordinal, $value, $ref);
+        return $this->getApplication()
+            ->putEvent($this->collection, $key, $type, $timestamp, $ordinal, $value, $ref);
     }
 
     /**
@@ -172,7 +180,8 @@ class Collection
      */
     public function postEvent($key, $type, array $value, $timestamp=0)
     {
-        return $this->application->postEvent($this->collection, $key, $type, $value, $timestamp);
+        return $this->getApplication()
+            ->postEvent($this->collection, $key, $type, $value, $timestamp);
     }
 
     /**
@@ -185,7 +194,8 @@ class Collection
      */
     public function deleteEvent($key, $type, $timestamp, $ordinal, $ref=null)
     {
-        return $this->application->deleteEvent($this->collection, $key, $type, $timestamp, $ordinal, $ref);
+        return $this->getApplication()
+            ->deleteEvent($this->collection, $key, $type, $timestamp, $ordinal, $ref);
     }
 
    /**
@@ -197,7 +207,8 @@ class Collection
      */
     public function purgeEvent($key, $type, $timestamp, $ordinal)
     {
-        return $this->application->purgeEvent($this->collection, $key, $type, $timestamp, $ordinal);
+        return $this->getApplication()
+            ->purgeEvent($this->collection, $key, $type, $timestamp, $ordinal);
     }
 
     /**
@@ -209,7 +220,8 @@ class Collection
      */
     public function listEvents($key, $type, $limit=10, array $range=null)
     {
-        return $this->application->listEvents($this->collection, $key, $type, $limit, $range);
+        return $this->getApplication()
+            ->listEvents($this->collection, $key, $type, $limit, $range);
     }
 
     

@@ -67,7 +67,7 @@ use andrefelipe\Orchestrate\Collection;
 
 $application = new Application();
 
-$collection = new Collection($application, 'collection');
+$collection = new Collection('collection');
 
 $object = $collection->get('key');
 $object = $collection->put('key', ['title' => 'My Title']);
@@ -86,14 +86,13 @@ $object = $collection->delete('key');
 
 ```php
 use andrefelipe\Orchestrate\Application;
-use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 
 $application = new Application();
 
-$object = new KeyValue($application, 'collection', 'key'); // no API calls yet
+$object = new KeyValue('collection', 'key'); // no API calls yet
 $object->get(); // API call to get the current key
-$object->get('20c14e8965d6cbb0'); // a specific ref
+$object->get('20c14e8965d6cbb0'); // get a specific ref
 $object->put(['title' => 'My Title']); // puts a new value
 $object->delete(); // delete the current ref
 ```
@@ -107,11 +106,29 @@ $application = new Application();
 $object = $application->get('collection', 'key');
 
 if ($object->isSuccess()) {
+
     print_r($object->getValue());
     // Array
     // (
     //     [title] => My Title
     // )
+
+    print_r($object->toArray());
+    // Array
+    // (
+    //     [kind] => item
+    //     [path] => Array
+    //         (
+    //             [collection] => collection
+    //             [key] => key
+    //             [ref] => 3eb18d8d034a3530
+    //         )
+    //     [value] => Array
+    //         (
+    //             [title] => My Title
+    //         )
+    // )
+
 } else {
     // in case if was an error, it would return results like these:
 
@@ -152,7 +169,7 @@ All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arraya
 
 ```php
 
-// for KeyValue objects, the Value is acessed like:
+// for KeyValue objects, the Value can be accessed like:
 
 $object = $application->get('collection', 'key');
 
@@ -198,25 +215,49 @@ if ($object->isSuccess()) {
 print_r($object->toArray());
 // Array
 // (
-//     [collection] => collection
-//     [key] => key
-//     [ref] => cbb48f9464612f20
+//     [kind] => item
+//     [path] => Array
+//         (
+//             [collection] => collection
+//             [key] => key
+//             [ref] => cbb48f9464612f20
+//             [reftime] => 1400085084739
+//             [score] => 1.0
+//             [tombstone] => true
+//         )
 //     [value] => Array
 //         (
 //             [title] => My Title
 //         )
-//     [reftime] => 1400085084739 (if available)
-//     [score] => 1.0 (if available)
-//     [tombstone] => true (if available)
 // )
 
 
 ```
 
+Final note:
 
+The HTTP client is only available at the `Application` object, so all objects must reference to it in order to work. You can do so via:
+```php
+$object = new KeyValue('collection', 'key');
+$object->setApplication($application);
+// where $application is an Application instance
+
+```
+But that will be rarelly necessary as, when the application is not set, the objects will automatically try to reference to the last created instance of `Application`. The current instance can be check at:
+```php
+Application::getCurrent();
+```
+
+The current application is automatically set every time we create a `new Application` instance. But you can change it via:
+```php
+Application::setCurrent();
+```
+
+This behaviour only affects when creating new `Objects` instances directly. When using the client API (via application or collection instances), they will always refer to the parent Application.
 
 
 Let's go:
+
 
 
 ## Orchestrate API
@@ -234,7 +275,7 @@ $application->ping() // returns boolean;
 ```php
 $object = $application->deleteCollection('collection');
 // or
-$collection = new Collection($application, 'collection');
+$collection = new Collection('collection');
 $collection->deleteCollection();
 ```
 
@@ -246,7 +287,7 @@ $object = $application->get('collection', 'key');
 // or
 $object = $collection->get('key');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object->get();
 ```
 
@@ -257,7 +298,7 @@ $object = $application->put('collection', 'key', ['title' => 'New Title']);
 // or
 $object = $collection->put('key', ['title' => 'New Title']);
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object['title'] = 'New Title';
 $object->put(); // puts the whole current Value, only with the title changed
 $object->put(['title' => 'New Title']); // puts an entire new value
@@ -273,7 +314,7 @@ $object = $application->put('collection', 'key', ['title' => 'New Title'], '20c1
 // or
 $object = $collection->get('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $object->put(['title' => 'New Title'], true); // uses the current object Ref
 ```
@@ -288,7 +329,7 @@ $object = $application->put('collection', 'key', ['title' => 'New Title'], false
 // or
 $object = $collection->get('key', ['title' => 'New Title'], false);
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object->put(['title' => 'New Title'], false);
 ```
 
@@ -300,7 +341,7 @@ $object = $application->post('collection', ['title' => 'New Title']);
 // or
 $object = $collection->post(['title' => 'New Title']);
 // or
-$object = new KeyValue($application, 'collection');
+$object = new KeyValue('collection');
 $object['title'] = 'New Title';
 $object->post(); // posts the current Value
 $object->post(['title' => 'New Title']); // posts a new value
@@ -314,7 +355,7 @@ $object = $application->delete('collection', 'key');
 // or
 $object = $collection->delete('key');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object->delete();
 $object->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
@@ -329,7 +370,7 @@ $object = $application->delete('collection', 'key', '20c14e8965d6cbb0');
 // or
 $object = $collection->delete('key', '20c14e8965d6cbb0');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 // first get or set a ref:
 // $object->get();
 // or $object->setRef('20c14e8965d6cbb0');
@@ -347,7 +388,7 @@ $object = $application->purge('collection', 'key');
 // or
 $object = $collection->purge('key');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object->purge();
 ```
 
@@ -358,10 +399,10 @@ $object->purge();
 ```php
 $object = $application->listCollection('collection');
 // or
-$collection = new Collection($application, 'collection');
+$collection = new Collection('collection');
 $object = $collection->listCollection();
 //or
-$object = new KeyValues($application, 'collection'); // note the plural
+$object = new KeyValues('collection'); // note the plural
 $object->listCollection();
 
 $object->next(); // loads next set of results
@@ -378,7 +419,7 @@ $object = $application->get('collection', 'key', '20c14e8965d6cbb0');
 // or
 $object = $collection->get('key', '20c14e8965d6cbb0');
 // or
-$object = new KeyValue($application, 'collection', 'key');
+$object = new KeyValue('collection', 'key');
 $object->get('20c14e8965d6cbb0');
 ```
 
@@ -391,7 +432,7 @@ $object = $application->listRefs('collection', 'key');
 // or
 $object = $collection->listRefs('key');
 // or
-$object = new Refs($application, 'collection', 'key');
+$object = new Refs('collection', 'key');
 $object->listRefs();
 ```
 
@@ -404,7 +445,7 @@ $object = $application->search('collection', 'title:"The Title*"');
 // or
 $object = $collection->search('title:"The Title*"');
 // or
-$object = new Search($application, 'collection');
+$object = new Search('collection');
 $object->search('title:"The Title*"');
 ```
 
@@ -424,7 +465,7 @@ $object = $application->getEvent('collection', 'key', 'type', 1400684480732, 1);
 // or
 $object = $collection->getEvent('key', 'type', 1400684480732, 1);
 // or
-$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object->get();
 ```
 
@@ -435,7 +476,7 @@ $object = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, 
 // or
 $object = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title']);
 // or
-$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object['title'] = 'New Title';
 $object->put(); // puts the whole current value, only with the title changed
 $object->put(['title' => 'New Title']); // puts an entire new value
@@ -451,7 +492,7 @@ $object = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, 
 // or
 $object = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
-$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object['title'] = 'New Title';
 $object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $object->put(['title' => 'New Title'], true); // uses the current object Ref
@@ -465,7 +506,7 @@ $object = $application->postEvent('collection', 'key', 'type', ['title' => 'New 
 // or
 $object = $collection->postEvent('key', 'type', ['title' => 'New Title']);
 // or
-$object = new Event($application, 'collection', 'key', 'type');
+$object = new Event('collection', 'key', 'type');
 $object['title'] = 'New Title';
 $object->post(); // posts the current Value
 $object->post(['title' => 'New Title']); // posts a new value
@@ -481,7 +522,7 @@ $object = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 
 // or
 $object = $collection->deleteEvent('key', 'type', 1400684480732, 1);
 // or
-$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object->delete();
 $object->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
@@ -496,7 +537,7 @@ $object = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 
 // or
 $object = $collection->deleteEvent('key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
 // or
-$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object = new Event('collection', 'key', 'type', 1400684480732, 1);
 // first get or set a ref:
 // $object->get();
 // or $object->setRef('20c14e8965d6cbb0');
@@ -514,7 +555,7 @@ $object = $application->purgeEvent('collection', 'key', 'type', 1400684480732, 1
 // or
 $object = $collection->purgeEvent('key', 'type', 1400684480732, 1);
 // or
-$object = new Event($application, 'collection', 'key', 'type', 1400684480732, 1);
+$object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object->purge();
 ```
 
@@ -524,10 +565,10 @@ $object->purge();
 ```php
 $object = $application->listEvents('collection', 'key', 'type');
 // or
-$collection = new Collection($application, 'collection');
+$collection = new Collection('collection');
 $object = $collection->listEvents('key', 'type');
 //or
-$object = new Events($application, 'collection', 'key', 'type'); // note the plural
+$object = new Events('collection', 'key', 'type'); // note the plural
 $object->listEvents();
 
 $object->next(); // loads next set of results

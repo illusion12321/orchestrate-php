@@ -21,6 +21,10 @@ trait ApplicationTrait
      */
     public function getApplication()
     {
+        if (!$this->application) {
+            $this->application = Application::getCurrent();
+        }
+
         return $this->application;
     }
 
@@ -30,6 +34,8 @@ trait ApplicationTrait
     public function setApplication(Application $application)
     {
         $this->application = $application;
+        
+        return $this;
     }
 
     
