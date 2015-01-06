@@ -1,7 +1,7 @@
 Orchestrate.io PHP Client
 ======
 
-This client follows very closely the Orchestrate API and naming conventions, so your best friend is always the (great) Orchestrate API Reference: https://orchestrate.io/docs/apiref
+This client follows very closely the Orchestrate API and naming conventions, so your best friend is always the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
 - PHP should be 5.4 or higher.
@@ -79,7 +79,7 @@ $object = $collection->delete('key');
 - `KeyValue` 
 - `KeyValues` 
 - `Refs` 
-- `Relations` 
+- `Graph` 
 - `Event`
 - `Events`
 - `Search`
@@ -469,7 +469,7 @@ $object = new Event('collection', 'key', 'type', 1400684480732, 1);
 $object->get();
 ```
 
-### Event Put (create/update by key)
+### Event Put (update)
 
 ```php
 $object = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title']);
@@ -499,7 +499,7 @@ $object->put(['title' => 'New Title'], true); // uses the current object Ref
 ```
 
 
-### Event Post (create & generate key)
+### Event Post (create)
 
 ```php
 $object = $application->postEvent('collection', 'key', 'type', ['title' => 'New Title']);
@@ -560,6 +560,60 @@ $object->listEvents();
 
 $object->next(); // loads next set of results
 ```
+
+
+
+
+
+
+
+
+
+### Graph Get (List):
+
+Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
+
+```php
+$response = $application->listRelations('collection', 'key', 'kind'); // one hop
+$response = $application->listRelations('collection', 'key', ['kind', 'kind2']); // two hops
+// or
+$collection = new Collection('collection');
+$response = $collection->listRelations('key', 'kind');
+// or
+$response = new Graph('collection', 'key', 'kind'); // note the plural
+$response->listRelations();
+
+$response->next(); // loads next set of results
+```
+
+
+### Graph Put
+
+```php
+$object = $application->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+// or
+$object = $collection->putRelation('key', 'kind', 'toCollection', 'toKey');
+// or
+$object = new KeyValue('collection', 'key');
+$object->putRelation('kind', 'toCollection', 'toKey');
+```
+
+
+### Graph Delete
+
+Deletes a relationship between two objects. Relations don't have a history, so the operation have the purge=true parameter.
+
+```php
+$object = $application->deleteRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+// or
+$object = $collection->deleteRelation('key', 'kind', 'toCollection', 'toKey');
+// or
+$object = new KeyValue('collection', 'key');
+$object->deleteRelation('kind', 'toCollection', 'toKey');
+```
+
+
+
 
 
 
