@@ -1,6 +1,8 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects\Common;
+namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Objects\Common\ApplicationTrait;
+use andrefelipe\Orchestrate\Objects\Common\CollectionTrait;
 use GuzzleHttp\HasDataTrait;
 use GuzzleHttp\ToArrayInterface;
 

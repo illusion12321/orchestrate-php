@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Bridge;
 
-use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
+use andrefelipe\Orchestrate\Objects\AbstractObject;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Relation;
 use andrefelipe\Orchestrate\Objects\Relations;
@@ -52,7 +52,7 @@ class GraphBridge
      * @param int $offset
      * @return Relations
      */
-    public function listRelations($kind, $limit=10, $offset=0)
+    public function getList($kind, $limit=10, $offset=0)
     {
        return (new Relations($this->parent->getCollection(), $this->parent->getKey()))
            ->setApplication($this->parent->getApplication())

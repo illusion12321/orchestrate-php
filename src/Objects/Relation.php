@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 
 class Relation extends AbstractObject
@@ -28,11 +27,14 @@ class Relation extends AbstractObject
 
 
 
-    public function __construct($collection, $key=null, $relation=null)
+
+    public function __construct($collection, $key=null, $relation=null, $toCollection=null, $toKey=null)
     {
         parent::__construct($collection);
         $this->key = $key;
         $this->relation = $relation;
+        $this->destinationCollection = $toCollection;
+        $this->destinationKey = $toKey;
     }
 
 
@@ -109,6 +111,7 @@ class Relation extends AbstractObject
             ],
             'relation' => $this->relation,
             // 'timestamp' => $this->timestamp,
+            // Orchestrate data export has timestamp, but the API doesn't return it yet
         ];
 
         return $result;
@@ -123,7 +126,6 @@ class Relation extends AbstractObject
         $this->relation = null;
         $this->destinationCollection = null;
         $this->destinationKey = null;
-        // $this->timestamp = 0;
         $this->data = [];
     }
 
@@ -154,9 +156,6 @@ class Relation extends AbstractObject
 
             if ($key === 'relation')
                 $this->relation = $value;
-
-            // if ($key === 'timestamp')
-            //     $this->timestamp = (int) $value;
         }
 
         return $this;
@@ -172,41 +171,43 @@ class Relation extends AbstractObject
 
 
     /**
-     * @param string $toCollection
-     * @param string $toKey
      * @return Relation self
      */
-    public function put($toCollection, $toKey)
+    public function put()
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
         $this->noRelationException();
+        $this->noDestinationCollectionException();
+        $this->noDestinationKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/relation/'.$this->relation.'/'.$toCollection.'/'.$toKey;
+        $path = $this->collection.'/'.$this->key.'/relation/'.$this->relation
+            .'/'.$this->destinationCollection.'/'.$this->destinationKey;
         
         // request
         $this->request('PUT', $path);
         
         return $this;
     }
-    
+
     
     /**
-     * @param string $toCollection
-     * @param string $toKey
      * @return Relation self
      */
-    public function delete($toCollection, $toKey)
+    public function delete()
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
         $this->noRelationException();
+        $this->noDestinationCollectionException();
+        $this->noDestinationKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/relation/'.$this->relation.'/'.$toCollection.'/'.$toKey;
+        $path = $this->collection.'/'.$this->key.'/relation/'.$this->relation
+            .'/'.$this->destinationCollection.'/'.$this->destinationKey;
 
         // request
         $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
@@ -216,10 +217,26 @@ class Relation extends AbstractObject
 
 
 
+
+
     protected function noRelationException()
     {
         if (!$this->relation) {
             throw new \BadMethodCallException('There is no relation set yet. Please do so through setRelation() method.');
+        }
+    }
+
+    protected function noDestinationCollectionException()
+    {
+        if (!$this->destinationCollection) {
+            throw new \BadMethodCallException('There is no destination collection set yet. Please do so through setDestinationCollection() method.');
+        }
+    }
+
+    protected function noDestinationKeyException()
+    {
+        if (!$this->destinationKey) {
+            throw new \BadMethodCallException('There is no destination key set yet. Please do so through setDestinationKey() method.');
         }
     }
 

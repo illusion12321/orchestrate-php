@@ -1,12 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Common\AbstractObject;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\TombstoneTrait;
 use andrefelipe\Orchestrate\Bridge\GraphBridge;
-
 
 class KeyValue extends AbstractObject
 {
@@ -33,18 +31,7 @@ class KeyValue extends AbstractObject
         parent::__construct($collection);
         $this->key = $key;
     }
-
-
-    protected $graph = null;
-
-    public function graph()
-    {
-        if (!$this->graph) {
-            $this->graph = new GraphBridge($this);
-        }
-
-        return $this->graph;
-    }
+    
 
 
     /**
@@ -340,60 +327,24 @@ class KeyValue extends AbstractObject
     }
 
 
-    // Graph
 
-    /**
-     * @param string $kind
-     * @param string $toCollection
-     * @param string $toKey
-     * @return KeyValue self
-     */
-    public function putRelation($kind, $toCollection, $toKey)
+
+
+
+    // API Bridge
+
+    protected $graph = null;
+
+    public function graph()
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
+        if (!$this->graph) {
+            $this->graph = new GraphBridge($this);
+        }
 
-        // define request options
-        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
-        
-        // request
-        $this->request('PUT', $path);
-        
-        return $this;
-    }
-
-    /**
-     * @param string $kind
-     * @param string $toCollection
-     * @param string $toKey
-     * @return KeyValue self
-     */
-    public function deleteRelation($kind, $toCollection, $toKey)
-    {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
-        // define request options
-        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
-
-        // request
-        $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
-        
-        return $this;
+        return $this->graph;
     }
 
 
-
-
-
-
-
-
-
-
-    // Cross-object API
     // TODO still consider to remove these, it's confusing to sometimes return self, other times, completely different values
     // I got myself sometimes read the success in the current KeyValue object
 

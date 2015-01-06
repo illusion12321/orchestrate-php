@@ -226,6 +226,50 @@ class Collection
     }
 
     
+    // Graph
+
+    /**
+     * @param string $key
+     * @param string $relation
+     * @param string $toCollection
+     * @param string $toKey
+     * @return Relation
+     */
+    public function putRelation($key, $relation, $toCollection, $toKey)
+    {
+        return $this->getApplication()
+            ->putRelation($this->collection, $key, $relation, $toCollection, $toKey);
+    }
+
+    /**
+     * @param string $key
+     * @param string $relation
+     * @param string $toCollection
+     * @param string $toKey
+     * @return Relation
+     */
+    public function deleteRelation($key, $relation, $toCollection, $toKey)
+    {
+        return $this->getApplication()
+            ->deleteRelation($this->collection, $key, $relation, $toCollection, $toKey);
+    }
+
+    /**
+     * @param string $key
+     * @param string|array $kind
+     * @param int $limit
+     * @param int $offset
+     * @return Relations
+     */
+    public function listRelations($key, $kind, $limit=10, $offset=0)
+    {
+        return $this->getApplication()
+            ->listRelations($this->collection, $key, $kind, $limit, $offset);
+    }
+
+
+    
+
     
 
 }
