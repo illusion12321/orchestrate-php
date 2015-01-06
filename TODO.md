@@ -1,6 +1,8 @@
 # TODO and IDEAS
 
-- Implement some common interfaces for response, etc
+- Implement some common interfaces, and general organization of the base classes
+
+- Implemente Tests
 
 - Study the advantages of turning all objects to resources like: $application['collection']['key'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 

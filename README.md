@@ -401,7 +401,7 @@ $object = $application->listCollection('collection');
 // or
 $collection = new Collection('collection');
 $object = $collection->listCollection();
-//or
+// or
 $object = new KeyValues('collection'); // note the plural
 $object->listCollection();
 
@@ -554,7 +554,7 @@ $object = $application->listEvents('collection', 'key', 'type');
 // or
 $collection = new Collection('collection');
 $object = $collection->listEvents('key', 'type');
-//or
+// or
 $object = new Events('collection', 'key', 'type'); // note the plural
 $object->listEvents();
 
@@ -574,16 +574,20 @@ $object->next(); // loads next set of results
 Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
 
 ```php
-$response = $application->listRelations('collection', 'key', 'kind'); // one hop
-$response = $application->listRelations('collection', 'key', ['kind', 'kind2']); // two hops
+$response = $application->listRelations('collection', 'key', 'kind');
 // or
 $collection = new Collection('collection');
 $response = $collection->listRelations('key', 'kind');
 // or
-$response = new Graph('collection', 'key', 'kind'); // note the plural
+$response = new Graph('collection', 'key', 'kind');
 $response->listRelations();
 
 $response->next(); // loads next set of results
+
+// the kind parameter accepts an array of strings to request the relatioship depth:
+$response = $application->listRelations('collection', 'key', ['kind', 'kind2']);
+// two hops
+
 ```
 
 
