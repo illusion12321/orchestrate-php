@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.3.0 - 2015-01-06
+
+- Full API parity (excluding only Path operations)
+- Cleaned project further
+
 ## 0.2.0-alpha - 2015-01-04
 
 - Implemented List, Refs and Events
