@@ -8,8 +8,7 @@ use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Search;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
-use andrefelipe\Orchestrate\Objects\Relation;
-use andrefelipe\Orchestrate\Objects\Relations;
+use andrefelipe\Orchestrate\Objects\Graph;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
@@ -503,31 +502,31 @@ class Application
     /**
      * @param string $collection
      * @param string $key
-     * @param string $relation
+     * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @return Relation
+     * @return KeyValue
      */
-    public function putRelation($collection, $key, $relation, $toCollection, $toKey)
+    public function putRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        return (new Relation($collection, $key, $relation))
+        return (new KeyValue($collection, $key))
             ->setApplication($this)
-            ->put($toCollection, $toKey);
+            ->putRelation($kind, $toCollection, $toKey);
     }
 
     /**
      * @param string $collection
      * @param string $key
-     * @param string $relation
+     * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @return Relation
+     * @return KeyValue
      */
-    public function deleteRelation($collection, $key, $relation, $toCollection, $toKey)
+    public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        return (new Relation($collection, $key, $relation))
+        return (new KeyValue($collection, $key))
             ->setApplication($this)
-            ->delete($toCollection, $toKey);
+            ->deleteRelation($kind, $toCollection, $toKey);
     }
 
     /**
@@ -536,13 +535,13 @@ class Application
      * @param string|array $kind
      * @param int $limit
      * @param int $offset
-     * @return Relations
+     * @return Graph
      */
     public function listRelations($collection, $key, $kind, $limit=10, $offset=0)
     {
-        return (new Relations($collection, $key))
+        return (new Graph($collection, $key, $kind))
             ->setApplication($this)
-            ->listRelations($kind, $limit, $offset);
+            ->listRelations($limit, $offset);
     }
 
 

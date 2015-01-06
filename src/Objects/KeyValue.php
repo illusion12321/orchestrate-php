@@ -4,7 +4,6 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\TombstoneTrait;
-use andrefelipe\Orchestrate\Bridge\GraphBridge;
 
 class KeyValue extends AbstractObject
 {
@@ -330,54 +329,56 @@ class KeyValue extends AbstractObject
 
 
 
-
-    // API Bridge
-
-    protected $graph = null;
-
-    public function graph()
-    {
-        if (!$this->graph) {
-            $this->graph = new GraphBridge($this);
-        }
-
-        return $this->graph;
-    }
-
-
-    // TODO still consider to remove these, it's confusing to sometimes return self, other times, completely different values
-    // I got myself sometimes read the success in the current KeyValue object
+    // Graph
 
     /**
-     * @return Relations
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * @return KeyValue self
      */
-    public function listRelations($kind, $limit=10, $offset=0)
+    public function putRelation($kind, $toCollection, $toKey)
     {
-        return (new Relations($this->collection, $this->key))
-            ->setApplication($this->getApplication())
-            ->listRelations($kind, $limit, $offset);
-    }
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
 
+        // define request options
+        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        
+        // request
+        $this->request('PUT', $path);
+        
+        return $this;
+    }
+    
     /**
-     * @return Refs
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * @return KeyValue self
      */
-    public function listRefs($limit=10, $offset=0, $values=false)
+    public function deleteRelation($kind, $toCollection, $toKey)
     {
-        return (new Refs($this->collection, $this->key))
-            ->setApplication($this->getApplication())
-            ->listRefs($limit, $offset, $values);
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
+
+        // define request options
+        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+
+        // request
+        $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
+        
+        return $this;
     }
 
 
-    /**
-     * @return Events
-     */
-    public function listEvents($type, $limit=10, array $range=null)
-    {
-        return (new Events($this->collection, $this->key, $type))
-            ->setApplication($this->getApplication())
-            ->listEvents($limit, $range);
-    }
+
+
+
+    
+
 
 
 

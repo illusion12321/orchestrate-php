@@ -233,7 +233,7 @@ class Collection
      * @param string $relation
      * @param string $toCollection
      * @param string $toKey
-     * @return Relation
+     * @return KeyValue
      */
     public function putRelation($key, $relation, $toCollection, $toKey)
     {
@@ -246,7 +246,7 @@ class Collection
      * @param string $relation
      * @param string $toCollection
      * @param string $toKey
-     * @return Relation
+     * @return KeyValue
      */
     public function deleteRelation($key, $relation, $toCollection, $toKey)
     {
@@ -259,7 +259,7 @@ class Collection
      * @param string|array $kind
      * @param int $limit
      * @param int $offset
-     * @return Relations
+     * @return Graph
      */
     public function listRelations($key, $kind, $limit=10, $offset=0)
     {
