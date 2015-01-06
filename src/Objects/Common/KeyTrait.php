@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
- * Trait that implements the Key methods
+ * Trait that implements the Key methods.
+ * 
+ * @internal
  */
 trait KeyTrait
 {

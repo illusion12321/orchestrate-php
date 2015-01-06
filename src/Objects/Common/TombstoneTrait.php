@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
- * Trait that implements the Tombstone methods
+ * Trait that implements the Tombstone methods.
+ * 
+ * @internal
  */
 trait TombstoneTrait
 {

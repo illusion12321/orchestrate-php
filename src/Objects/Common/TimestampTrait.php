@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
- * Trait that implements the Timestamp methods
+ * Trait that implements the Timestamp methods.
+ * 
+ * @internal
  */
 trait TimestampTrait
 {

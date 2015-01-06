@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
- * Trait that implements the Collection methods
+ * Trait that implements the Collection methods.
+ * 
+ * @internal
  */
 trait CollectionTrait
 {

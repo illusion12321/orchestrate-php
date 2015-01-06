@@ -14,9 +14,15 @@ class Collection
     {
         $this->collection = $collection;
     }
+    
 
 
+    // -------------------- Orchestrate API --------------------
+    // https://orchestrate.io/docs/apiref
 
+
+    // Collection
+    
     /**
      * @return boolean
      */
@@ -35,12 +41,6 @@ class Collection
         return $response->getStatusCode() === 200;
     }
 
-
-
-
-
-
-    // Cross-object API
 
     // Key/Value
 

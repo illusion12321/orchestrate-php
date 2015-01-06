@@ -5,7 +5,9 @@ use andrefelipe\Orchestrate\Application;
 
 
 /**
- * Trait that implements the Application methods
+ * Trait that implements the Application methods.
+ * 
+ * @internal
  */
 trait ApplicationTrait
 {

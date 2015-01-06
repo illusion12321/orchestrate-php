@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
- * Trait that implements the Type methods
+ * Trait that implements the Type methods.
+ * 
+ * @internal
  */
 trait TypeTrait
 {

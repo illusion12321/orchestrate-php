@@ -30,7 +30,7 @@ class KeyValues extends AbstractList
 
             if (isset($range['end']))
                 $parameters['endKey'] = $range['end'];
-        }        
+        }
 
         // request
         $this->request('GET', $this->collection, ['query' => $parameters]);

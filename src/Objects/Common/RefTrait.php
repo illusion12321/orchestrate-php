@@ -2,7 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects\Common;
 
 /**
- * Trait that implements the Ref methods
+ * Trait that implements the Ref methods.
+ * 
+ * @internal
  */
 trait RefTrait
 {
