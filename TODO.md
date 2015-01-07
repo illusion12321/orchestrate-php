@@ -4,7 +4,7 @@
 
 - Implement Tests
 
-- Add Docs
+- Add Docs (ApiGen, Sami or something that can be created from the source files)?
 
 - Implement async operations?
 
