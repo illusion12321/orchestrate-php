@@ -87,12 +87,12 @@ $object = $collection->put('key', ['title' => 'My Title']);
 $object = $collection->delete('key');
 ```
 
-3- **Objects** — the actual Orchestrate objects or list of objects, which provides a object-like API, as well as the results and response status:
+3- **Objects** — the actual Orchestrate objects or list of objects, which provides a object-like API, as well as the results, response status, and pagination methods:
 
-- `KeyValue` 
-- `KeyValues` 
-- `Refs` 
-- `Graph` 
+- `KeyValue`
+- `KeyValues`
+- `Refs`
+- `Graph`
 - `Event`
 - `Events`
 - `Search`
@@ -277,9 +277,12 @@ Let's go:
 
 
 ### Application Ping:
+> returns Boolean
 
 ```php
-$application->ping() // returns boolean
+if ( $application->ping() ) {
+    // good
+}
 ```
 
 
@@ -307,6 +310,7 @@ $object->get();
 ```
 
 ### Key/Value Put (create/update by key)
+> returns KeyValue object
 
 ```php
 $object = $application->put('collection', 'key', ['title' => 'New Title']);
@@ -350,6 +354,7 @@ $object->put(['title' => 'New Title'], false);
 
 
 ### Key/Value Post (create & generate key)
+> returns KeyValue object
 
 ```php
 $object = $application->post('collection', ['title' => 'New Title']);
@@ -461,31 +466,31 @@ $object->listRefs();
 > returns Search object
 
 ```php
-$response = $application->search('collection', 'title:"The Title*"');
+$object = $application->search('collection', 'title:"The Title*"');
 // or
-$response = $collection->search('title:"The Title*"');
+$object = $collection->search('title:"The Title*"');
 // or
-$response = new Search('collection');
-$response->search('title:"The Title*"');
+$object = new Search('collection');
+$object->search('title:"The Title*"');
 
 
 // get array of the search results (KeyValue objects)
-$response->getResults();
+$object->getResults();
 
 // iterate over the results
-foreach ($response as $item) {
+foreach ($object as $item) {
     
     $item->getValue();
     // items are KeyValue objects
 }
 
 // pagination
-$response->getNextUrl(); // string
-$response->getPrevUrl(); // string
-$response->getCount(); // count of the current set of results
-$response->getTotalCount(); // count of the total results available
-$response->next(); // loads next set of results
-$response->prev(); // loads previous set of results
+$object->getNextUrl(); // string
+$object->getPrevUrl(); // string
+$object->getCount(); // count of the current set of results
+$object->getTotalCount(); // count of the total results available
+$object->next(); // loads next set of results
+$object->prev(); // loads previous set of results
 ```
 
 All Search parameters are supported, and it includes Geo queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
@@ -498,6 +503,7 @@ search($query, $sort='', $limit=10, $offset=0)
 
 
 ### Event Get
+> returns Event object
 
 ```php
 $object = $application->getEvent('collection', 'key', 'type', 1400684480732, 1);
@@ -509,6 +515,7 @@ $object->get();
 ```
 
 ### Event Put (update)
+> returns Event object
 
 ```php
 $object = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title']);
@@ -539,6 +546,7 @@ $object->put(['title' => 'New Title'], true); // uses the current object Ref
 
 
 ### Event Post (create)
+> returns Event object
 
 ```php
 $object = $application->postEvent('collection', 'key', 'type', ['title' => 'New Title']);
@@ -555,6 +563,7 @@ $object->post(['title' => 'New Title'], true); // use stored timestamp
 
 
 ### Event Delete
+> returns Event object
 
 Warning: Orchestrate do not support full history of each event, so the delete operation have the purge=true parameter.
 
@@ -587,6 +596,7 @@ $object->delete('20c14e8965d6cbb0'); // delete a specific ref
 
 
 ### Event List:
+> returns Events object
 
 ```php
 $object = $application->listEvents('collection', 'key', 'type');
@@ -609,28 +619,30 @@ $object->next(); // loads next set of results
 
 
 ### Graph Get (List):
+> returns Graph object
 
 Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
 
 ```php
-$response = $application->listRelations('collection', 'key', 'kind');
+$object = $application->listRelations('collection', 'key', 'kind');
 // or
 $collection = new Collection('collection');
-$response = $collection->listRelations('key', 'kind');
+$object = $collection->listRelations('key', 'kind');
 // or
-$response = new Graph('collection', 'key', 'kind');
-$response->listRelations();
+$object = new Graph('collection', 'key', 'kind');
+$object->listRelations();
 
-$response->next(); // loads next set of results
+$object->next(); // loads next set of results
 
 // the kind parameter accepts an array of strings to request the relatioship depth:
-$response = $application->listRelations('collection', 'key', ['kind', 'kind2']);
+$object = $application->listRelations('collection', 'key', ['kind', 'kind2']);
 // two hops
 
 ```
 
 
 ### Graph Put
+> returns KeyValue object
 
 ```php
 $object = $application->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
@@ -643,6 +655,7 @@ $object->putRelation('kind', 'toCollection', 'toKey');
 
 
 ### Graph Delete
+> returns KeyValue object
 
 Deletes a relationship between two objects. Relations don't have a history, so the operation have the purge=true parameter.
 
