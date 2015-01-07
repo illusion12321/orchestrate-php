@@ -284,6 +284,7 @@ $application->ping() // returns boolean
 
 
 ### Collection Delete:
+> returns Collection object
 
 ```php
 $object = $application->deleteCollection('collection');
@@ -294,6 +295,7 @@ $collection->deleteCollection();
 
 
 ### Key/Value Get
+> returns KeyValue object
 
 ```php
 $object = $application->get('collection', 'key');
@@ -362,6 +364,7 @@ $object->post(['title' => 'New Title']); // posts a new value
 
 
 ### Key/Value Delete
+> returns KeyValue object
 
 ```php
 $object = $application->delete('collection', 'key');
@@ -408,6 +411,7 @@ $object->purge();
 
 
 ### Key/Value List:
+> returns KeyValues object
 
 ```php
 $object = $application->listCollection('collection');
@@ -424,6 +428,7 @@ $object->next(); // loads next set of results
 
 
 ### Refs Get:
+> returns KeyValue object
 
 Returns the specified version of a value.
 
@@ -437,8 +442,9 @@ $object->get('20c14e8965d6cbb0');
 ```
 
 ### Refs List:
+> returns Refs object
 
-Returns the specified version of a value.
+Get the specified version of a value.
 
 ```php
 $object = $application->listRefs('collection', 'key');
@@ -452,7 +458,7 @@ $object->listRefs();
 
 
 ### Search Collection:
-> returns `Search` object
+> returns Search object
 
 ```php
 $response = $application->search('collection', 'title:"The Title*"');
@@ -470,7 +476,7 @@ $response->getResults();
 foreach ($response as $item) {
     
     $item->getValue();
-    // items are KeyValue Objects
+    // items are KeyValue objects
 }
 
 // pagination
