@@ -81,10 +81,10 @@ class KeyValue extends AbstractObject
         ];
 
         if ($this->refTime)
-            $result['path']['reftime'] = $this->refTime;
+            $result['reftime'] = $this->refTime;
 
         if ($this->score)
-            $result['path']['score'] = $this->score;
+            $result['score'] = $this->score;
 
         if ($this->tombstone)
             $result['path']['tombstone'] = $this->tombstone;
