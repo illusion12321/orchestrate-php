@@ -307,6 +307,13 @@ $object = $collection->get('key');
 // or
 $object = new KeyValue('collection', 'key');
 $object->get();
+
+// get the object info
+$object->getKey(); // string
+$object->getRef(); // string
+$object->getValue(); // array of the Value
+$object->toArray(); // array representation of the object
+$object->getBody(); // array of the unfiltered HTTP response body
 ```
 
 ### Key/Value Put (create/update by key)
@@ -427,7 +434,24 @@ $object = $collection->listCollection();
 $object = new KeyValues('collection'); // note the plural
 $object->listCollection();
 
+
+// get array of the results (KeyValue objects)
+$object->getResults();
+
+// or go ahead and iterate over the results directly
+foreach ($object as $item) {
+    
+    $item->getValue();
+    // items are KeyValue objects
+}
+
+// pagination
+$object->getNextUrl(); // string
+$object->getPrevUrl(); // string
+$object->getCount(); // count of the current set of results
+$object->getTotalCount(); // count of the total results available
 $object->next(); // loads next set of results
+$object->prev(); // loads previous set of results
 ```
 
 
@@ -458,6 +482,25 @@ $object = $collection->listRefs('key');
 // or
 $object = new Refs('collection', 'key');
 $object->listRefs();
+
+
+// get array of the results (KeyValue objects)
+$object->getResults();
+
+// or go ahead and iterate over the results directly
+foreach ($object as $item) {
+    
+    $item->getValue();
+    // items are KeyValue objects
+}
+
+// pagination
+$object->getNextUrl(); // string
+$object->getPrevUrl(); // string
+$object->getCount(); // count of the current set of results
+$object->getTotalCount(); // count of the total results available
+$object->next(); // loads next set of results
+$object->prev(); // loads previous set of results
 ```
 
 
@@ -477,7 +520,7 @@ $object->search('title:"The Title*"');
 // get array of the search results (KeyValue objects)
 $object->getResults();
 
-// iterate over the results
+// or go ahead and iterate over the results directly
 foreach ($object as $item) {
     
     $item->getValue();
@@ -607,7 +650,24 @@ $object = $collection->listEvents('key', 'type');
 $object = new Events('collection', 'key', 'type'); // note the plural
 $object->listEvents();
 
+
+// get array of the results (Event objects)
+$object->getResults();
+
+// or go ahead and iterate over the results directly
+foreach ($object as $item) {
+    
+    $item->getValue();
+    // items are Event objects
+}
+
+// pagination
+$object->getNextUrl(); // string
+$object->getPrevUrl(); // string
+$object->getCount(); // count of the current set of results
+$object->getTotalCount(); // count of the total results available
 $object->next(); // loads next set of results
+$object->prev(); // loads previous set of results
 ```
 
 
@@ -632,11 +692,29 @@ $object = $collection->listRelations('key', 'kind');
 $object = new Graph('collection', 'key', 'kind');
 $object->listRelations();
 
-$object->next(); // loads next set of results
 
 // the kind parameter accepts an array of strings to request the relatioship depth:
 $object = $application->listRelations('collection', 'key', ['kind', 'kind2']);
 // two hops
+
+
+// get array of the results (KeyValue objects)
+$object->getResults();
+
+// or go ahead and iterate over the results directly
+foreach ($object as $item) {
+    
+    $item->getValue();
+    // items are KeyValue objects
+}
+
+// pagination
+$object->getNextUrl(); // string
+$object->getPrevUrl(); // string
+$object->getCount(); // count of the current set of results
+$object->getTotalCount(); // count of the total results available
+$object->next(); // loads next set of results
+$object->prev(); // loads previous set of results
 
 ```
 
