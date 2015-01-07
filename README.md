@@ -452,14 +452,34 @@ $object->listRefs();
 
 
 ### Search Collection:
+###### returns `Search` object
+##### returns `Search` object
 
 ```php
-$object = $application->search('collection', 'title:"The Title*"');
+$response = $application->search('collection', 'title:"The Title*"');
 // or
-$object = $collection->search('title:"The Title*"');
+$response = $collection->search('title:"The Title*"');
 // or
-$object = new Search('collection');
-$object->search('title:"The Title*"');
+$response = new Search('collection');
+$response->search('title:"The Title*"');
+
+// get array of the search results (KeyValue objects)
+$response->getResults();
+
+// iterate over the results
+foreach ($response as $item) {
+    
+    $item->getValue();
+    // items are KeyValue Objects
+}
+
+// pagination
+$response->getNextUrl(); // string
+$response->getPrevUrl(); // string
+$response->getCount(); // count of the current set of results
+$response->getTotalCount(); // count of the total results available
+$response->next(); // loads next set of results
+$response->prev(); // loads previous set of results, if available
 ```
 
 All Search parameters are supported, and it includes Geo queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
