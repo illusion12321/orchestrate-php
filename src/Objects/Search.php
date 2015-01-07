@@ -25,11 +25,11 @@ class Search extends AbstractList
         ];
 
         if (!empty($sort)) {
-            $parameters['sort'] = (array) implode(',', $sort);
+            $parameters['sort'] = implode(',', (array) $sort);
         }
 
         if (!empty($aggregate)) {
-            $parameters['aggregate'] = (array) implode(',', $aggregate);
+            $parameters['aggregate'] = implode(',', (array) $aggregate);
         }
 
         if ($offset) {
