@@ -166,11 +166,8 @@ class KeyValue extends AbstractObject
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
+            $this->data = $value;
         }
-
-        // set value as input value, even if not success, so we can retry
-        $this->data = $value;
-
 
         return $this;
     }
@@ -198,16 +195,14 @@ class KeyValue extends AbstractObject
             $this->key = null;
             $this->ref = null;
             $this->setKeyRefFromLocation();
+            $this->data = $value;
         }
-
-        // set value as input value, even if not success, so we can retry
-        $this->data = $value;
 
         return $this;
     }
 
 
-
+    
 
     /**
      * @param PatchBuilder $operations
@@ -245,7 +240,7 @@ class KeyValue extends AbstractObject
             // reload the Value from API
             if ($reload) {
                 $this->get($this->getRef());
-            }            
+            }
         }
         
         return $this;
