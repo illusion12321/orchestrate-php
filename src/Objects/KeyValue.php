@@ -4,6 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\ValueTrait;
+use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject
 {
@@ -45,7 +46,7 @@ class KeyValue extends AbstractObject
     {
         parent::reset();
         $this->key = null;
-        $this->ref = null;        
+        $this->ref = null;
         $this->data = [];
     }
 
@@ -91,6 +92,7 @@ class KeyValue extends AbstractObject
 
 
     /**
+     * @param string $ref
      * @return KeyValue self
      */
     public function get($ref=null)
@@ -124,6 +126,8 @@ class KeyValue extends AbstractObject
     
     
     /**
+     * @param array $value
+     * @param string $ref
      * @return KeyValue self
      */
     public function put(array $value=null, $ref=null)
@@ -174,6 +178,7 @@ class KeyValue extends AbstractObject
 
 
     /**
+     * @param array $value
      * @return KeyValue self
      */
     public function post(array $value=null)
@@ -205,6 +210,116 @@ class KeyValue extends AbstractObject
 
 
     /**
+     * @param array|PatchBuilder $operations
+     * @param string $ref
+     * @return KeyValue self
+     */
+    public function patch($operations, $ref=null)
+    {
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
+        
+        if (is_a($operations, '\andrefelipe\Orchestrate\Query\PatchBuilder')) {
+            $operations = $operations->toArray();
+
+        } elseif (!is_array($operations)) {
+            throw new \BadMethodCallException('The operations parameter can only be of type array or PatchBuilder ('.gettype($operations).' given).');
+        }
+        
+
+        // define request options
+        $path = $this->collection.'/'.$this->key;
+        $options = ['json' => $operations];
+
+        if ($ref) {
+
+            // set If-Match
+            if ($ref === true) {
+                $ref = $this->ref;
+            }
+
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+        }
+
+        // request
+        $this->request('PATCH', $path, $options);
+        
+        // set values
+        if ($this->isSuccess()) {
+            $this->setRefFromETag();
+
+            // get the Value from API
+            // $this->get($this->getRef());
+        }
+        
+        return $this;
+    }
+
+
+
+
+    /**
+     * @param array $value
+     * @param string $ref
+     * @return KeyValue self
+     */
+    public function patchMerge(array $value=null, $ref=null)
+    {
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
+
+        if ($value === null) {
+            $value = $this->data;
+        }
+
+        // define request options
+        $path = $this->collection.'/'.$this->key;
+        $options = ['json' => $value];
+
+        if ($ref) {
+
+            // set If-Match
+            if ($ref === true) {
+                $ref = $this->ref;
+            }
+
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+        }
+
+        // request
+        $this->request('PATCH', $path, $options);
+        
+        // set values
+        if ($this->isSuccess()) {
+            $this->setRefFromETag();
+
+            // modify value, following Orchestrate's standard
+            $this->data = array_merge($this->data, $value);
+
+            foreach ($value as $k => $v) {
+                if ($v === null) {
+                    unset($this->data[$key]);
+                }
+            }
+
+            // - Any fields that do not already exist will be added.
+
+            // -If the partial Key/Value contains a field whose value is null, Orchestrate will remove the field and its value from the existing Key/Value item.
+            
+            // - Array values given in the partial Key/Value will not merge into an existing array value, but will completely replace the value in the existing Key/Value item.
+        }
+
+        return $this;
+    }
+
+
+
+
+
+    /**
+     * @param string $ref
      * @return KeyValue self
      */
     public function delete($ref=null)
