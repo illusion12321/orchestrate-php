@@ -353,6 +353,7 @@ $object->toArray(); // array representation of the object
 $object->getBody(); // array of the unfiltered HTTP response body
 ```
 
+
 ### Key/Value Put (create/update by key)
 > returns KeyValue object
 
@@ -375,7 +376,7 @@ Stores the value for the key only if the value of the ref matches the current st
 ```php
 $object = $application->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
-$object = $collection->get('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+$object = $collection->put('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
 $object = new KeyValue('collection', 'key');
 $object->put(['title' => 'New Title'], '20c14e8965d6cbb0');
@@ -390,11 +391,93 @@ Stores the value for the key if no key/value already exists.
 ```php
 $object = $application->put('collection', 'key', ['title' => 'New Title'], false);
 // or
-$object = $collection->get('key', ['title' => 'New Title'], false);
+$object = $collection->put('key', ['title' => 'New Title'], false);
 // or
 $object = new KeyValue('collection', 'key');
 $object->put(['title' => 'New Title'], false);
 ```
+
+
+### Key/Value Patch (partial update - Operations)
+> returns KeyValue object
+
+Please refer to the [API Reference](https://orchestrate.io/docs/apiref#keyvalue-patch) for all details.
+
+```php
+// uses the Patch operation builder
+use andrefelipe\Orchestrate\Query\PatchBuilder;
+
+$patch = (new PatchBuilder())
+    ->add('birth_place.city', 'New York')
+    ->copy('full_name', 'name');
+
+$object = $application->patch('collection', 'key', $patch);
+// or
+$object = $collection->patch('key', $patch);
+// or
+$object = new KeyValue('collection', 'key');
+$object->patch($patch);
+
+// Warning: when patching, the object Value (retrievable with $object->getValue()) WILL NOT be updated.
+// Orchestrate does not (yet) return the Value body in Patch operations, and mocking on our side will be very inconsistent and an extra GET would have to issued anyway
+
+// As a solution, to fetch the resulting Value, use the third parameter (reload) as:
+$object->patch($patch, null, true);
+
+// it will reload the data with $object->get($object->getRef()); if the patch was successful
+```
+
+**Conditional Patch (Operations) If-Match**:
+
+Updates the value for the key if the value for this header matches the current ref value.
+
+```php
+$patch = (new PatchBuilder())
+    ->add('birth_place.city', 'New York')
+    ->copy('full_name', 'name');
+
+$object = $application->patch('collection', 'key', $patch, '20c14e8965d6cbb0');
+// or
+$object = $collection->patch('key', $patch, '20c14e8965d6cbb0');
+// or
+$object = new KeyValue('collection', 'key');
+$object->patch($patch, '20c14e8965d6cbb0');
+$object->patch($patch, true); // uses the current object Ref
+$object->patch($patch, true, true); // with the reload as mentioned above
+```
+
+
+### Key/Value Patch (partial update - Merge)
+> returns KeyValue object
+
+```php
+$object = $application->patchMerge('collection', 'key', ['title' => 'New Title']);
+// or
+$object = $collection->patchMerge('key', ['title' => 'New Title']);
+// or
+$object = new KeyValue('collection', 'key');
+$object['title'] = 'New Title';
+$object->patchMerge(); // merges the current Value
+$object->patchMerge(['title' => 'New Title']); // or merge with new value
+// also has a 'reload' parameter as mentioned above
+```
+
+
+**Conditional Patch (Merge) If-Match**:
+
+Stores the value for the key only if the value of the ref matches the current stored ref.
+
+```php
+$object = $application->patchMerge('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+// or
+$object = $collection->patchMerge('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+// or
+$object = new KeyValue('collection', 'key');
+$object->patchMerge(['title' => 'New Title'], '20c14e8965d6cbb0');
+$object->patchMerge(['title' => 'New Title'], true); // uses the current object Ref
+// also has a 'reload' parameter as mentioned above
+```
+
 
 
 ### Key/Value Post (create & generate key)
@@ -561,8 +644,14 @@ $object->getResults();
 foreach ($object as $item) {
     
     $item->getValue();
-    // items are KeyValue objects
+    // items are SearchResult objects
+
+    $item->getScore(); // search score
+    $item->getDistance(); // populated if it was a Geo query
 }
+
+// aggregates
+$object->getAggregates(); // array of the Aggregate results, if any 
 
 // pagination
 $object->getNextUrl(); // string
@@ -575,7 +664,14 @@ $object->prev(); // loads previous set of results
 
 All Search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
 ```php
-public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+// public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+
+// aggregates example
+$object = $collection->search(
+    'value.created_date:[2014-01-01 TO 2014-12-31]',
+    null,
+    'value.created_date:time_series:month'
+);
 ```
 
 
