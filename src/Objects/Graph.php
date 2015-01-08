@@ -21,7 +21,7 @@ class Graph extends AbstractList
     {
         parent::__construct($collection);
         $this->key = $key;
-        $this->kind = $kind;
+        $this->kind = (array) $kind;
     }
 
 
