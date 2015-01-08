@@ -186,6 +186,37 @@ if ($object->isSuccess()) {
 All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
 
 ```php
+$object = $application->get('collection', 'key');
+
+$object->getValue(); // array of the Value
+$object['my_property']; // direct array access to the Value
+foreach ($object as $key => $value) {}  // iterate thought the Value
+count($object); // the Value count
+$object['my_property'] = 'new value'; // set
+unset($object['my_property']); // unset
+
+
+$object = $application->search('collection', 'title:"The Title*"');
+
+$object->getResults(); // array of SearchResult objects
+$object[0]; // direct array access to the Results
+foreach ($object as $item) {} // iterate thought the Results
+count($object); // the Results count
+$object['my_property'] = 'new value'; // set, throws Exception
+unset($object['my_property']); // unset, throws Exception
+// there is no point on changing the search result array,
+// but you can of course manage each item:
+foreach ($object as $item) {
+    $item->putRelation('kind', 'toCollection', 'toKey');
+    if ($item->isSuccess()) {
+        // do something else
+    }
+}
+```
+
+Example:
+
+```php
 
 // for KeyValue objects, the Value can be accessed like:
 
