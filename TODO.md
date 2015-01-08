@@ -1,8 +1,8 @@
 # TODO and IDEAS
 
-- Implement the Patch operations
-
 - Work on Query builders for Search (search/sort/aggregate)? 
+
+- Inline Docs
 
 - Implement some common interfaces, and general organization of the base classes
 

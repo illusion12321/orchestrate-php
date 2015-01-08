@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.5.0 - 2015-01-08
+
+- Implemented Patch operations!
+- Full API parity
+- Now road is clear to optimizations, Docs and Tests
+
 ## 0.4.0 - 2015-01-08
 
 - Implemented search Aggregates

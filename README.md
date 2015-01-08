@@ -401,7 +401,7 @@ $object->put(['title' => 'New Title'], false);
 ### Key/Value Patch (partial update - Operations)
 > returns KeyValue object
 
-Please refer to the [API Reference](https://orchestrate.io/docs/apiref#keyvalue-patch) for all details.
+Please refer to the [API Reference](https://orchestrate.io/docs/apiref#keyvalue-patch) for all details about the operations.
 
 ```php
 // uses the Patch operation builder
@@ -418,13 +418,17 @@ $object = $collection->patch('key', $patch);
 $object = new KeyValue('collection', 'key');
 $object->patch($patch);
 
-// Warning: when patching, the object Value (retrievable with $object->getValue()) WILL NOT be updated.
-// Orchestrate does not (yet) return the Value body in Patch operations, and mocking on our side will be very inconsistent and an extra GET would have to issued anyway
+// Warning: when patching, the object Value (retrievable with $object->getValue())
+// WILL NOT be updated! Orchestrate does not (yet) return the Value body in
+// Patch operations, and mocking on our side will be very inconsistent
+// and an extra GET would have to issued anyway.
 
-// As a solution, to fetch the resulting Value, use the third parameter (reload) as:
+// As a solution, you can fetch the resulting Value, using the
+// third parameter 'reload' as:
 $object->patch($patch, null, true);
 
-// it will reload the data with $object->get($object->getRef()); if the patch was successful
+// it will reload the data with $object->get($object->getRef());
+// if the patch was successful
 ```
 
 **Conditional Patch (Operations) If-Match**:
