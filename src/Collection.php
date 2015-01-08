@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Objects\Common\ApplicationTrait;
 use andrefelipe\Orchestrate\Objects\Common\CollectionTrait;
+use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class Collection
 {
@@ -65,6 +66,31 @@ class Collection
     {
         return $this->getApplication()
             ->put($this->collection, $key, $value, $ref);
+    }
+
+    /**
+     * @param string $key
+     * @param PatchBuilder $operations
+     * @param string $ref
+     * @param boolean $reload
+     * @return KeyValue
+     */
+    public function patch($key, PatchBuilder $operations, $ref=null, $reload=false)
+    {
+        return $this->getApplication()
+            ->patch($this->collection, $key, $operations, $ref, $reload);
+    }
+
+    /**
+     * @param string $key
+     * @param array $value
+     * @param string $ref
+     * @return KeyValue
+     */
+    public function patchMerge($key, array $value, $ref=null)
+    {
+        return $this->getApplication()
+            ->patchMerge($this->collection, $key, $value, $ref);
     }
 
     /**

@@ -9,6 +9,7 @@ use andrefelipe\Orchestrate\Objects\Search;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Graph;
+use andrefelipe\Orchestrate\Query\PatchBuilder;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
@@ -310,6 +311,35 @@ class Application
         return (new KeyValue($collection, $key))
             ->setApplication($this)
             ->put($value, $ref);
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param PatchBuilder $operations
+     * @param string $ref
+     * @param boolean $reload
+     * @return KeyValue
+     */
+    public function patch($collection, $key, PatchBuilder $operations, $ref=null, $reload=false)
+    {
+        return (new KeyValue($collection, $key))
+            ->setApplication($this)
+            ->patch($operations, $ref, $reload);
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param array $value
+     * @param string $ref
+     * @return KeyValue
+     */
+    public function patchMerge($collection, $key, array $value, $ref=null)
+    {
+        return (new KeyValue($collection, $key))
+            ->setApplication($this)
+            ->patchMerge($value, $ref);
     }
 
     /**
