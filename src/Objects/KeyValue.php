@@ -210,27 +210,20 @@ class KeyValue extends AbstractObject
 
 
     /**
-     * @param array|PatchBuilder $operations
+     * @param PatchBuilder $operations
      * @param string $ref
+     * @param boolean $reload
      * @return KeyValue self
      */
-    public function patch($operations, $ref=null)
+    public function patch(PatchBuilder $operations, $ref=null, $reload=false)
     {
         // required values
         $this->noCollectionException();
         $this->noKeyException();
-        
-        if (is_a($operations, '\andrefelipe\Orchestrate\Query\PatchBuilder')) {
-            $operations = $operations->toArray();
-
-        } elseif (!is_array($operations)) {
-            throw new \BadMethodCallException('The operations parameter can only be of type array or PatchBuilder ('.gettype($operations).' given).');
-        }
-        
 
         // define request options
         $path = $this->collection.'/'.$this->key;
-        $options = ['json' => $operations];
+        $options = ['json' => $operations->toArray()];
 
         if ($ref) {
 
@@ -249,8 +242,10 @@ class KeyValue extends AbstractObject
         if ($this->isSuccess()) {
             $this->setRefFromETag();
 
-            // get the Value from API
-            // $this->get($this->getRef());
+            // reload the Value from API
+            if ($reload) {
+                $this->get($this->getRef());
+            }            
         }
         
         return $this;
