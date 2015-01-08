@@ -87,15 +87,20 @@ $object = $collection->put('key', ['title' => 'My Title']);
 $object = $collection->delete('key');
 ```
 
-3- **Objects** — the actual Orchestrate objects or list of objects, which provides a object-like API, as well as the results, response status, and pagination methods:
+3- **Objects** — the actual Orchestrate objects, which provides a object-like API, as well as the results, response status, and pagination methods. They split in two categories:
 
-- `KeyValue`
-- `KeyValues`
-- `Refs`
-- `Graph`
-- `Event`
-- `Events`
-- `Search`
+**Single Objects**, which provides methods to manage a single entity (get/put/delete/etc):
+- `KeyValue`, core to Orchestrate and our client, handles key/ref/value;
+- `Ref`, a KeyValue subclass, adds tombstone and reftime properties;
+- `Event`, provides a similar API as the KeyValue, for the Event object;
+- `SearchResult`, a KeyValue subclass, adds score and distance properties.
+
+**List of Objects**, which provides the results and methods for pagination: 
+- `KeyValues`, used for KeyValue List query, with KeyValue instances as result
+- `Refs`, used for Refs List query, with Ref instances as result
+- `Graph`, used for Graph Get query, with KeyValue instances as result
+- `Events`, used for Event List query, with Event instances as result
+- `Search`, used for Search query, with SearchResult instances as result
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -148,14 +153,14 @@ if ($object->isSuccess()) {
     echo $object->getStatus(); // items_not_found
     // — the Orchestrate Error code
     
-    echo $item->getStatusCode();  // 404
+    echo $object->getStatusCode();  // 404
     // — the HTTP response status code
 
-    echo $item->getStatusMessage(); // The requested items could not be found.
+    echo $object->getStatusMessage(); // The requested items could not be found.
     // — the status message, in case of error, the Orchestrate message is used
     // intead of the default HTTP Reason-Phrases
     
-    print_r($item->getBody());
+    print_r($object->getBody());
     // Array
     // (
     //     [message] => The requested items could not be found.
@@ -484,7 +489,7 @@ $object = new Refs('collection', 'key');
 $object->listRefs();
 
 
-// get array of the results (KeyValue objects)
+// get array of the results (Ref objects)
 $object->getResults();
 
 // or go ahead and iterate over the results directly
@@ -505,8 +510,8 @@ $object->prev(); // loads previous set of results
 
 
 
-### Search Collection:
-> returns Search object
+### Search:
+> returns Search object, with results as SearchResult objects (a KeyValue subclass)
 
 ```php
 $object = $application->search('collection', 'title:"The Title*"');
@@ -517,7 +522,7 @@ $object = new Search('collection');
 $object->search('title:"The Title*"');
 
 
-// get array of the search results (KeyValue objects)
+// get array of the search results (SearchResult objects)
 $object->getResults();
 
 // or go ahead and iterate over the results directly
@@ -538,7 +543,7 @@ $object->prev(); // loads previous set of results
 
 All Search parameters are supported, and it includes Geo queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
 ```php
-search($query, $sort='', $limit=10, $offset=0)
+public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
 ```
 
 
