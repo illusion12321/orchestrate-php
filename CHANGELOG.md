@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.4.0 - 2015-01-08
+
+- Implemented search Aggregates
+- Added KeyValue subclasses (Ref and SearchResult)
+
 ## 0.3.0 - 2015-01-06
 
 - Full API parity (excluding only Patch operations)

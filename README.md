@@ -186,6 +186,7 @@ if ($object->isSuccess()) {
 All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
 
 ```php
+// KeyValue Get
 $object = $application->get('collection', 'key');
 
 $object->getValue(); // array of the Value
@@ -195,7 +196,7 @@ count($object); // the Value count
 $object['my_property'] = 'new value'; // set
 unset($object['my_property']); // unset
 
-
+// Search
 $object = $application->search('collection', 'title:"The Title*"');
 
 $object->getResults(); // array of SearchResult objects
@@ -459,7 +460,7 @@ $object->purge();
 
 
 ### Key/Value List:
-> returns KeyValues object
+> returns KeyValues object, with results as KeyValue objects
 
 ```php
 $object = $application->listCollection('collection');
@@ -507,7 +508,7 @@ $object->get('20c14e8965d6cbb0');
 ```
 
 ### Refs List:
-> returns Refs object
+> returns Refs object, with results as Ref objects (a KeyValue subclass)
 
 Get the specified version of a value.
 
@@ -572,7 +573,7 @@ $object->next(); // loads next set of results
 $object->prev(); // loads previous set of results
 ```
 
-All Search parameters are supported, and it includes Geo queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
+All Search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
 ```php
 public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
 ```
@@ -675,7 +676,7 @@ $object->delete('20c14e8965d6cbb0'); // delete a specific ref
 
 
 ### Event List:
-> returns Events object
+> returns Events object, with results as Event objects
 
 ```php
 $object = $application->listEvents('collection', 'key', 'type');
@@ -715,7 +716,7 @@ $object->prev(); // loads previous set of results
 
 
 ### Graph Get (List):
-> returns Graph object
+> returns Graph object, with results as KeyValue objects
 
 Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
 
@@ -886,4 +887,6 @@ if ($object->isSuccess()) {
 
 Here are some useful notes to consider when using the Orchestrate service:
 - Avoid using slashes (/) in the key name, some problems will arise when querying them;
-- If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list
+- If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
+- When adding a field for a date, prefix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date)
+
