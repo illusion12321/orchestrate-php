@@ -143,7 +143,7 @@ abstract class AbstractList extends AbstractObject
 
 
 
-    protected function request($method, $url = null, array $options = [], $childrenClass='KeyValue')
+    protected function request($method, $url = null, array $options = [])
     {
         $this->reset();
         parent::request($method, $url, $options);
@@ -151,7 +151,7 @@ abstract class AbstractList extends AbstractObject
         if ($this->isSuccess()) {
             
             if (!empty($this->body['results'])) {
-                $this->data = array_map([$this, 'create'.$childrenClass], $this->body['results']);
+                $this->data = array_map([$this, 'createChildrenClass'], $this->body['results']);
             }
 
             if (!empty($this->body['count'])) {
@@ -172,18 +172,10 @@ abstract class AbstractList extends AbstractObject
         }
     }
 
-    // This can be handled in a better way, just get it going for now
-
-    private function createKeyValue(array $values)
+    
+    protected function createChildrenClass(array $values)
     {
-        return (new KeyValue($this->collection))
-            ->setApplication($this->getApplication())
-            ->init($values);
-    }
-
-    private function createEvent(array $values)
-    {
-        return (new Event($this->collection))
+        return (new KeyValue($this->getCollection()))
             ->setApplication($this->getApplication())
             ->init($values);
     }

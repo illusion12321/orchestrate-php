@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
+use andrefelipe\Orchestrate\Objects\Common\ValueTrait;
 use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
 use andrefelipe\Orchestrate\Objects\Common\TimestampTrait;
 
@@ -10,6 +11,7 @@ class Event extends AbstractObject
 {
     use KeyTrait;
     use RefTrait;
+    use ValueTrait;
     use TypeTrait;
     use TimestampTrait;
 
@@ -50,21 +52,7 @@ class Event extends AbstractObject
         $this->ordinal = (int) $ordinal;
     }
 
-    /**
-     * @return array
-     */
-    public function getValue()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param array $value
-     */
-    public function setValue(array $value)
-    {
-        $this->data = $value;
-    }
+    
     
     /**
      * @return array
@@ -82,6 +70,8 @@ class Event extends AbstractObject
                 'ordinal' => $this->ordinal,
             ],
             'value' => $this->data,
+            'timestamp' => $this->timestamp,
+            'ordinal' => $this->ordinal,
         ];
 
         return $result;
@@ -118,22 +108,22 @@ class Event extends AbstractObject
             if ($key === 'collection')
                 $this->collection = $value;
 
-            if ($key === 'key')
+            elseif ($key === 'key')
                 $this->key = $value;
 
-            if ($key === 'ref')
+            elseif ($key === 'ref')
                 $this->ref = $value;
 
-            if ($key === 'type')
+            elseif ($key === 'type')
                 $this->type = $value;
 
-            if ($key === 'timestamp')
+            elseif ($key === 'timestamp')
                 $this->timestamp = (int) $value;
 
-            if ($key === 'ordinal')
+            elseif ($key === 'ordinal')
                 $this->ordinal = (int) $value;
 
-            if ($key === 'value')
+            elseif ($key === 'value')
                 $this->data = (array) $value;
         }
 

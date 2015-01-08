@@ -386,16 +386,17 @@ class Application
     /**
      * @param string $collection
      * @param string $query
-     * @param string $sort
+     * @param string|array $sort
+     * @param string|array $aggregate
      * @param int $limit
      * @param int $offset
      * @return Search
      */
-    public function search($collection, $query, $sort='', $limit=10, $offset=0)
+    public function search($collection, $query, $sort=null, $aggregate=null, $limit=10, $offset=0)
     {
         return (new Search($collection))
             ->setApplication($this)
-            ->search($query, $sort, $limit, $offset);
+            ->search($query, $sort, $aggregate, $limit, $offset);
     }
 
 

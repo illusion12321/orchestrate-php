@@ -52,13 +52,20 @@ class Events extends AbstractList
         }
 
         // request
-        $this->request('GET', $path, ['query' => $parameters], 'Event');
+        $this->request('GET', $path, ['query' => $parameters]);
         
         return $this;
     }
 
 
     
+
+    protected function createChildrenClass(array $values)
+    {
+        return (new Event($this->getCollection()))
+            ->setApplication($this->getApplication())
+            ->init($values);
+    }
 
 
 

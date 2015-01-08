@@ -49,6 +49,13 @@ class Refs extends AbstractList
     }
 
 
+
+    protected function createChildrenClass(array $values)
+    {
+        return (new Ref($this->getCollection()))
+            ->setApplication($this->getApplication())
+            ->init($values);
+    }
     
 
 

@@ -6,6 +6,45 @@ class Search extends AbstractList
     
 
     /**
+     * @var array
+     */
+    protected $aggregates = [];
+
+    /**
+     * @return float
+     */
+    public function getAggregates()
+    {
+        return $this->aggregates;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $result = parent::toArray();
+
+        if (!empty($this->aggregates))
+            $result['aggregates'] = $this->aggregates;
+        
+        return $result;
+    }
+
+
+    public function reset()
+    {
+        parent::reset();
+        $this->aggregates = [];
+    }
+
+
+
+
+
+
+    /**
      * @param string $query
      * @param string|array $sort
      * @param string|array $aggregate
@@ -43,6 +82,30 @@ class Search extends AbstractList
     }
    
 
+
+
+
+
+
+    protected function request($method, $url = null, array $options = [])
+    {
+        parent::request($method, $url, $options);
+
+        if ($this->isSuccess()) {
+
+            if (!empty($this->body['aggregates'])) {
+                $this->aggregates = $this->body['aggregates'];
+            }
+        }
+    }
+    
+
+    protected function createChildrenClass(array $values)
+    {
+        return (new SearchResult($this->getCollection()))
+            ->setApplication($this->getApplication())
+            ->init($values);
+    }
 
 
 }

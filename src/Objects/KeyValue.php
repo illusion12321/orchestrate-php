@@ -3,26 +3,13 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Common\RefTrait;
-use andrefelipe\Orchestrate\Objects\Common\TombstoneTrait;
+use andrefelipe\Orchestrate\Objects\Common\ValueTrait;
 
 class KeyValue extends AbstractObject
 {
     use KeyTrait;
     use RefTrait;
-    use TombstoneTrait;
-
-
-    /**
-     * @var int
-     */
-    protected $refTime = 0;
-
-    /**
-     * @var float
-     */
-    protected $score = 0;
-
-    
+    use ValueTrait;
 
 
     public function __construct($collection, $key=null)
@@ -30,40 +17,9 @@ class KeyValue extends AbstractObject
         parent::__construct($collection);
         $this->key = $key;
     }
+
+
     
-
-
-    /**
-     * @return int
-     */
-    public function getRefTime()
-    {
-        return $this->refTime;
-    }
-
-    /**
-     * @return float
-     */
-    public function getScore()
-    {
-        return $this->score;
-    }
-
-    /**
-     * @return array
-     */
-    public function getValue()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param array $value
-     */
-    public function setValue(array $value)
-    {
-        $this->data = $value;
-    }
     
     /**
      * @return array
@@ -79,15 +35,6 @@ class KeyValue extends AbstractObject
             ],
             'value' => $this->data,
         ];
-
-        if ($this->refTime)
-            $result['reftime'] = $this->refTime;
-
-        if ($this->score)
-            $result['score'] = $this->score;
-
-        if ($this->tombstone)
-            $result['path']['tombstone'] = $this->tombstone;
         
         return $result;
     }
@@ -98,10 +45,7 @@ class KeyValue extends AbstractObject
     {
         parent::reset();
         $this->key = null;
-        $this->ref = null;
-        $this->refTime = 0;
-        $this->score = 0;
-        $this->tombstone = false;
+        $this->ref = null;        
         $this->data = [];
     }
 
@@ -123,22 +67,13 @@ class KeyValue extends AbstractObject
             if ($key === 'collection')
                 $this->collection = $value;
 
-            if ($key === 'key')
+            elseif ($key === 'key')
                 $this->key = $value;
 
-            if ($key === 'ref')
+            elseif ($key === 'ref')
                 $this->ref = $value;
 
-            if ($key === 'reftime')
-                $this->refTime = (int) $value;
-
-            if ($key === 'score')
-                $this->score = (float) $value;
-
-            if ($key === 'tombstone')
-                $this->tombstone = (boolean) $value;
-
-            if ($key === 'value')
+            elseif ($key === 'value')
                 $this->data = (array) $value;
         }
 

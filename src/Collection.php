@@ -130,15 +130,16 @@ class Collection
 
     /**
      * @param string $query
-     * @param string $sort
+     * @param string|array $sort
+     * @param string|array $aggregate
      * @param int $limit
      * @param int $offset
      * @return Search
      */
-    public function search($query, $sort='', $limit=10, $offset=0)
+    public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
     {
         return $this->getApplication()
-            ->search($this->collection, $query, $sort, $limit, $offset);
+            ->search($this->collection, $query, $sort, $aggregate, $limit, $offset);
     }
 
 
