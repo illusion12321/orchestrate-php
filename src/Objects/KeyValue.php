@@ -202,7 +202,7 @@ class KeyValue extends AbstractObject
     }
 
 
-    
+
 
     /**
      * @param PatchBuilder $operations
@@ -252,9 +252,10 @@ class KeyValue extends AbstractObject
     /**
      * @param array $value
      * @param string $ref
+     * @param boolean $reload
      * @return KeyValue self
      */
-    public function patchMerge(array $value=null, $ref=null)
+    public function patchMerge(array $value=null, $ref=null, $reload=false)
     {
         // required values
         $this->noCollectionException();
@@ -285,20 +286,10 @@ class KeyValue extends AbstractObject
         if ($this->isSuccess()) {
             $this->setRefFromETag();
 
-            // modify value, following Orchestrate's standard
-            $this->data = array_merge($this->data, $value);
-
-            foreach ($value as $k => $v) {
-                if ($v === null) {
-                    unset($this->data[$key]);
-                }
-            }
-
-            // - Any fields that do not already exist will be added.
-
-            // -If the partial Key/Value contains a field whose value is null, Orchestrate will remove the field and its value from the existing Key/Value item.
-            
-            // - Array values given in the partial Key/Value will not merge into an existing array value, but will completely replace the value in the existing Key/Value item.
+            // reload the Value from API
+            if ($reload) {
+                $this->get($this->getRef());
+            }            
         }
 
         return $this;

@@ -85,12 +85,13 @@ class Collection
      * @param string $key
      * @param array $value
      * @param string $ref
+     * @param boolean $reload
      * @return KeyValue
      */
-    public function patchMerge($key, array $value, $ref=null)
+    public function patchMerge($key, array $value, $ref=null, $reload=false)
     {
         return $this->getApplication()
-            ->patchMerge($this->collection, $key, $value, $ref);
+            ->patchMerge($this->collection, $key, $value, $ref, $reload);
     }
 
     /**

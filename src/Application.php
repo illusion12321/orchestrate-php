@@ -333,13 +333,14 @@ class Application
      * @param string $key
      * @param array $value
      * @param string $ref
+     * @param boolean $reload
      * @return KeyValue
      */
-    public function patchMerge($collection, $key, array $value, $ref=null)
+    public function patchMerge($collection, $key, array $value, $ref=null, $reload=false)
     {
         return (new KeyValue($collection, $key))
             ->setApplication($this)
-            ->patchMerge($value, $ref);
+            ->patchMerge($value, $ref, $reload);
     }
 
     /**
