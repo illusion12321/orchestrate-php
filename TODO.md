@@ -1,9 +1,5 @@
 # TODO and IDEAS
 
-- Would have to create more single objects like: Result, Ref (more?) because there are missing fields like: distance, score, aggregate, reftime, tombstone
-
-- getAggregates would return a list of Aggregate objects? Maybe not because what will I do with it if it's an object, will I put/delete ? no use...
-
 - Implement the Patch operations
 
 - Work on Query builders for Search (search/sort/aggregate)? 
