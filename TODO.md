@@ -1,7 +1,5 @@
 # TODO and IDEAS
 
-- Should the Collection be changed to an object, multifunctional, handling both lists, search and single object queries, all in one place? — there is a good thing about removing the Collection as is, and leave Application the only client-like API.
-
 - Work on Query builders for Search (search/sort/aggregate)? 
 
 - Inline Docs
