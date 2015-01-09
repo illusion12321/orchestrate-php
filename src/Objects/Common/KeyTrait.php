@@ -34,6 +34,9 @@ trait KeyTrait
     }
 
 
+    /**
+     * @throws \BadMethodCallException if 'key' is not set yet.
+     */
     protected function noKeyException()
     {
         if (!$this->key) {

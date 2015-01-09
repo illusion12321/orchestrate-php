@@ -39,7 +39,7 @@ class Collection
             ['query' => ['force' => 'true']]
         );
 
-        return $response->getStatusCode() === 200;
+        return $response->getStatusCode() === 204;
     }
 
 

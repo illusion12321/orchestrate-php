@@ -13,12 +13,14 @@ trait ApplicationTrait
 {
 
     /**
-     * @var Application
+     * @var Application 
      */
-    protected $application;
-    
+    private $application;
 
     /**
+     * Get current Application instance. If not set, will automatically try
+     * to get the last created instance with Application::getCurrent()
+     * 
      * @return Application
      */
     public function getApplication()
@@ -31,6 +33,9 @@ trait ApplicationTrait
     }
 
     /**
+     * Set the Application which which the object will belong to. API requests
+     * will use the Application HTTP client.
+     * 
      * @param Application $application
      */
     public function setApplication(Application $application)

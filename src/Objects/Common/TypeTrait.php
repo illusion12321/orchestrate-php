@@ -34,6 +34,9 @@ trait TypeTrait
     }
 
 
+    /**
+     * @throws \BadMethodCallException if 'type' is not set yet.
+     */
     protected function noTypeException()
     {
         if (!$this->type) {

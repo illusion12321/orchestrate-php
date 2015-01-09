@@ -34,6 +34,9 @@ trait CollectionTrait
     }
     
 
+    /**
+     * @throws \BadMethodCallException if 'collection' is not set yet.
+     */
     protected function noCollectionException()
     {
         if (!$this->collection) {
