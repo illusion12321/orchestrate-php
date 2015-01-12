@@ -8,6 +8,9 @@ This client follows very closely the Orchestrate API and naming conventions, so 
 - JSON is parsed as, and expected to be, associative array.
 - You may find it a very user-friendly client.
 
+[![Latest Stable Version](https://poser.pugx.org/andrefelipe/orchestrate-php/v/stable.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
+[![License](https://poser.pugx.org/andrefelipe/orchestrate-php/license.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
+
 
 ## Instalation
 
