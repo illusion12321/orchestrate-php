@@ -1,10 +1,10 @@
 Orchestrate.io PHP Client
 ======
 
-This client follows very closely the Orchestrate API and naming conventions, so your best friend is always the Orchestrate API Reference: https://orchestrate.io/docs/apiref
+This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so your best friend is always the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
-- Orchestrate's error responses are honored.
 - PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in on every response.
+- Orchestrate's error responses are honored.
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
 - PHP should be 5.4 or higher.
 - JSON is parsed as, and expected to be, associative array.
