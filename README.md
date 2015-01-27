@@ -1,7 +1,7 @@
 Orchestrate.io PHP Client
 ======
 
-This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so your best friend is always the Orchestrate API Reference: https://orchestrate.io/docs/apiref
+A very straight forward PHP client for Orchestrate.io](https://orchestrate.io) DBaaS.
 
 - PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in on every response.
 - Orchestrate's error responses are honored.
@@ -9,6 +9,8 @@ This client follows very closely [Orchestrate's](https://orchestrate.io) naming 
 - PHP must be 5.4 or higher.
 - JSON is parsed as, and expected to be, associative array.
 - You may find it a very user-friendly client.
+
+This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
 [![Latest Stable Version](https://poser.pugx.org/andrefelipe/orchestrate-php/v/stable.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
 [![License](https://poser.pugx.org/andrefelipe/orchestrate-php/license.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
@@ -96,16 +98,16 @@ $item = $collection->delete('key');
 
 **Single Objects**, which provides methods to manage a single entity (get/put/delete/etc):
 - `KeyValue`, core to Orchestrate and our client, handles key/ref/value;
-- `Ref`, a KeyValue subclass, adds tombstone and reftime properties;
+- `Ref`, a KeyValue subclass, adds the tombstone and reftime properties;
 - `Event`, provides a similar API as the KeyValue, for the Event object;
-- `SearchResult`, a KeyValue subclass, adds score and distance properties.
+- `SearchResult`, a KeyValue subclass, adds the score and distance properties.
 
-**List of Objects**, which provides the results and methods for pagination: 
-- `KeyValues`, used for KeyValue List query, with KeyValue instances as result
-- `Refs`, used for Refs List query, with Ref instances as result
-- `Graph`, used for Graph Get query, with KeyValue instances as result
-- `Events`, used for Event List query, with Event instances as result
-- `Search`, used for Search query, with SearchResult instances as result
+**List of Objects**, which provides the results and pagination methods: 
+- `KeyValues`, used for KeyValue List query
+- `Refs`, used for Refs List query
+- `Graph`, used for Graph Get query
+- `Events`, used for Event List query
+- `Search`, used for Search query, with support for aggregates
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -120,7 +122,7 @@ $item->put(['title' => 'My Title']); // puts a new value
 $item->delete(); // delete the current ref
 ```
 
-Please note that the result of all operations, in any approach, are exact the same, they all return **Objects**. And ***Objects* holds the results as well as the response status.**
+Please note that the result of all operations, in any approach, are exact the same, they all return **Objects**. And **Objects holds the results as well as the response status.**
 
 Example:
 
@@ -188,52 +190,23 @@ if ($item->isSuccess()) {
 
 ```
 
-All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array:
-
-```php
-// KeyValue Get
-$item = $application->get('collection', 'key');
-
-$item->getValue(); // array of the Value
-$item['my_property']; // direct array access to the Value
-foreach ($item as $key => $value) {}  // iterate thought the Value
-count($item); // the Value count
-$item['my_property'] = 'new value'; // set
-unset($item['my_property']); // unset
-
-// Search
-$results = $application->search('collection', 'title:"The Title*"');
-
-$results->getResults(); // array of SearchResult objects
-$results[0]; // direct array access to the Results
-foreach ($results as $item) {} // iterate thought the Results
-count($results); // the Results count
-$results['my_property'] = 'new value'; // set, throws Exception
-unset($results['my_property']); // unset, throws Exception
-// there is no point on changing the search result array,
-// but you can of course manage each item:
-foreach ($results as $item) {
-    $item->putRelation('kind', 'toCollection', 'toKey');
-    if ($item->isSuccess()) {
-        // do something else
-    }
-}
-```
+All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array.
 
 Example:
 
 ```php
 
-// for KeyValue objects, the Value can be accessed like:
+// considering KeyValue with the value of {"title": "My Title"}
 
 $item = $application->get('collection', 'key');
 
-if (count($item)) // 1 in this case
-{
-    echo $item['title']; // My Title
+if (count($item)) { // get the property count 
+
+    if (isset($item['title'])) {
+        echo $item['title'];  // My Title
+    }
     
-    foreach ($item as $key => $value)
-    {
+    foreach ($item as $key => $value) {
         echo $key; // title
         echo $value; // My Title
     }
@@ -250,22 +223,10 @@ if ($item->isSuccess()) {
 }
 
 
-// if you don't want to use the internal Array directly, you can always use:
+// if you don't want to use the internal Value Array directly, you can always get it with:
 $value = $item->getValue();
-// it will return the internal Array that is being accessed
-// then you can change it as usual
-$value['profile'] = ['name' => 'The Name', 'age' => 10];
-// and send to Orchestrate with:
-$item->put($value);
-// or with:
-$item = $application->put('collection', $item->getKey(), $value);
 
-if ($item->isSuccess()) {
-    // good
-}
-
-
-// also all objects provide an additional method, toArray
+// also all objects provide an additional method, toArray()
 // which returns an Array representation of the object
 print_r($item->toArray());
 // Array
@@ -285,6 +246,32 @@ print_r($item->toArray());
 //             [title] => My Title
 //         )
 // )
+
+
+// Of course, it gets interesting on List objects like Search:
+
+$results = $application->search('collection', 'title:"The Title*"');
+
+// you can iterate over the results directly!
+foreach ($results as $item) {
+    
+    // get its values
+    $item->getValue(); // the Value
+    $item->getScore(); // search score
+    $item->getDistance(); // populated if it was a Geo query
+
+    // and manage them
+    $item->putRelation('kind', 'toCollection', 'toKey');
+
+    // if relation was created successfuly
+    if ($item->isSuccess()) {
+
+        // take the opportunity to post an event
+        $values = ['type' => 'relation', 'to' => 'toKey', 'ref' => $item->getRef()];
+
+        $application->postEvent('collection', $item->getKey(), 'log', $values);
+    }
+}
 
 
 ```
@@ -647,9 +634,9 @@ $results->search('title:"The Title*"');
 
 
 // get array of the search results (SearchResult objects)
-$results->getResults();
+$list_of_items = $results->getResults();
 
-// or go ahead and iterate over the results directly
+// or go ahead and iterate over the results directly!
 foreach ($results as $item) {
     
     $item->getValue();

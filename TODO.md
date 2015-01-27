@@ -1,12 +1,14 @@
 # TODO and IDEAS
 
-- Work on Query builders for Search (search/sort/aggregate)? 
-
 - Inline Docs
 
-- Implement some common interfaces, and general organization of the base classes
+- Reconsider adding methods of getEvent, postEvent, etc, to KeyValue?
+
+- Work on Query builders for Search (search/sort/aggregate)?
 
 - Implement Tests
+
+- Implement some common interfaces, and general organization of the base classes
 
 - Add Docs (ApiGen, Sami or something that can be created from the source files)?
 
