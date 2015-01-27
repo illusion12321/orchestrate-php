@@ -1,7 +1,7 @@
 Orchestrate.io PHP Client
 ======
 
-A very straight forward PHP client for Orchestrate.io](https://orchestrate.io) DBaaS.
+A very straight forward PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
 
 - PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in on every response.
 - Orchestrate's error responses are honored.
