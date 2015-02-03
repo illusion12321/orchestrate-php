@@ -104,15 +104,8 @@ class Event extends AbstractObject
      */
     public function get()
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-        $this->noTimestampException();
-        $this->noOrdinalException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
 
      
         // request
@@ -141,19 +134,12 @@ class Event extends AbstractObject
      */
     public function put(array $value=null, $ref=null)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-        $this->noTimestampException();
-        $this->noOrdinalException();
-
         if ($value === null) {
             $value = $this->data;
         }
 
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
         $options = ['json' => $value];
 
         if ($ref) {
@@ -189,12 +175,7 @@ class Event extends AbstractObject
      */
     public function post(array $value=null, $timestamp=0)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-
-        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true);
 
         if ($timestamp === true) {
             $timestamp = $this->timestamp;
@@ -233,15 +214,8 @@ class Event extends AbstractObject
      */
     public function delete($ref=null)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-        $this->noTimestampException();
-        $this->noOrdinalException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
         $options = ['query' => ['purge' => 'true']];
 
         if ($ref) {
@@ -272,15 +246,8 @@ class Event extends AbstractObject
      */
     public function purge()
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-        $this->noTimestampException();
-        $this->noOrdinalException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
         $options = ['query' => ['purge' => 'true']];
 
         // request
