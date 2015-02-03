@@ -21,11 +21,6 @@ use GuzzleHttp\Exception\ConnectException;
  */
 class Application
 {
-    /**
-     * @var Application
-     */
-    private static $application;
-
 	/**
 	 * @var string
 	 */
@@ -61,22 +56,6 @@ class Application
 
 
     // -------------------- Application --------------------
-
-    /**
-     * @return Application
-     */
-    public static function getCurrent()
-    {
-        return self::$application;
-    }
-
-    /**
-     * @param Application $application
-     */
-    public static function setCurrent($application)
-    {
-        self::$application = $application;
-    }
 
     /**
      * @param string $key 
