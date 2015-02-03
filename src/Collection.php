@@ -19,6 +19,14 @@ class Collection
         $this->setCollection($collection);
     }
 
+    /**
+     * @return string The collection name
+     */
+    public function __toString()
+    {
+        return $this->getCollection();
+    }
+
 
     // Collection
     
