@@ -20,14 +20,14 @@ abstract class AbstractObject extends AbstractResponse implements
      * @param string $collection
      */
     public function __construct($collection)
-    {        
-        $this->collection = $collection;
+    {
+        $this->setCollection($collection);
     }
 
     protected function request($method, $url = null, array $options = [])
     {
         // request at the Application HTTP client
-        $response = $this->getApplication()->request($method, $url, $options);
+        $response = $this->getApplication(true)->request($method, $url, $options);
 
         // and store/process the results
         $this->setResponse($response);

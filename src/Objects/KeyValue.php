@@ -15,7 +15,7 @@ class KeyValue extends AbstractObject
     public function __construct($collection, $key=null)
     {
         parent::__construct($collection);
-        $this->key = $key;
+        $this->setKey($key);
     }
 
     /**
@@ -27,10 +27,10 @@ class KeyValue extends AbstractObject
             'kind' => 'item',
             'path' => [
                 'collection' => $this->getCollection(),
-                'key' => $this->key,
-                'ref' => $this->ref,
+                'key' => $this->getKey(),
+                'ref' => $this->getRef(),
             ],
-            'value' => $this->data,
+            'value' => $this->getValue(),
         ];
         
         return $result;
@@ -61,13 +61,13 @@ class KeyValue extends AbstractObject
                 $this->setCollection($value);
 
             elseif ($key === 'key')
-                $this->key = $value;
+                $this->setKey($value);
 
             elseif ($key === 'ref')
-                $this->ref = $value;
+                $this->setRef($value);
 
             elseif ($key === 'value')
-                $this->data = (array) $value;
+                $this->setValue((array) $value);
         }
 
         return $this;
@@ -81,12 +81,8 @@ class KeyValue extends AbstractObject
      */
     public function get($ref=null)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key;
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
 
         if ($ref) {
             $path .= '/refs/'.trim($ref, '"');
@@ -116,16 +112,12 @@ class KeyValue extends AbstractObject
      */
     public function put(array $value=null, $ref=null)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         if ($value === null) {
             $value = $this->data;
         }
 
         // define request options
-        $path = $this->getCollection().'/'.$this->key;
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $value];
 
         if ($ref) {
@@ -164,15 +156,12 @@ class KeyValue extends AbstractObject
      */
     public function post(array $value=null)
     {
-        // required values
-        $this->noCollectionException();
-
         if ($value === null) {
             $value = $this->data;
         }
 
         // request
-        $this->request('POST', $this->getCollection(), ['json' => $value]);
+        $this->request('POST', $this->getCollection(true), ['json' => $value]);
         
         // set values
         if ($this->isSuccess()) {
@@ -195,12 +184,8 @@ class KeyValue extends AbstractObject
      */
     public function patch(PatchBuilder $operations, $ref=null, $reload=false)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key;
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
@@ -239,16 +224,12 @@ class KeyValue extends AbstractObject
      */
     public function patchMerge(array $value=null, $ref=null, $reload=false)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         if ($value === null) {
             $value = $this->data;
         }
 
         // define request options
-        $path = $this->getCollection().'/'.$this->key;
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $value];
 
         if ($ref) {
@@ -285,12 +266,8 @@ class KeyValue extends AbstractObject
      */
     public function delete($ref=null)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key;
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = [];
 
         if ($ref) {
@@ -315,12 +292,8 @@ class KeyValue extends AbstractObject
      */
     public function purge()
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key;
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['query' => ['purge' => 'true']];
 
         // request
@@ -344,12 +317,8 @@ class KeyValue extends AbstractObject
      */
     public function putRelation($kind, $toCollection, $toKey)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
         
         // request
         $this->request('PUT', $path);
@@ -367,12 +336,8 @@ class KeyValue extends AbstractObject
      */
     public function deleteRelation($kind, $toCollection, $toKey)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
 
         // request
         $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);

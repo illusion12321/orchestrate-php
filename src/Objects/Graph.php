@@ -25,13 +25,8 @@ class Graph extends AbstractList
      */
     public function listRelations($limit=10, $offset=0)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noKindException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/relations/'.implode('/', $this->kind);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/relations/'.implode('/', $this->getKind(true));
         $parameters = ['limit' => $limit];
         
         if ($offset)

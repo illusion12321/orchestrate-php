@@ -12,9 +12,6 @@ class KeyValues extends AbstractList
      */
     public function listCollection($limit=10, array $range=null)
     {
-        // required values
-        $this->noCollectionException();
-
         // define request options
         $parameters = ['limit' => $limit];
 
@@ -33,7 +30,7 @@ class KeyValues extends AbstractList
         }
 
         // request
-        $this->request('GET', $this->getCollection(), ['query' => $parameters]);
+        $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
         
         return $this;
     }

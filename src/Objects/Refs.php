@@ -10,7 +10,7 @@ class Refs extends AbstractList
     public function __construct($collection, $key=null)
     {
         parent::__construct($collection);
-        $this->key = $key;
+        $this->setKey($key);
     }
 
     /**
@@ -23,12 +23,8 @@ class Refs extends AbstractList
      */
     public function listRefs($limit=10, $offset=0, $values=false)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/refs/';
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/refs/';
         
         $parameters = ['limit' => $limit];
         

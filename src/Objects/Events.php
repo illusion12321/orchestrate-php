@@ -25,13 +25,8 @@ class Events extends AbstractList
      */
     public function listEvents($limit=10, array $range=null)
     {
-        // required values
-        $this->noCollectionException();
-        $this->noKeyException();
-        $this->noTypeException();
-
         // define request options
-        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/';
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/';
         
         $parameters = ['limit' => $limit];
 
@@ -53,7 +48,7 @@ class Events extends AbstractList
         $this->request('GET', $path, ['query' => $parameters]);
         
         return $this;
-    }    
+    }
 
     protected function createChildrenClass(array $values)
     {

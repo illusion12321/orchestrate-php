@@ -117,7 +117,7 @@ abstract class AbstractList extends AbstractObject
         if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($url, '/'.$this->getApplication()->getApiVersion().'/');
+            $url = ltrim($url, '/'.$this->getApplication(true)->getApiVersion().'/');
 
             // request
             $this->request('GET', $url);
