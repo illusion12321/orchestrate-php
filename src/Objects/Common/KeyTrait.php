@@ -14,10 +14,15 @@ trait KeyTrait
     protected $key = null;
     
     /**
+     * @param boolean $required 
+     * 
      * @return string
      */
-    public function getKey()
+    public function getKey($required = false)
     {
+        if ($required)
+            $this->noKeyException();
+
         return $this->key;
     }
 

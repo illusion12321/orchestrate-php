@@ -13,19 +13,19 @@ trait ApplicationTrait
     /**
      * @var Application 
      */
-    private $application;
+    protected $application;
 
     /**
-     * Get current Application instance. If not set, will automatically try
-     * to get the last created instance with Application::getCurrent()
+     * Get current Application instance.
+     * 
+     * @param boolean $required
      * 
      * @return Application
      */
-    public function getApplication()
+    public function getApplication($required = false)
     {
-        if (!$this->application) {
-            $this->application = Application::getCurrent();
-        }
+        if ($required)
+            $this->noApplicationException();
 
         return $this->application;
     }
@@ -41,5 +41,15 @@ trait ApplicationTrait
         $this->application = $application;
         
         return $this;
-    }    
+    }
+
+    /**
+     * @throws \BadMethodCallException if 'application' is not set yet.
+     */
+    protected function noApplicationException()
+    {
+        if (!$this->application) {
+            throw new \BadMethodCallException('There is no application set yet. Please do so through setApplication() method.');
+        }
+    }
 }

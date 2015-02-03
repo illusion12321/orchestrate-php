@@ -14,10 +14,15 @@ trait TimestampTrait
     protected $timestamp = 0;
     
     /**
+     * @param boolean $required
+     * 
      * @return int
      */
-    public function getTimestamp()
+    public function getTimestamp($required = false)
     {
+        if ($required)
+            $this->noTimestampException();
+
         return $this->timestamp;
     }
 
@@ -27,6 +32,8 @@ trait TimestampTrait
     public function setTimestamp($timestamp)
     {
         $this->timestamp = is_string($timestamp) ? strtotime($timestamp) : (int) $timestamp;
+
+        return $this;
     }
 
     /**

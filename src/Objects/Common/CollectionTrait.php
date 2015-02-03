@@ -14,10 +14,15 @@ trait CollectionTrait
     protected $collection;
 
     /**
+     * @param boolean $required 
+     * 
      * @return string
      */
-    public function getCollection()
+    public function getCollection($required = false)
     {
+        if ($required)
+            $this->noCollectionException();
+
         return $this->collection;
     }
 
@@ -27,7 +32,7 @@ trait CollectionTrait
     public function setCollection($collection)
     {
         $this->collection = (string) $collection;
-        
+
         return $this;
     }
 

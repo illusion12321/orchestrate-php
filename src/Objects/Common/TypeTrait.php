@@ -14,10 +14,15 @@ trait TypeTrait
     protected $type = null;
 
     /**
+     * @param boolean $required
+     * 
      * @return string
      */
-    public function getType()
+    public function getType($required = false)
     {
+        if ($required)
+            $this->noTypeException();
+
         return $this->type;
     }
 
