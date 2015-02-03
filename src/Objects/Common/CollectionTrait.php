@@ -26,8 +26,8 @@ trait CollectionTrait
      */
     public function setCollection($collection)
     {
-        $this->collection = $collection;
-
+        $this->collection = (string) $collection;
+        
         return $this;
     }
 
@@ -39,5 +39,5 @@ trait CollectionTrait
         if (!$this->collection) {
             throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
         }
-    }    
+    }
 }

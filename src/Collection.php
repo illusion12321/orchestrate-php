@@ -16,7 +16,7 @@ class Collection
 
     public function __construct($collection)
     {
-        $this->collection = $collection;
+        $this->setCollection($collection);
     }
 
 
@@ -34,7 +34,7 @@ class Collection
         // request
         $response = $this->getApplication()->request(
             'DELETE',
-            $this->collection,
+            $this->getCollection(),
             ['query' => ['force' => 'true']]
         );
 
@@ -53,8 +53,8 @@ class Collection
      */
     public function get($key, $ref=null)
     {
-        return $this->getApplication()
-            ->get($this->collection, $key, $ref);
+        return $this->getApplication(true)
+            ->get($this->getCollection(), $key, $ref);
     }
 
     /**
@@ -68,7 +68,7 @@ class Collection
     public function put($key, array $value, $ref=null)
     {
         return $this->getApplication()
-            ->put($this->collection, $key, $value, $ref);
+            ->put($this->getCollection(), $key, $value, $ref);
     }
 
     /**
@@ -83,7 +83,7 @@ class Collection
     public function patch($key, PatchBuilder $operations, $ref=null, $reload=false)
     {
         return $this->getApplication()
-            ->patch($this->collection, $key, $operations, $ref, $reload);
+            ->patch($this->getCollection(), $key, $operations, $ref, $reload);
     }
 
     /**
@@ -98,7 +98,7 @@ class Collection
     public function patchMerge($key, array $value, $ref=null, $reload=false)
     {
         return $this->getApplication()
-            ->patchMerge($this->collection, $key, $value, $ref, $reload);
+            ->patchMerge($this->getCollection(), $key, $value, $ref, $reload);
     }
 
     /**
@@ -110,7 +110,7 @@ class Collection
     public function post(array $value)
     {
         return $this->getApplication()
-            ->post($this->collection, $value);
+            ->post($this->getCollection(), $value);
     }
 
     /**
@@ -123,7 +123,7 @@ class Collection
     public function delete($key, $ref=null)
     {
         return $this->getApplication()
-            ->delete($this->collection, $key, $ref, $purge);
+            ->delete($this->getCollection(), $key, $ref, $purge);
     }
 
     /**
@@ -135,7 +135,7 @@ class Collection
     public function purge($key)
     {
         return $this->getApplication()
-            ->purge($this->collection, $key);
+            ->purge($this->getCollection(), $key);
     }
 
     /**
@@ -148,7 +148,7 @@ class Collection
     public function listCollection($limit=10, array $range=null)
     {
         return $this->getApplication()
-            ->listCollection($this->collection, $limit, $range);
+            ->listCollection($this->getCollection(), $limit, $range);
     }
 
 
@@ -166,7 +166,7 @@ class Collection
     public function listRefs($key, $limit=10, $offset=0, $values=false)
     {
         return $this->getApplication()
-            ->listRefs($this->collection, $key, $limit, $offset, $values);
+            ->listRefs($this->getCollection(), $key, $limit, $offset, $values);
     }
 
 
@@ -185,7 +185,7 @@ class Collection
     public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
     {
         return $this->getApplication()
-            ->search($this->collection, $query, $sort, $aggregate, $limit, $offset);
+            ->search($this->getCollection(), $query, $sort, $aggregate, $limit, $offset);
     }
 
 
@@ -203,7 +203,7 @@ class Collection
     public function getEvent($key, $type, $timestamp, $ordinal)
     {
         return $this->getApplication()
-            ->getEvent($this->collection, $key, $type, $timestamp, $ordinal);
+            ->getEvent($this->getCollection(), $key, $type, $timestamp, $ordinal);
     }
 
     /**
@@ -220,7 +220,7 @@ class Collection
     public function putEvent($key, $type, $timestamp, $ordinal, array $value, $ref=null)
     {
         return $this->getApplication()
-            ->putEvent($this->collection, $key, $type, $timestamp, $ordinal, $value, $ref);
+            ->putEvent($this->getCollection(), $key, $type, $timestamp, $ordinal, $value, $ref);
     }
 
     /**
@@ -235,7 +235,7 @@ class Collection
     public function postEvent($key, $type, array $value, $timestamp=0)
     {
         return $this->getApplication()
-            ->postEvent($this->collection, $key, $type, $value, $timestamp);
+            ->postEvent($this->getCollection(), $key, $type, $value, $timestamp);
     }
 
     /**
@@ -251,7 +251,7 @@ class Collection
     public function deleteEvent($key, $type, $timestamp, $ordinal, $ref=null)
     {
         return $this->getApplication()
-            ->deleteEvent($this->collection, $key, $type, $timestamp, $ordinal, $ref);
+            ->deleteEvent($this->getCollection(), $key, $type, $timestamp, $ordinal, $ref);
     }
 
    /**
@@ -266,7 +266,7 @@ class Collection
     public function purgeEvent($key, $type, $timestamp, $ordinal)
     {
         return $this->getApplication()
-            ->purgeEvent($this->collection, $key, $type, $timestamp, $ordinal);
+            ->purgeEvent($this->getCollection(), $key, $type, $timestamp, $ordinal);
     }
 
     /**
@@ -281,7 +281,7 @@ class Collection
     public function listEvents($key, $type, $limit=10, array $range=null)
     {
         return $this->getApplication()
-            ->listEvents($this->collection, $key, $type, $limit, $range);
+            ->listEvents($this->getCollection(), $key, $type, $limit, $range);
     }
 
     
@@ -299,7 +299,7 @@ class Collection
     public function putRelation($key, $relation, $toCollection, $toKey)
     {
         return $this->getApplication()
-            ->putRelation($this->collection, $key, $relation, $toCollection, $toKey);
+            ->putRelation($this->getCollection(), $key, $relation, $toCollection, $toKey);
     }
 
     /**
@@ -314,7 +314,7 @@ class Collection
     public function deleteRelation($key, $relation, $toCollection, $toKey)
     {
         return $this->getApplication()
-            ->deleteRelation($this->collection, $key, $relation, $toCollection, $toKey);
+            ->deleteRelation($this->getCollection(), $key, $relation, $toCollection, $toKey);
     }
 
     /**
@@ -329,6 +329,6 @@ class Collection
     public function listRelations($key, $kind, $limit=10, $offset=0)
     {
         return $this->getApplication()
-            ->listRelations($this->collection, $key, $kind, $limit, $offset);
+            ->listRelations($this->getCollection(), $key, $kind, $limit, $offset);
     }
 }

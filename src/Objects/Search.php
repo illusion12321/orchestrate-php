@@ -69,7 +69,7 @@ class Search extends AbstractList
         }
         
         // request
-        $this->request('GET', $this->collection, ['query' => $parameters]);
+        $this->request('GET', $this->getCollection(), ['query' => $parameters]);
 
         return $this;
     }

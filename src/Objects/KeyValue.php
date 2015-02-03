@@ -26,7 +26,7 @@ class KeyValue extends AbstractObject
         $result = [
             'kind' => 'item',
             'path' => [
-                'collection' => $this->collection,
+                'collection' => $this->getCollection(),
                 'key' => $this->key,
                 'ref' => $this->ref,
             ],
@@ -58,7 +58,7 @@ class KeyValue extends AbstractObject
         foreach ($values as $key => $value) {
             
             if ($key === 'collection')
-                $this->collection = $value;
+                $this->setCollection($value);
 
             elseif ($key === 'key')
                 $this->key = $value;
@@ -86,7 +86,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->getCollection().'/'.$this->key;
 
         if ($ref) {
             $path .= '/refs/'.trim($ref, '"');
@@ -125,7 +125,7 @@ class KeyValue extends AbstractObject
         }
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->getCollection().'/'.$this->key;
         $options = ['json' => $value];
 
         if ($ref) {
@@ -172,7 +172,7 @@ class KeyValue extends AbstractObject
         }
 
         // request
-        $this->request('POST', $this->collection, ['json' => $value]);
+        $this->request('POST', $this->getCollection(), ['json' => $value]);
         
         // set values
         if ($this->isSuccess()) {
@@ -200,7 +200,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->getCollection().'/'.$this->key;
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
@@ -248,7 +248,7 @@ class KeyValue extends AbstractObject
         }
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->getCollection().'/'.$this->key;
         $options = ['json' => $value];
 
         if ($ref) {
@@ -290,7 +290,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->getCollection().'/'.$this->key;
         $options = [];
 
         if ($ref) {
@@ -320,7 +320,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key;
+        $path = $this->getCollection().'/'.$this->key;
         $options = ['query' => ['purge' => 'true']];
 
         // request
@@ -349,7 +349,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        $path = $this->getCollection().'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
         
         // request
         $this->request('PUT', $path);
@@ -372,7 +372,7 @@ class KeyValue extends AbstractObject
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        $path = $this->getCollection().'/'.$this->key.'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
 
         // request
         $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);

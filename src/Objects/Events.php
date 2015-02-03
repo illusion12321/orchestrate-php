@@ -31,7 +31,7 @@ class Events extends AbstractList
         $this->noTypeException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/';
+        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/';
         
         $parameters = ['limit' => $limit];
 

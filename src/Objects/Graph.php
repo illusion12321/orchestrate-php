@@ -52,7 +52,7 @@ class Graph extends AbstractList
         $this->noKindException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/relations/'.implode('/', $this->kind);
+        $path = $this->getCollection().'/'.$this->key.'/relations/'.implode('/', $this->kind);
         $parameters = ['limit' => $limit];
         
         if ($offset)

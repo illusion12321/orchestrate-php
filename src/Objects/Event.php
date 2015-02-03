@@ -53,7 +53,7 @@ class Event extends AbstractObject
         $result = [
             'kind' => 'event',
             'path' => [
-                'collection' => $this->collection,
+                'collection' => $this->getCollection(),
                 'key' => $this->key,
                 'ref' => $this->ref,
                 'type' => $this->type,
@@ -93,7 +93,7 @@ class Event extends AbstractObject
         foreach ($values as $key => $value) {
             
             if ($key === 'collection')
-                $this->collection = $value;
+                $this->setCollection($value);
 
             elseif ($key === 'key')
                 $this->key = $value;
@@ -131,7 +131,7 @@ class Event extends AbstractObject
         $this->noOrdinalException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
 
      
         // request
@@ -172,7 +172,7 @@ class Event extends AbstractObject
         }
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
         $options = ['json' => $value];
 
         if ($ref) {
@@ -213,7 +213,7 @@ class Event extends AbstractObject
         $this->noKeyException();
         $this->noTypeException();
 
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type;
+        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type;
 
         if ($timestamp === true) {
             $timestamp = $this->timestamp;
@@ -260,7 +260,7 @@ class Event extends AbstractObject
         $this->noOrdinalException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
         $options = ['query' => ['purge' => 'true']];
 
         if ($ref) {
@@ -299,7 +299,7 @@ class Event extends AbstractObject
         $this->noOrdinalException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $path = $this->getCollection().'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
         $options = ['query' => ['purge' => 'true']];
 
         // request

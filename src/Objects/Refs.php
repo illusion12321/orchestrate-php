@@ -28,7 +28,7 @@ class Refs extends AbstractList
         $this->noKeyException();
 
         // define request options
-        $path = $this->collection.'/'.$this->key.'/refs/';
+        $path = $this->getCollection().'/'.$this->key.'/refs/';
         
         $parameters = ['limit' => $limit];
         
