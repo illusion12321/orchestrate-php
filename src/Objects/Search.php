@@ -45,7 +45,7 @@ class Search extends AbstractList
      * @return Search self
      * @link https://orchestrate.io/docs/apiref#search-collection
      */
-    public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+    public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         // define request options
         $parameters = [

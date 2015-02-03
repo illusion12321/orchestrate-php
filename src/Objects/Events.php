@@ -9,7 +9,7 @@ class Events extends AbstractList
     use KeyTrait;
     use TypeTrait;
 
-    public function __construct($collection, $key=null, $type=null)
+    public function __construct($collection, $key = null, $type = null)
     {
         parent::__construct($collection);
         $this->key = $key;
@@ -23,7 +23,7 @@ class Events extends AbstractList
      * @return Events self
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function listEvents($limit=10, array $range=null)
+    public function listEvents($limit = 10, array $range = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/';

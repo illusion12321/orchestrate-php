@@ -17,7 +17,7 @@ class Event extends AbstractObject
     use TimestampTrait;
     use OrdinalTrait;
 
-    public function __construct($collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
+    public function __construct($collection, $key = null, $type = null, $timestamp = 0, $ordinal = 0)
     {
         parent::__construct($collection);
         $this->key = $key;
@@ -132,7 +132,7 @@ class Event extends AbstractObject
      * @return Event self
      * @link https://orchestrate.io/docs/apiref#events-put
      */
-    public function put(array $value=null, $ref=null)
+    public function put(array $value = null, $ref = null)
     {
         if ($value === null) {
             $value = $this->data;
@@ -173,7 +173,7 @@ class Event extends AbstractObject
      * @return Event self
      * @link https://orchestrate.io/docs/apiref#events-post
      */
-    public function post(array $value=null, $timestamp=0)
+    public function post(array $value = null, $timestamp = 0)
     {
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true);
 
@@ -212,7 +212,7 @@ class Event extends AbstractObject
      * @return Event self
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
-    public function delete($ref=null)
+    public function delete($ref = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);

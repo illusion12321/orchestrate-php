@@ -12,7 +12,7 @@ class KeyValue extends AbstractObject
     use RefTrait;
     use ValueTrait;
 
-    public function __construct($collection, $key=null)
+    public function __construct($collection, $key = null)
     {
         parent::__construct($collection);
         $this->setKey($key);
@@ -79,7 +79,7 @@ class KeyValue extends AbstractObject
      * @return KeyValue self
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
-    public function get($ref=null)
+    public function get($ref = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
@@ -110,7 +110,7 @@ class KeyValue extends AbstractObject
      * @return KeyValue self
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
-    public function put(array $value=null, $ref=null)
+    public function put(array $value = null, $ref = null)
     {
         if ($value === null) {
             $value = $this->data;
@@ -154,7 +154,7 @@ class KeyValue extends AbstractObject
      * @return KeyValue self
      * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
-    public function post(array $value=null)
+    public function post(array $value = null)
     {
         if ($value === null) {
             $value = $this->data;
@@ -182,7 +182,7 @@ class KeyValue extends AbstractObject
      * @return KeyValue self
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
-    public function patch(PatchBuilder $operations, $ref=null, $reload=false)
+    public function patch(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
@@ -222,7 +222,7 @@ class KeyValue extends AbstractObject
      * @return KeyValue self
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge(array $value=null, $ref=null, $reload=false)
+    public function patchMerge(array $value = null, $ref = null, $reload = false)
     {
         if ($value === null) {
             $value = $this->data;
@@ -264,7 +264,7 @@ class KeyValue extends AbstractObject
      * @return KeyValue self
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
-    public function delete($ref=null)
+    public function delete($ref = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);

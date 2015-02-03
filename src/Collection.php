@@ -48,7 +48,7 @@ class Collection
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
-    public function get($key, $ref=null)
+    public function get($key, $ref = null)
     {
         return $this->getApplication(true)
             ->get($this->getCollection(true), $key, $ref);
@@ -62,7 +62,7 @@ class Collection
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
-    public function put($key, array $value, $ref=null)
+    public function put($key, array $value, $ref = null)
     {
         return $this->getApplication(true)
             ->put($this->getCollection(true), $key, $value, $ref);
@@ -77,7 +77,7 @@ class Collection
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
-    public function patch($key, PatchBuilder $operations, $ref=null, $reload=false)
+    public function patch($key, PatchBuilder $operations, $ref = null, $reload = false)
     {
         return $this->getApplication(true)
             ->patch($this->getCollection(true), $key, $operations, $ref, $reload);
@@ -92,7 +92,7 @@ class Collection
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge($key, array $value, $ref=null, $reload=false)
+    public function patchMerge($key, array $value, $ref = null, $reload = false)
     {
         return $this->getApplication(true)
             ->patchMerge($this->getCollection(true), $key, $value, $ref, $reload);
@@ -117,7 +117,7 @@ class Collection
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
-    public function delete($key, $ref=null)
+    public function delete($key, $ref = null)
     {
         return $this->getApplication(true)
             ->delete($this->getCollection(true), $key, $ref, $purge);
@@ -142,7 +142,7 @@ class Collection
      * @return KeyValues
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function listCollection($limit=10, array $range=null)
+    public function listCollection($limit = 10, array $range = null)
     {
         return $this->getApplication(true)
             ->listCollection($this->getCollection(true), $limit, $range);
@@ -160,7 +160,7 @@ class Collection
      * @return Refs
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
-    public function listRefs($key, $limit=10, $offset=0, $values=false)
+    public function listRefs($key, $limit = 10, $offset = 0, $values = false)
     {
         return $this->getApplication(true)
             ->listRefs($this->getCollection(true), $key, $limit, $offset, $values);
@@ -179,7 +179,7 @@ class Collection
      * @return Search
      * @link https://orchestrate.io/docs/apiref#search-collection
      */
-    public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+    public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         return $this->getApplication(true)
             ->search($this->getCollection(true), $query, $sort, $aggregate, $limit, $offset);
@@ -214,7 +214,7 @@ class Collection
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-put
      */
-    public function putEvent($key, $type, $timestamp, $ordinal, array $value, $ref=null)
+    public function putEvent($key, $type, $timestamp, $ordinal, array $value, $ref = null)
     {
         return $this->getApplication(true)
             ->putEvent($this->getCollection(true), $key, $type, $timestamp, $ordinal, $value, $ref);
@@ -229,7 +229,7 @@ class Collection
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-post
      */
-    public function postEvent($key, $type, array $value, $timestamp=0)
+    public function postEvent($key, $type, array $value, $timestamp = 0)
     {
         return $this->getApplication(true)
             ->postEvent($this->getCollection(true), $key, $type, $value, $timestamp);
@@ -245,7 +245,7 @@ class Collection
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
-    public function deleteEvent($key, $type, $timestamp, $ordinal, $ref=null)
+    public function deleteEvent($key, $type, $timestamp, $ordinal, $ref = null)
     {
         return $this->getApplication(true)
             ->deleteEvent($this->getCollection(true), $key, $type, $timestamp, $ordinal, $ref);
@@ -275,7 +275,7 @@ class Collection
      * @return Events
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function listEvents($key, $type, $limit=10, array $range=null)
+    public function listEvents($key, $type, $limit = 10, array $range = null)
     {
         return $this->getApplication(true)
             ->listEvents($this->getCollection(true), $key, $type, $limit, $range);
@@ -323,7 +323,7 @@ class Collection
      * @return Graph
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function listRelations($key, $kind, $limit=10, $offset=0)
+    public function listRelations($key, $kind, $limit = 10, $offset = 0)
     {
         return $this->getApplication(true)
             ->listRelations($this->getCollection(true), $key, $kind, $limit, $offset);

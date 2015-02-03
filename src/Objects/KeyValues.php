@@ -10,7 +10,7 @@ class KeyValues extends AbstractList
      * @return KeyValues self
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function listCollection($limit=10, array $range=null)
+    public function listCollection($limit = 10, array $range = null)
     {
         // define request options
         $parameters = ['limit' => $limit];

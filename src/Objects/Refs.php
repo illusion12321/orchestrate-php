@@ -7,7 +7,7 @@ class Refs extends AbstractList
 {
     use KeyTrait;
 
-    public function __construct($collection, $key=null)
+    public function __construct($collection, $key = null)
     {
         parent::__construct($collection);
         $this->setKey($key);
@@ -21,7 +21,7 @@ class Refs extends AbstractList
      * @return Refs self
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
-    public function listRefs($limit=10, $offset=0, $values=false)
+    public function listRefs($limit = 10, $offset = 0, $values = false)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/refs/';

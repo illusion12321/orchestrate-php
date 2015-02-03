@@ -44,7 +44,7 @@ class Application
 	/**
 	 * @param string $apiKey
 	 */
-	public function __construct($apiKey=null, $host=null, $apiVersion=null)
+	public function __construct($apiKey = null, $host = null, $apiVersion = null)
 	{
         // set client options
         $this->setApiKey($apiKey);
@@ -58,7 +58,7 @@ class Application
     /**
      * @param string $key 
      */
-    public function setApiKey($key=null)
+    public function setApiKey($key = null)
     {
         if ($key)
             $this->apiKey = $key;
@@ -77,7 +77,7 @@ class Application
     /**
      * @param string $host 
      */
-    public function setHost($host=null)
+    public function setHost($host = null)
     {
         if ($host)
             $this->host = trim($host, '/'); 
@@ -96,7 +96,7 @@ class Application
     /**
      * @param string $version 
      */
-    public function setApiVersion($version=null)
+    public function setApiVersion($version = null)
     {
         $this->apiVersion = $version ? $version : 'v0';
     }
@@ -256,7 +256,7 @@ class Application
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
-    public function get($collection, $key, $ref=null)
+    public function get($collection, $key, $ref = null)
     {
         return (new KeyValue($collection, $key))
             ->setApplication($this)
@@ -272,7 +272,7 @@ class Application
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
-    public function put($collection, $key, array $value, $ref=null)
+    public function put($collection, $key, array $value, $ref = null)
     {
         return (new KeyValue($collection, $key))
             ->setApplication($this)
@@ -289,7 +289,7 @@ class Application
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
-    public function patch($collection, $key, PatchBuilder $operations, $ref=null, $reload=false)
+    public function patch($collection, $key, PatchBuilder $operations, $ref = null, $reload = false)
     {
         return (new KeyValue($collection, $key))
             ->setApplication($this)
@@ -306,7 +306,7 @@ class Application
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge($collection, $key, array $value, $ref=null, $reload=false)
+    public function patchMerge($collection, $key, array $value, $ref = null, $reload = false)
     {
         return (new KeyValue($collection, $key))
             ->setApplication($this)
@@ -335,7 +335,7 @@ class Application
      * @return KeyValue
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
-    public function delete($collection, $key, $ref=null)
+    public function delete($collection, $key, $ref = null)
     {
         return (new KeyValue($collection, $key))
             ->setApplication($this)
@@ -364,7 +364,7 @@ class Application
      * @return KeyValues
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function listCollection($collection, $limit=10, array $range=null)
+    public function listCollection($collection, $limit = 10, array $range = null)
     {
         return (new KeyValues($collection))
             ->setApplication($this)
@@ -384,7 +384,7 @@ class Application
      * @return Refs
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
-    public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
+    public function listRefs($collection, $key, $limit = 10, $offset = 0, $values = false)
     {
         return (new Refs($collection, $key))
             ->setApplication($this)
@@ -405,7 +405,7 @@ class Application
      * @return Search
      * @link https://orchestrate.io/docs/apiref#search-collection
      */
-    public function search($collection, $query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+    public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         return (new Search($collection))
             ->setApplication($this)
@@ -444,7 +444,7 @@ class Application
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-put
      */
-    public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref=null)
+    public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref = null)
     {
         return (new Event($collection, $key, $type, $timestamp, $ordinal))
             ->setApplication($this)
@@ -461,7 +461,7 @@ class Application
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-post
      */
-    public function postEvent($collection, $key, $type, array $value, $timestamp=0)
+    public function postEvent($collection, $key, $type, array $value, $timestamp = 0)
     {
         return (new Event($collection, $key, $type))
             ->setApplication($this)
@@ -479,7 +479,7 @@ class Application
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
-    public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref=null)
+    public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref = null)
     {
         return (new Event($collection, $key, $type, $timestamp, $ordinal))
             ->setApplication($this)
@@ -513,7 +513,7 @@ class Application
      * @return Events
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function listEvents($collection, $key, $type, $limit=10, array $range=null)
+    public function listEvents($collection, $key, $type, $limit = 10, array $range = null)
     {
         return (new Events($collection, $key, $type))
             ->setApplication($this)
@@ -567,7 +567,7 @@ class Application
      * @return Graph
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function listRelations($collection, $key, $kind, $limit=10, $offset=0)
+    public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
     {
         return (new Graph($collection, $key, $kind))
             ->setApplication($this)
