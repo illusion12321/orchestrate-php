@@ -50,8 +50,6 @@ class Application
         $this->setApiKey($apiKey);
         $this->setHost($host);
         $this->setApiVersion($apiVersion);
-
-        self::$application = $this;
 	}
 
 
