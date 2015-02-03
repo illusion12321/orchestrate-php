@@ -127,7 +127,7 @@ class PatchBuilder implements ToArrayInterface
      * 
      * @return PatchBuilder self
      */
-    private function appendOperation($operation, $path, $value=null, $fromPath=null)
+    protected function appendOperation($operation, $path, $value=null, $fromPath=null)
     {
         $op = [
             'op' => $operation,

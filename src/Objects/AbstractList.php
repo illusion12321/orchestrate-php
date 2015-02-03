@@ -108,7 +108,7 @@ abstract class AbstractList extends AbstractObject
         return $this->getUrl($this->prevUrl);
     }
 
-    private function getUrl($url)
+    protected function getUrl($url)
     {
         // reset object
         $this->reset();

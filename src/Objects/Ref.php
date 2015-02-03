@@ -39,8 +39,8 @@ class Ref extends KeyValue
         if ($this->reftime)
             $result['reftime'] = $this->reftime;
 
-        if ($this->tombstone)
-            $result['path']['tombstone'] = $this->tombstone;
+        if ($this->isTombstone())
+            $result['path']['tombstone'] = true;
         
         return $result;
     }

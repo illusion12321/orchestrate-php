@@ -9,17 +9,17 @@ class SearchResult extends KeyValue
     protected $score = 0;
 
     /**
+     * @var float
+     */
+    protected $distance = 0;
+
+    /**
      * @return float
      */
     public function getScore()
     {
         return $this->score;
-    }
-
-    /**
-     * @var float
-     */
-    protected $distance = 0;
+    }    
 
     /**
      * @return float
