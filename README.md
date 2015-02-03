@@ -7,6 +7,7 @@ A very straight forward PHP client for [Orchestrate.io](https://orchestrate.io) 
 - Orchestrate's error responses are honored.
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
 - PHP must be 5.4 or higher.
+- Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
 - JSON is parsed as, and expected to be, associative array.
 - You may find it a very user-friendly client.
 
