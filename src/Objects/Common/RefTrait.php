@@ -26,7 +26,7 @@ trait RefTrait
      */
     public function setRef($ref)
     {
-        $this->ref = $ref;
+        $this->ref = (string) $ref;
 
         return $this;
     }

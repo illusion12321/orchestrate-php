@@ -31,7 +31,7 @@ trait KeyTrait
      */
     public function setKey($key)
     {
-        $this->key = $key;
+        $this->key = (string) $key;
 
         return $this;
     }
