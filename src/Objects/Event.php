@@ -6,6 +6,7 @@ use andrefelipe\Orchestrate\Objects\Common\RefTrait;
 use andrefelipe\Orchestrate\Objects\Common\ValueTrait;
 use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
 use andrefelipe\Orchestrate\Objects\Common\TimestampTrait;
+use andrefelipe\Orchestrate\Objects\Common\OrdinalTrait;
 
 class Event extends AbstractObject
 {
@@ -14,11 +15,7 @@ class Event extends AbstractObject
     use ValueTrait;
     use TypeTrait;
     use TimestampTrait;
-
-    /**
-     * @var int
-     */
-    protected $ordinal = 0;
+    use OrdinalTrait;
 
     public function __construct($collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
     {
@@ -28,22 +25,6 @@ class Event extends AbstractObject
         $this->timestamp = $timestamp;
         $this->ordinal = $ordinal;
     }
-
-    /**
-     * @return int
-     */
-    public function getOrdinal()
-    {
-        return $this->ordinal;
-    }
-
-    /**
-     * @param int $ordinal
-     */
-    public function setOrdinal($ordinal)
-    {
-        $this->ordinal = (int) $ordinal;
-    }    
     
     /**
      * @return array
@@ -329,13 +310,6 @@ class Event extends AbstractObject
 
         if (isset($location[6])) {
             $this->ordinal = (int) $location[6];
-        }
-    }
-
-    protected function noOrdinalException()
-    {
-        if (!$this->ordinal) {
-            throw new \BadMethodCallException('There is no ordinal set yet. Please do so through setOrdinal() method.');
         }
     }
 
