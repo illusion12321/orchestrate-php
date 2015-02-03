@@ -31,6 +31,12 @@ abstract class AbstractResponse
     protected $statusMessage = '';
 
     /**
+     * Gets the body of the response, independently if it was an error or not.
+     * Useful for debugging but for a more specific usage please rely on each
+     * implementation getters.
+     * 
+     * Important: The body is always an associative array.
+     * 
      * @return array
      */
     public function getBody()
@@ -39,6 +45,8 @@ abstract class AbstractResponse
     }
 
     /**
+     * Get the Guzzle Response object of the last request.
+     * 
      * @return Response
      */
     public function getResponse()
@@ -47,9 +55,15 @@ abstract class AbstractResponse
     }
 
     /**
-     * Always lowercase, spaces as underline.
+     * Gets the status of the last response.
+     * If the request was successful the value is the HTTP Reason-Phrase*.
+     * If the request was not successful the value is the Orchestrate Error Code.
+     * 
+     * * Note: The status is converted to lowercase and spaces as underline, to match
+     * Orchestrate's error code standard.
      * 
      * @return string
+     * @link https://orchestrate.io/docs/apiref#errors
      */
     public function getStatus()
     {
@@ -57,6 +71,8 @@ abstract class AbstractResponse
     }
 
     /**
+     * Gets the status code.
+     * 
      * @return int
      */
     public function getStatusCode()
@@ -65,7 +81,12 @@ abstract class AbstractResponse
     }
 
     /**
+     * Gets the status message.
+     * If the request was successful the value is the HTTP Reason-Phrase.
+     * If the request was not successful the value is the Orchestrate Error Description.
+     * 
      * @return string
+     * @link https://orchestrate.io/docs/apiref#errors
      */
     public function getStatusMessage()
     {
@@ -73,6 +94,8 @@ abstract class AbstractResponse
     }
 
     /**
+     * Gets the X-ORCHESTRATE-REQ-ID header.
+     * 
      * @return string
      */
     public function getRequestId()
@@ -83,6 +106,8 @@ abstract class AbstractResponse
     }
 
     /**
+     * Gets the Date header.
+     * 
      * @return string
      */
     public function getRequestDate()
@@ -93,6 +118,12 @@ abstract class AbstractResponse
     }
 
     /**
+     * Gets the effective URL that was generated for the request.
+     * Useful for debugging or logging, etc.
+     * 
+     * Sample for a KeyValue GET:
+     * https://api.orchestrate.io/v0/my-collection/my-key
+     * 
      * @return string
      */
     public function getRequestUrl()
@@ -103,6 +134,10 @@ abstract class AbstractResponse
     }
     
     /**
+     * Check if last request was successful.
+     * 
+     * A request is considered successful if status code is not 4xx or 5xx.
+     * 
      * @return boolean
      */
     public function isSuccess()
@@ -111,6 +146,10 @@ abstract class AbstractResponse
     }
 
     /**
+     * Check if last request was unsuccessful.
+     * 
+     * A request is considered error if status code is 4xx or 5xx.
+     * 
      * @return boolean
      */
     public function isError()
@@ -119,36 +158,46 @@ abstract class AbstractResponse
             || ($this->statusCode >= 400 && $this->statusCode <= 599);
     }
 
+    /**
+     * Resets current object for reuse.
+     */
     public function reset()
     {
         $this->response = null;
         $this->body = [];
         $this->status = '';
         $this->statusCode = 0;
-        $this->statusMessage = '';        
+        $this->statusMessage = '';
     }
 
+    /**
+     * Store Guzzle Response and define body JSON and status.
+     * 
+     * @param Response $response
+     */
     protected function setResponse(Response $response)
     {
         // store
         $this->response = $response;
-        
+
         // process
-        $this->body = $response->json();
-        $this->statusMessage = $response->getReasonPhrase();
-        $this->status = str_replace(' ', '_', strtolower($this->statusMessage));
-        $this->statusCode = $response->getStatusCode();
+        if ($response) {
+            $this->body = $response->json();
+            $this->statusMessage = $response->getReasonPhrase();
+            $this->status = str_replace(' ', '_', strtolower($this->statusMessage));
+            $this->statusCode = $response->getStatusCode();
 
-        if ($this->isError()) {
+            if ($this->isError()) {
 
-            // try to get the Orchestrate error messages
+                // try to get the Orchestrate error messages
 
-            if (isset($this->body['code'])) {
-                $this->status = $this->body['code'];
-            }
+                if (isset($this->body['code'])) {
+                    $this->status = $this->body['code'];
+                }
 
-            if (isset($this->body['message'])) {
-                $this->statusMessage = $this->body['message'];
+                if (isset($this->body['message'])) {
+                    $this->statusMessage = $this->body['message'];
+                }
             }
         }
     }
