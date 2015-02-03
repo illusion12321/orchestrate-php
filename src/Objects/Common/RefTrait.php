@@ -8,12 +8,10 @@ namespace andrefelipe\Orchestrate\Objects\Common;
  */
 trait RefTrait
 {
-
     /**
      * @var string
      */
     protected $ref = null;
-    
 
     /**
      * @return string
@@ -33,12 +31,10 @@ trait RefTrait
         return $this;
     }
 
-
     protected function setRefFromETag()
     {
         if ($etag = $this->response->getHeader('ETag')) {
             $this->ref = trim($etag, '"');
         }
     }
-
 }

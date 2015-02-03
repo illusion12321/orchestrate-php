@@ -9,20 +9,19 @@ namespace andrefelipe\Orchestrate\Objects\Common;
 trait ValueTrait
 {
 
-   /**
+    /**
     * @return array
     */
-   public function getValue()
-   {
-       return $this->data;
-   }
+    public function getValue()
+    {
+        return $this->data;
+    }
 
-   /**
+    /**
     * @param array $value
     */
-   public function setValue(array $value)
-   {
-       $this->data = $value;
-   }
-
+    public function setValue(array $value)
+    {
+        $this->data = $value;
+    }
 }

@@ -8,13 +8,11 @@ namespace andrefelipe\Orchestrate\Objects\Common;
  */
 trait TimestampTrait
 {
-
     /**
      * @var int
      */
     protected $timestamp = 0;
     
-
     /**
      * @return int
      */
@@ -31,7 +29,6 @@ trait TimestampTrait
         $this->timestamp = is_string($timestamp) ? strtotime($timestamp) : (int) $timestamp;
     }
 
-
     /**
      * @throws \BadMethodCallException if 'timestamp' is not set yet.
      */
@@ -40,6 +37,5 @@ trait TimestampTrait
         if (!$this->timestamp) {
             throw new \BadMethodCallException('There is no timestamp set yet. Please do so through setTimestamp() method.');
         }
-    }
-    
+    }    
 }

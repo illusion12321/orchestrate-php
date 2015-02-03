@@ -12,16 +12,12 @@ class KeyValue extends AbstractObject
     use RefTrait;
     use ValueTrait;
 
-
     public function __construct($collection, $key=null)
     {
         parent::__construct($collection);
         $this->key = $key;
     }
 
-
-    
-    
     /**
      * @return array
      */
@@ -40,8 +36,6 @@ class KeyValue extends AbstractObject
         return $result;
     }
 
-
-
     public function reset()
     {
         parent::reset();
@@ -49,8 +43,6 @@ class KeyValue extends AbstractObject
         $this->ref = null;
         $this->data = [];
     }
-
-
 
     public function init(array $values)
     {
@@ -81,19 +73,11 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
-
-
-
-
-    // API
-
-
-
     /**
      * @param string $ref
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
     public function get($ref=null)
     {
@@ -121,14 +105,14 @@ class KeyValue extends AbstractObject
         }
 
         return $this;
-    }
-
-    
+    }    
     
     /**
      * @param array $value
      * @param string $ref
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
     public function put(array $value=null, $ref=null)
     {
@@ -172,11 +156,11 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
     /**
      * @param array $value
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
     public function post(array $value=null)
     {
@@ -201,14 +185,13 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
-
     /**
      * @param PatchBuilder $operations
      * @param string $ref
      * @param boolean $reload
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
     public function patch(PatchBuilder $operations, $ref=null, $reload=false)
     {
@@ -246,14 +229,13 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
-
     /**
      * @param array $value
      * @param string $ref
      * @param boolean $reload
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
     public function patchMerge(array $value=null, $ref=null, $reload=false)
     {
@@ -295,13 +277,11 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
-
-
     /**
      * @param string $ref
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function delete($ref=null)
     {
@@ -329,11 +309,9 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
-
     /**
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function purge()
     {
@@ -356,17 +334,13 @@ class KeyValue extends AbstractObject
         return $this;
     }
 
-
-
-
-
-    // Graph
-
     /**
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#graph-put
      */
     public function putRelation($kind, $toCollection, $toKey)
     {
@@ -387,7 +361,9 @@ class KeyValue extends AbstractObject
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
+     * 
      * @return KeyValue self
+     * @link https://orchestrate.io/docs/apiref#graph-delete
      */
     public function deleteRelation($kind, $toCollection, $toKey)
     {
@@ -403,22 +379,6 @@ class KeyValue extends AbstractObject
         
         return $this;
     }
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-    // helpers
-
     
     protected function setKeyRefFromLocation()
     {
@@ -436,16 +396,6 @@ class KeyValue extends AbstractObject
         }
     }
 
-
-
-
-
-
-
-
-
-    // override ArrayAccess
-
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || is_int($offset)) {
@@ -454,10 +404,4 @@ class KeyValue extends AbstractObject
             $this->data[$offset] = $value;
         }
     }
-
-
-
-
-
-
 }

@@ -3,12 +3,12 @@ namespace andrefelipe\Orchestrate\Objects;
 
 class KeyValues extends AbstractList
 {
-    
-
     /**
      * @param int $limit
      * @param array $range
+     * 
      * @return KeyValues self
+     * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
     public function listCollection($limit=10, array $range=null)
     {
@@ -37,8 +37,4 @@ class KeyValues extends AbstractList
         
         return $this;
     }
-   
-
-
-
 }

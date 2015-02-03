@@ -15,7 +15,10 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 
-
+/**
+ * 
+ * @link https://orchestrate.io/docs/apiref
+ */
 class Application
 {
     /**
@@ -43,8 +46,6 @@ class Application
 	 */
 	protected $client;
     
-
-
 	/**
 	 * @param string $apiKey
 	 */
@@ -76,7 +77,6 @@ class Application
     {
         self::$application = $application;
     }
-
 
     /**
      * @param string $key 
@@ -125,9 +125,6 @@ class Application
     }
 
 
-
-
-
     // -------------------- Http Client --------------------
 
     /**
@@ -160,8 +157,6 @@ class Application
     {
         $this->client = $client;
     }
-
-
 
     /**
      * Create a new request based on the HTTP method.
@@ -245,24 +240,13 @@ class Application
     }
 
 
-
-
-
-
-
-
-
-
-
     // -------------------- Orchestrate API --------------------
-    // https://orchestrate.io/docs/apiref
-
-
 
     // Application
 
     /**
      * @return boolean
+     * @link https://orchestrate.io/docs/apiref#authentication-ping
      */
     public function ping()
     {
@@ -275,6 +259,7 @@ class Application
 
     /**
      * @return boolean
+     * @link https://orchestrate.io/docs/apiref#collections-delete
      */
     public function deleteCollection($collection)
     {
@@ -290,7 +275,9 @@ class Application
      * @param string $collection
      * @param string $key
      * @param string $ref
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
     public function get($collection, $key, $ref=null)
     {
@@ -304,7 +291,9 @@ class Application
      * @param string $key
      * @param array $value
      * @param string $ref
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
     public function put($collection, $key, array $value, $ref=null)
     {
@@ -319,7 +308,9 @@ class Application
      * @param PatchBuilder $operations
      * @param string $ref
      * @param boolean $reload
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
     public function patch($collection, $key, PatchBuilder $operations, $ref=null, $reload=false)
     {
@@ -334,7 +325,9 @@ class Application
      * @param array $value
      * @param string $ref
      * @param boolean $reload
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
     public function patchMerge($collection, $key, array $value, $ref=null, $reload=false)
     {
@@ -346,7 +339,9 @@ class Application
     /**
      * @param string $collection
      * @param array $value
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
     public function post($collection, array $value)
     {
@@ -359,7 +354,9 @@ class Application
      * @param string $collection
      * @param string $key
      * @param string $ref
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function delete($collection, $key, $ref=null)
     {
@@ -371,7 +368,9 @@ class Application
     /**
      * @param string $collection
      * @param string $key
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function purge($collection, $key)
     {
@@ -384,7 +383,9 @@ class Application
      * @param string $collection
      * @param int $limit
      * @param array $range
+     * 
      * @return KeyValues
+     * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
     public function listCollection($collection, $limit=10, array $range=null)
     {
@@ -402,7 +403,9 @@ class Application
      * @param int $limit
      * @param int $offset
      * @param boolean $values
+     * 
      * @return Refs
+     * @link https://orchestrate.io/docs/apiref#refs-list
      */
     public function listRefs($collection, $key, $limit=10, $offset=0, $values=false)
     {
@@ -421,7 +424,9 @@ class Application
      * @param string|array $aggregate
      * @param int $limit
      * @param int $offset
+     * 
      * @return Search
+     * @link https://orchestrate.io/docs/apiref#search-collection
      */
     public function search($collection, $query, $sort=null, $aggregate=null, $limit=10, $offset=0)
     {
@@ -439,7 +444,9 @@ class Application
      * @param string $type
      * @param int $timestamp
      * @param int $ordinal
+     * 
      * @return Event
+     * @link https://orchestrate.io/docs/apiref#events-get
      */
     public function getEvent($collection, $key, $type, $timestamp, $ordinal)
     {
@@ -456,7 +463,9 @@ class Application
      * @param int $ordinal
      * @param array $value
      * @param string $ref
+     * 
      * @return Event
+     * @link https://orchestrate.io/docs/apiref#events-put
      */
     public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref=null)
     {
@@ -471,7 +480,9 @@ class Application
      * @param string $type
      * @param array $value
      * @param int $timestamp
+     * 
      * @return Event
+     * @link https://orchestrate.io/docs/apiref#events-post
      */
     public function postEvent($collection, $key, $type, array $value, $timestamp=0)
     {
@@ -487,7 +498,9 @@ class Application
      * @param int $timestamp
      * @param int $ordinal
      * @param string $ref
+     * 
      * @return Event
+     * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref=null)
     {
@@ -502,7 +515,9 @@ class Application
      * @param string $type
      * @param int $timestamp
      * @param int $ordinal
+     * 
      * @return Event
+     * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function purgeEvent($collection, $key, $type, $timestamp, $ordinal)
     {
@@ -517,7 +532,9 @@ class Application
      * @param string $type
      * @param int $limit
      * @param array $range
+     * 
      * @return Events
+     * @link https://orchestrate.io/docs/apiref#events-list
      */
     public function listEvents($collection, $key, $type, $limit=10, array $range=null)
     {
@@ -525,8 +542,6 @@ class Application
             ->setApplication($this)
             ->listEvents($limit, $range);
     }
-
-
 
 
     // Graph
@@ -537,7 +552,9 @@ class Application
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#graph-put
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey)
     {
@@ -552,7 +569,9 @@ class Application
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
+     * 
      * @return KeyValue
+     * @link https://orchestrate.io/docs/apiref#graph-delete
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
     {
@@ -567,7 +586,9 @@ class Application
      * @param string|array $kind
      * @param int $limit
      * @param int $offset
+     * 
      * @return Graph
+     * @link https://orchestrate.io/docs/apiref#graph-get
      */
     public function listRelations($collection, $key, $kind, $limit=10, $offset=0)
     {
@@ -575,12 +596,4 @@ class Application
             ->setApplication($this)
             ->listRelations($limit, $offset);
     }
-
-
-    
-
-
-
-
-
 }

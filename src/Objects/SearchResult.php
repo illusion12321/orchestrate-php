@@ -3,8 +3,6 @@ namespace andrefelipe\Orchestrate\Objects;
 
 class SearchResult extends KeyValue
 {
-    
-    
     /**
      * @var float
      */
@@ -31,7 +29,6 @@ class SearchResult extends KeyValue
         return $this->distance;
     }
 
-
     /**
      * @return array
      */
@@ -48,14 +45,12 @@ class SearchResult extends KeyValue
         return $result;
     }
 
-
     public function reset()
     {
         parent::reset();
         $this->score = 0;
         $this->distance = 0;
     }
-
 
     public function init(array $values)
     {
@@ -71,6 +66,4 @@ class SearchResult extends KeyValue
 
         return $this;
     }
-    
-
 }

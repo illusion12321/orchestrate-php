@@ -3,8 +3,6 @@ namespace andrefelipe\Orchestrate\Objects;
 
 class Ref extends KeyValue
 {
-    
-    
     /**
      * @var boolean
      */
@@ -17,7 +15,6 @@ class Ref extends KeyValue
     {
         return $this->tombstone;
     }
-
     
     /**
      * @var int
@@ -31,7 +28,6 @@ class Ref extends KeyValue
     {
         return $this->reftime;
     }
-
 
     /**
      * @return array
@@ -49,14 +45,12 @@ class Ref extends KeyValue
         return $result;
     }
 
-
     public function reset()
     {
         parent::reset();
         $this->reftime = 0;
         $this->tombstone = false;
     }
-
 
     public function init(array $values)
     {
@@ -72,6 +66,4 @@ class Ref extends KeyValue
 
         return $this;
     }
-    
-
 }

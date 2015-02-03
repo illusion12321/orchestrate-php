@@ -20,9 +20,7 @@
 
 - add sort operations to List objects?
 
-- Maybe later add a static Facade ? 'Orchestrate' as Application ?
-
 - maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
 
-- method to move KeyValue to another Collection or Application ?
+- method to move a KeyValue to another Collection or Application ?
 

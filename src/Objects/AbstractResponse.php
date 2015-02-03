@@ -5,7 +5,6 @@ use \GuzzleHttp\Message\Response;
 
 abstract class AbstractResponse
 {
-
     /**
      * @var array
      */
@@ -30,8 +29,6 @@ abstract class AbstractResponse
      * @var string
      */
     protected $statusMessage = '';
-
-
 
     /**
      * @return array
@@ -122,8 +119,6 @@ abstract class AbstractResponse
             || ($this->statusCode >= 400 && $this->statusCode <= 599);
     }
 
-
-    
     public function reset()
     {
         $this->response = null;
@@ -132,7 +127,6 @@ abstract class AbstractResponse
         $this->statusCode = 0;
         $this->statusMessage = '';        
     }
-    
 
     protected function setResponse(Response $response)
     {
@@ -158,11 +152,4 @@ abstract class AbstractResponse
             }
         }
     }
-
-
-
-
-
-
-
 }

@@ -16,14 +16,14 @@ abstract class AbstractObject extends AbstractResponse implements
     use CollectionTrait;
     use HasDataTrait;
     
-    
+    /**
+     * @param string $collection
+     */
     public function __construct($collection)
     {        
         $this->collection = $collection;
     }
 
-
-    
     protected function request($method, $url = null, array $options = [])
     {
         // request at the Application HTTP client
@@ -32,7 +32,4 @@ abstract class AbstractObject extends AbstractResponse implements
         // and store/process the results
         $this->setResponse($response);
     }
-
-
-
 }

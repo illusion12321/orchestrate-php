@@ -3,8 +3,6 @@ namespace andrefelipe\Orchestrate\Objects;
 
 class Search extends AbstractList
 {
-    
-
     /**
      * @var array
      */
@@ -17,7 +15,6 @@ class Search extends AbstractList
     {
         return $this->aggregates;
     }
-
 
     /**
      * @return array
@@ -32,17 +29,11 @@ class Search extends AbstractList
         return $result;
     }
 
-
     public function reset()
     {
         parent::reset();
         $this->aggregates = [];
     }
-
-
-
-
-
 
     /**
      * @param string $query
@@ -50,7 +41,9 @@ class Search extends AbstractList
      * @param string|array $aggregate
      * @param int $limit
      * @param int $offset
+     * 
      * @return Search self
+     * @link https://orchestrate.io/docs/apiref#search-collection
      */
     public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
     {
@@ -80,12 +73,6 @@ class Search extends AbstractList
 
         return $this;
     }
-   
-
-
-
-
-
 
     protected function request($method, $url = null, array $options = [])
     {
@@ -97,8 +84,7 @@ class Search extends AbstractList
                 $this->aggregates = $this->body['aggregates'];
             }
         }
-    }
-    
+    }    
 
     protected function createChildrenClass(array $values)
     {
@@ -106,6 +92,4 @@ class Search extends AbstractList
             ->setApplication($this->getApplication())
             ->init($values);
     }
-
-
 }

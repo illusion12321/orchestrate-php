@@ -3,7 +3,6 @@ namespace andrefelipe\Orchestrate\Objects\Common;
 
 use andrefelipe\Orchestrate\Application;
 
-
 /**
  * Trait that implements the Application methods.
  * 
@@ -11,7 +10,6 @@ use andrefelipe\Orchestrate\Application;
  */
 trait ApplicationTrait
 {
-
     /**
      * @var Application 
      */
@@ -43,8 +41,5 @@ trait ApplicationTrait
         $this->application = $application;
         
         return $this;
-    }
-
-    
-    
+    }    
 }

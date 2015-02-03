@@ -8,12 +8,10 @@ namespace andrefelipe\Orchestrate\Objects\Common;
  */
 trait TypeTrait
 {
-
     /**
      * @var string
      */
     protected $type = null;
-    
 
     /**
      * @return string
@@ -33,7 +31,6 @@ trait TypeTrait
         return $this;
     }
 
-
     /**
      * @throws \BadMethodCallException if 'type' is not set yet.
      */
@@ -42,6 +39,5 @@ trait TypeTrait
         if (!$this->type) {
             throw new \BadMethodCallException('There is no type set yet. Please do so through setType() method.');
         }
-    }
-    
+    }    
 }

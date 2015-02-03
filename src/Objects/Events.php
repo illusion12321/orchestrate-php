@@ -9,8 +9,6 @@ class Events extends AbstractList
     use KeyTrait;
     use TypeTrait;
 
-
-
     public function __construct($collection, $key=null, $type=null)
     {
         parent::__construct($collection);
@@ -18,12 +16,12 @@ class Events extends AbstractList
         $this->type = $type;
     }
 
-
-
     /**
      * @param int $limit
      * @param array $range
+     * 
      * @return Events self
+     * @link https://orchestrate.io/docs/apiref#events-list
      */
     public function listEvents($limit=10, array $range=null)
     {
@@ -55,10 +53,7 @@ class Events extends AbstractList
         $this->request('GET', $path, ['query' => $parameters]);
         
         return $this;
-    }
-
-
-    
+    }    
 
     protected function createChildrenClass(array $values)
     {
@@ -66,7 +61,4 @@ class Events extends AbstractList
             ->setApplication($this->getApplication())
             ->init($values);
     }
-
-
-
 }

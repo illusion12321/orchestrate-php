@@ -8,13 +8,11 @@ namespace andrefelipe\Orchestrate\Objects\Common;
  */
 trait KeyTrait
 {
-
     /**
      * @var string
      */
     protected $key = null;
     
-
     /**
      * @return string
      */
@@ -33,7 +31,6 @@ trait KeyTrait
         return $this;
     }
 
-
     /**
      * @throws \BadMethodCallException if 'key' is not set yet.
      */
@@ -42,6 +39,5 @@ trait KeyTrait
         if (!$this->key) {
             throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
         }
-    }
-    
+    }    
 }

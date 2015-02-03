@@ -3,8 +3,6 @@ namespace andrefelipe\Orchestrate\Objects;
 
 abstract class AbstractList extends AbstractObject
 {
-    
-
     /**
      * @var int
      */
@@ -24,12 +22,6 @@ abstract class AbstractList extends AbstractObject
      * @var string
      */
     protected $prevUrl = '';
-
-
-
-    // no need for constructor
-
-
     
     /**
      * @return array
@@ -64,7 +56,6 @@ abstract class AbstractList extends AbstractObject
         return $result;
     }
 
-
     /**
      * @return int
      */
@@ -97,7 +88,6 @@ abstract class AbstractList extends AbstractObject
         return $this->prevUrl;
     }
 
-
     public function reset()
     {
         parent::reset();
@@ -108,9 +98,6 @@ abstract class AbstractList extends AbstractObject
         $this->data = [];
     }
 
-
-
-
     public function next()
     {
         return $this->getUrl($this->nextUrl);
@@ -120,8 +107,6 @@ abstract class AbstractList extends AbstractObject
     {
         return $this->getUrl($this->prevUrl);
     }
-
-
 
     private function getUrl($url)
     {
@@ -140,8 +125,6 @@ abstract class AbstractList extends AbstractObject
 
         return $this;
     }
-
-
 
     protected function request($method, $url = null, array $options = [])
     {
@@ -171,7 +154,6 @@ abstract class AbstractList extends AbstractObject
             }
         }
     }
-
     
     protected function createChildrenClass(array $values)
     {
@@ -179,20 +161,6 @@ abstract class AbstractList extends AbstractObject
             ->setApplication($this->getApplication())
             ->init($values);
     }
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-    // override ArrayAccess
 
     public function offsetSet($offset, $value)
     {
@@ -203,9 +171,4 @@ abstract class AbstractList extends AbstractObject
     {
         throw new \RuntimeException('You cannot mutate a list\'s data, only it\'s children, the KeyValue objects.');
     }
-
-
-
-
-
 }

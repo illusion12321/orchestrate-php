@@ -3,20 +3,19 @@ namespace andrefelipe\Orchestrate\Query;
 
 use GuzzleHttp\ToArrayInterface;
 
+/**
+ * 
+ * @link https://orchestrate.io/docs/apiref#keyvalue-patch-operations
+ */
 class PatchBuilder implements ToArrayInterface
 {
-
     /**
      * @var array
      */
     protected $operations = [];
 
-
-
-
     public function __construct() {}
     
-
     /**
      * @return array
      */
@@ -30,14 +29,12 @@ class PatchBuilder implements ToArrayInterface
         $this->operations = [];
     }
 
-
-    // operations
-
     /**
      * Depending on the specified path, creates a field with that value, replaces an existing field with the specified value, or adds the value to an array.
      * 
      * @param string $path
      * @param string $value
+     * 
      * @return PatchBuilder self
      */
     public function add($path, $value)
@@ -49,6 +46,7 @@ class PatchBuilder implements ToArrayInterface
      * Removes the field at a specified path.
      * 
      * @param string $path
+     * 
      * @return PatchBuilder self
      */
     public function remove($path)
@@ -61,6 +59,7 @@ class PatchBuilder implements ToArrayInterface
      * 
      * @param string $path
      * @param string $value
+     * 
      * @return PatchBuilder self
      */
     public function replace($path, $value)
@@ -73,6 +72,7 @@ class PatchBuilder implements ToArrayInterface
      * 
      * @param string $fromPath
      * @param string $toPath
+     * 
      * @return PatchBuilder self
      */
     public function move($fromPath, $toPath)
@@ -85,6 +85,7 @@ class PatchBuilder implements ToArrayInterface
      * 
      * @param string $fromPath
      * @param string $toPath
+     * 
      * @return PatchBuilder self
      */
     public function copy($fromPath, $toPath)
@@ -97,6 +98,7 @@ class PatchBuilder implements ToArrayInterface
      * 
      * @param string $path
      * @param string $value
+     * 
      * @return PatchBuilder self
      */
     public function test($path, $value)
@@ -109,6 +111,7 @@ class PatchBuilder implements ToArrayInterface
      * 
      * @param string $path
      * @param string $value
+     * 
      * @return PatchBuilder self
      */
     public function inc($path, $value=1)
@@ -116,12 +119,12 @@ class PatchBuilder implements ToArrayInterface
         return $this->appendOperation('inc', $path, $value);
     }
 
-
     /**
      * @param string $operation
      * @param string $path
      * @param string $value
      * @param string $fromPath
+     * 
      * @return PatchBuilder self
      */
     private function appendOperation($operation, $path, $value=null, $fromPath=null)
@@ -143,9 +146,4 @@ class PatchBuilder implements ToArrayInterface
 
         return $this;
     }
-
-
-    
-
-
 }

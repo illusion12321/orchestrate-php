@@ -8,12 +8,10 @@ namespace andrefelipe\Orchestrate\Objects\Common;
  */
 trait CollectionTrait
 {
-
     /**
      * @var string
      */
     protected $collection;
-    
 
     /**
      * @return string
@@ -32,7 +30,6 @@ trait CollectionTrait
 
         return $this;
     }
-    
 
     /**
      * @throws \BadMethodCallException if 'collection' is not set yet.
@@ -42,6 +39,5 @@ trait CollectionTrait
         if (!$this->collection) {
             throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
         }
-    }
-    
+    }    
 }

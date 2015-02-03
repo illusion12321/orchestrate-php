@@ -15,15 +15,10 @@ class Event extends AbstractObject
     use TypeTrait;
     use TimestampTrait;
 
-
-    
-
     /**
      * @var int
      */
     protected $ordinal = 0;
-
-
 
     public function __construct($collection, $key=null, $type=null, $timestamp=0, $ordinal=0)
     {
@@ -33,8 +28,6 @@ class Event extends AbstractObject
         $this->timestamp = $timestamp;
         $this->ordinal = $ordinal;
     }
-
-
 
     /**
      * @return int
@@ -50,9 +43,7 @@ class Event extends AbstractObject
     public function setOrdinal($ordinal)
     {
         $this->ordinal = (int) $ordinal;
-    }
-
-    
+    }    
     
     /**
      * @return array
@@ -77,8 +68,6 @@ class Event extends AbstractObject
         return $result;
     }
 
-
-
     public function reset()
     {
         parent::reset();
@@ -89,8 +78,6 @@ class Event extends AbstractObject
         $this->ordinal = 0;
         $this->data = [];
     }
-
-
 
     public function init(array $values)
     {
@@ -130,17 +117,9 @@ class Event extends AbstractObject
         return $this;
     }
 
-
-
-
-
-
-
-    // API
-
-
     /**
      * @return Event self
+     * @link https://orchestrate.io/docs/apiref#events-get
      */
     public function get()
     {
@@ -171,11 +150,13 @@ class Event extends AbstractObject
 
         return $this;
     }
-
-    
     
     /**
+     * @param array $value
+     * @param string $ref
+     * 
      * @return Event self
+     * @link https://orchestrate.io/docs/apiref#events-put
      */
     public function put(array $value=null, $ref=null)
     {
@@ -218,10 +199,12 @@ class Event extends AbstractObject
         return $this;
     }
 
-
-
     /**
+     * @param array $value
+     * @param int $timestamp
+     * 
      * @return Event self
+     * @link https://orchestrate.io/docs/apiref#events-post
      */
     public function post(array $value=null, $timestamp=0)
     {
@@ -261,11 +244,11 @@ class Event extends AbstractObject
         return $this;
     }
 
-
-
-
     /**
+     * @param string $ref
+     * 
      * @return Event self
+     * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function delete($ref=null)
     {
@@ -301,14 +284,34 @@ class Event extends AbstractObject
         return $this;
     }
 
+    /**
+     * 
+     * @return Event self
+     * @link https://orchestrate.io/docs/apiref#events-delete
+     */
+    public function purge()
+    {
+        // required values
+        $this->noCollectionException();
+        $this->noKeyException();
+        $this->noTypeException();
+        $this->noTimestampException();
+        $this->noOrdinalException();
 
+        // define request options
+        $path = $this->collection.'/'.$this->key.'/events/'.$this->type.'/'.$this->timestamp.'/'.$this->ordinal;
+        $options = ['query' => ['purge' => 'true']];
 
+        // request
+        $this->request('DELETE', $path, $options);
 
-    
+        // null ref if success, as it will never exist again
+        if ($this->isSuccess()) {
+            $this->ref = null;
+        }
 
-
-
-    // helpers
+        return $this;
+    }
 
     protected function setTimestampFromLocation()
     {
@@ -327,9 +330,7 @@ class Event extends AbstractObject
         if (isset($location[6])) {
             $this->ordinal = (int) $location[6];
         }
-    }    
-
-    
+    }
 
     protected function noOrdinalException()
     {
@@ -337,15 +338,6 @@ class Event extends AbstractObject
             throw new \BadMethodCallException('There is no ordinal set yet. Please do so through setOrdinal() method.');
         }
     }
-
-
-
-
-
-
-
-
-    // override ArrayAccess
 
     public function offsetSet($offset, $value)
     {
@@ -355,10 +347,4 @@ class Event extends AbstractObject
             $this->data[$offset] = $value;
         }
     }
-
-
-
-
-
-
 }
