@@ -89,7 +89,7 @@ use andrefelipe\Orchestrate\Collection;
 $application = new Application();
 
 $collection = new Collection('collection');
-$item->setApplication($application); // link to the client
+$collection->setApplication($application); // link to the client
 
 $item = $collection->get('key');
 $item = $collection->put('key', ['title' => 'My Title']);
@@ -128,12 +128,9 @@ $item->delete(); // delete the current ref
 
 Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Application or Collection. But on a programatically import. for example. it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
 
-Remember, the credentials and the HTTP client are only available at the `Application` object, so all objects must reference to it in order to work. You can do so via:
-```php
-$item = new KeyValue('collection', 'key');
-$item->setApplication($application);
-// where $application is an Application instance
-```
+Remember, the credentials and the HTTP client are only available at the `Application` object, so all objects must reference to it in order to work. You can do so via the `setApplication` method.
+
+
 
 
 ## Responses
@@ -143,7 +140,9 @@ The result of all operations, in any approach, are exact the same, they all retu
 Example:
 
 ```php
+use andrefelipe\Orchestrate\Application;
 $application = new Application();
+
 $item = $application->get('collection', 'key'); // returns a KeyValue object
 
 if ($item->isSuccess()) {
@@ -153,6 +152,7 @@ if ($item->isSuccess()) {
     // (
     //     [title] => My Title
     // )
+    // - the Value
 
     print_r($item->toArray());
     // Array
@@ -169,17 +169,34 @@ if ($item->isSuccess()) {
     //             [title] => My Title
     //         )
     // )
+    // - array representation of the object
+
+
+    echo $item->getRequestId();
+    // ec96acd0-ac7b-11e4-8cf6-22000a0d84a1
+    // - Orchestrate request id, X-ORCHESTRATE-REQ-ID
+
+    echo $item->getRequestDate();
+    // Wed, 04 Feb 2015 14:41:37 GMT
+    // - the HTTP Date header
+
+    echo $item->getRequestUrl();
+    // https://api.orchestrate.io/v0/collection/key
+    // - the effective URL that resulted in this response
 
 } else {
     // in case if was an error, it would return results like these:
 
-    echo $item->getStatus(); // items_not_found
+    echo $item->getStatus();
+    // items_not_found
     // — the Orchestrate Error code
     
-    echo $item->getStatusCode();  // 404
+    echo $item->getStatusCode();
+    // 404
     // — the HTTP response status code
 
-    echo $item->getStatusMessage(); // The requested items could not be found.
+    echo $item->getStatusMessage();\
+    // The requested items could not be found.
     // — the status message, in case of error, the Orchestrate message is used
     // intead of the default HTTP Reason-Phrases
     
@@ -202,6 +219,8 @@ if ($item->isSuccess()) {
     // )
     // — the full body of the response, in this case, the Orchestrate error
 
+    $response = $item->getResponse();
+    // - GuzzleHttp\Message\Response
 }
 
 ```
@@ -331,6 +350,7 @@ $item = $application->get('collection', 'key');
 $item = $collection->get('key');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->get();
 
 // get the object info
@@ -351,6 +371,7 @@ $item = $application->put('collection', 'key', ['title' => 'New Title']);
 $item = $collection->put('key', ['title' => 'New Title']);
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item['title'] = 'New Title';
 $item->put(); // puts the whole current Value, only with the title changed
 $item->put(['title' => 'New Title']); // puts an entire new value
@@ -367,6 +388,7 @@ $item = $application->put('collection', 'key', ['title' => 'New Title'], '20c14e
 $item = $collection->put('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $item->put(['title' => 'New Title'], true); // uses the current object Ref
 ```
@@ -382,6 +404,7 @@ $item = $application->put('collection', 'key', ['title' => 'New Title'], false);
 $item = $collection->put('key', ['title' => 'New Title'], false);
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->put(['title' => 'New Title'], false);
 ```
 
@@ -404,6 +427,7 @@ $item = $application->patch('collection', 'key', $patch);
 $item = $collection->patch('key', $patch);
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->patch($patch);
 
 // Warning: when patching, the object Value (retrievable with $item->getValue())
@@ -433,6 +457,7 @@ $item = $application->patch('collection', 'key', $patch, '20c14e8965d6cbb0');
 $item = $collection->patch('key', $patch, '20c14e8965d6cbb0');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->patch($patch, '20c14e8965d6cbb0');
 $item->patch($patch, true); // uses the current object Ref
 $item->patch($patch, true, true); // with the reload as mentioned above
@@ -448,6 +473,7 @@ $item = $application->patchMerge('collection', 'key', ['title' => 'New Title']);
 $item = $collection->patchMerge('key', ['title' => 'New Title']);
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item['title'] = 'New Title';
 $item->patchMerge(); // merges the current Value
 $item->patchMerge(['title' => 'New Title']); // or merge with new value
@@ -465,6 +491,7 @@ $item = $application->patchMerge('collection', 'key', ['title' => 'New Title'], 
 $item = $collection->patchMerge('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->patchMerge(['title' => 'New Title'], '20c14e8965d6cbb0');
 $item->patchMerge(['title' => 'New Title'], true); // uses the current object Ref
 // also has a 'reload' parameter as mentioned above
@@ -481,6 +508,7 @@ $item = $application->post('collection', ['title' => 'New Title']);
 $item = $collection->post(['title' => 'New Title']);
 // or
 $item = new KeyValue('collection');
+$item->setApplication($application);
 $item['title'] = 'New Title';
 $item->post(); // posts the current Value
 $item->post(['title' => 'New Title']); // posts a new value
@@ -496,6 +524,7 @@ $item = $application->delete('collection', 'key');
 $item = $collection->delete('key');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->delete();
 $item->delete('20c14e8965d6cbb0'); // delete the specific ref
 ```
@@ -511,6 +540,7 @@ $item = $application->delete('collection', 'key', '20c14e8965d6cbb0');
 $item = $collection->delete('key', '20c14e8965d6cbb0');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 // first get or set a ref:
 // $item->get();
 // or $item->setRef('20c14e8965d6cbb0');
@@ -529,6 +559,7 @@ $item = $application->purge('collection', 'key');
 $item = $collection->purge('key');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->purge();
 ```
 
@@ -540,10 +571,10 @@ $item->purge();
 ```php
 $list = $application->listCollection('collection');
 // or
-$collection = new Collection('collection');
 $list = $collection->listCollection();
 // or
 $list = new KeyValues('collection'); // note the plural
+$list->setApplication($application);
 $list->listCollection();
 
 
@@ -579,6 +610,7 @@ $item = $application->get('collection', 'key', '20c14e8965d6cbb0');
 $item = $collection->get('key', '20c14e8965d6cbb0');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->get('20c14e8965d6cbb0');
 ```
 
@@ -593,6 +625,7 @@ $list = $application->listRefs('collection', 'key');
 $list = $collection->listRefs('key');
 // or
 $list = new Refs('collection', 'key');
+$list->setApplication($application);
 $list->listRefs();
 
 
@@ -626,6 +659,7 @@ $results = $application->search('collection', 'title:"The Title*"');
 $results = $collection->search('title:"The Title*"');
 // or
 $results = new Search('collection');
+$results->setApplication($application);
 $results->search('title:"The Title*"');
 
 
@@ -679,6 +713,7 @@ $event = $application->getEvent('collection', 'key', 'type', 1400684480732, 1);
 $event = $collection->getEvent('key', 'type', 1400684480732, 1);
 // or
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
+$event->setApplication($application);
 $event->get();
 ```
 
@@ -691,6 +726,7 @@ $event = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, [
 $event = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title']);
 // or
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
+$event->setApplication($application);
 $event['title'] = 'New Title';
 $event->put(); // puts the whole current value, only with the title changed
 $event->put(['title' => 'New Title']); // puts an entire new value
@@ -707,6 +743,7 @@ $event = $application->putEvent('collection', 'key', 'type', 1400684480732, 1, [
 $event = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
 // or
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
+$event->setApplication($application);
 $event['title'] = 'New Title';
 $event->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $event->put(['title' => 'New Title'], true); // uses the current object Ref
@@ -722,6 +759,7 @@ $event = $application->postEvent('collection', 'key', 'type', ['title' => 'New T
 $event = $collection->postEvent('key', 'type', ['title' => 'New Title']);
 // or
 $event = new Event('collection', 'key', 'type');
+$event->setApplication($application);
 $event['title'] = 'New Title';
 $event->post(); // posts the current Value
 $event->post(['title' => 'New Title']); // posts a new value
@@ -741,6 +779,7 @@ $event = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 1
 $event = $collection->deleteEvent('key', 'type', 1400684480732, 1);
 // or
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
+$event->setApplication($application);
 $event->delete();
 ```
 
@@ -755,6 +794,7 @@ $event = $application->deleteEvent('collection', 'key', 'type', 1400684480732, 1
 $event = $collection->deleteEvent('key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
 // or
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
+$event->setApplication($application);
 // first get or set a ref:
 // $event->get();
 // or $event->setRef('20c14e8965d6cbb0');
@@ -769,10 +809,10 @@ $event->delete('20c14e8965d6cbb0'); // delete a specific ref
 ```php
 $events = $application->listEvents('collection', 'key', 'type');
 // or
-$collection = new Collection('collection');
 $events = $collection->listEvents('key', 'type');
 // or
 $events = new Events('collection', 'key', 'type'); // note the plural
+$events->setApplication($application);
 $events->listEvents();
 
 
@@ -811,10 +851,10 @@ Returns relation's collection, key, ref, and values. The "kind" parameter(s) ind
 ```php
 $list = $application->listRelations('collection', 'key', 'kind');
 // or
-$collection = new Collection('collection');
 $list = $collection->listRelations('key', 'kind');
 // or
 $list = new Graph('collection', 'key', 'kind');
+$list->setApplication($application);
 $list->listRelations();
 
 
@@ -853,6 +893,7 @@ $item = $application->putRelation('collection', 'key', 'kind', 'toCollection', '
 $item = $collection->putRelation('key', 'kind', 'toCollection', 'toKey');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->putRelation('kind', 'toCollection', 'toKey');
 ```
 
@@ -868,6 +909,7 @@ $item = $application->deleteRelation('collection', 'key', 'kind', 'toCollection'
 $item = $collection->deleteRelation('key', 'kind', 'toCollection', 'toKey');
 // or
 $item = new KeyValue('collection', 'key');
+$item->setApplication($application);
 $item->deleteRelation('kind', 'toCollection', 'toKey');
 ```
 
@@ -883,92 +925,6 @@ $item->deleteRelation('kind', 'toCollection', 'toKey');
 Please refer to the source code for now, while a proper documentation is made.
 
 Here is a sample of the KeyValue Class methods: 
-
-### Key/Value
-```php
-$item = $application->get('collection', 'key');
-
-if ($item->isSuccess()) {
-    
-    // get the object info
-    $item->getKey(); // string
-    $item->getRef(); // string
-    $item->getValue(); // array
-    $item->toArray(); // array representation of the object
-    $item->getBody(); // array of the HTTP response body
-    
-    // working with the Value
-    $item['my_property']; // direct array access to the Value
-    foreach ($item as $key => $value) {} // iteratable
-    $item['my_property'] = 'new value'; // set
-    unset($item['my_property']); // unset
-    
-    // some API methods
-    $item->put(); // put the current value, if has changed, otherwise return
-    $item->put(null); // same as above
-    $item->put(['title' => 'new title']); // put a new value
-    $item->delete(); // delete the current ref
-    $item->delete('20c14e8965d6cbb0'); // delete the specific ref
-    $item->purge(); // permanently delete all refs and graph relations
-
-    // booleans to check status
-    $item->isSuccess(); // if the last request was sucessful
-    $item->isError(); // if the last request was not sucessful
-    
-    $item->getResponse(); // GuzzleHttp\Message\Response
-    $item->getStatus(); // ok, created, items_not_found, etc
-    $item->getStatusCode(); // (int) the HTTP response status code
-    $item->getStatusMessage(); // Orchestrate response message, or HTTP Reason-Phrase
-
-    $item->getRequestId(); // Orchestrate request id, X-ORCHESTRATE-REQ-ID
-    $item->getRequestDate(); // the HTTP Date header
-    $item->getRequestUrl(); // the effective URL that resulted in this response
-
-}
-```
-
-Here is a sample of the Search Class methods: 
-
-### Search
-```php
-$results = $application->search('collection', 'title:"The Title*"');
-
-if ($results->isSuccess()) {
-    
-    // get the object info
-    $results->getResults(); // array of the search results
-    $results->toArray(); // array representation of the object
-    $results->getBody(); // array of the full HTTP response body
-
-    // pagination
-    $results->getNextUrl(); // string
-    $results->getPrevUrl(); // string
-    $results->getCount(); // available to match the syntax, but is exactly the same as count($results)
-    $results->getTotalCount();
-    $results->next(); // loads next set of results
-    $results->prev(); // loads previous set of results, if available
-    
-    // working with the Results
-    $results[0]; // direct array access to the Results
-    foreach ($results as $item) {} // iterate thought the Results
-    count($results); // the Results count
-
-    // booleans to check status
-    $results->isSuccess(); // if the last request was sucessful
-    $results->isError(); // if the last request was not sucessful
-    
-    $results->getResponse(); // GuzzleHttp\Message\Response
-    $results->getStatus(); // ok, created, items_not_found, etc
-    $results->getStatusCode(); // (int) the HTTP response status code
-    $results->getStatusMessage(); // Orchestrate response message, or HTTP Reason-Phrase
-
-    $results->getRequestId(); // Orchestrate request id, X-ORCHESTRATE-REQ-ID
-    $results->getRequestDate(); // the HTTP Date header
-    $results->getRequestUrl(); // the effective URL that resulted in this response
-
-}
-```
-
 
 
 ## Useful Notes

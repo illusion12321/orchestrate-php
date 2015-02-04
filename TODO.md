@@ -1,5 +1,7 @@
 # TODO and IDEAS
 
+- change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
+
 - Inline Docs
 
 - Reconsider adding methods of getEvent, postEvent, etc, to KeyValue?
