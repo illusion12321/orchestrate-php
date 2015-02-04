@@ -67,7 +67,7 @@ $application->ping(); // (boolean)
 ## Getting Started
 We define our classes following the same convention as Orchestrate, so we have:
 
-1- **Application** — which holds the HTTP client, and provides a client-like API interface to Orchestrate.
+1- **Application** — which holds the credentials and HTTP client, and provides a client-like API interface to Orchestrate.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -299,7 +299,7 @@ Let's go:
 > returns Boolean
 
 ```php
-if ( $application->ping() ) {
+if ($application->ping()) {
     // good
 }
 ```
@@ -309,10 +309,9 @@ if ( $application->ping() ) {
 > returns Boolean
 
 ```php
-$application->deleteCollection('collection');
-// or
-$collection = new Collection('collection');
-$collection->deleteCollection();
+if ($application->deleteCollection('collection')) {
+    // good
+}
 ```
 
 

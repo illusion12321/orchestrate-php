@@ -27,26 +27,6 @@ class Collection
         return $this->getCollection();
     }
 
-
-    // Collection
-    
-    /**
-     * @return boolean
-     * @link https://orchestrate.io/docs/apiref#collections-delete
-     */
-    public function deleteCollection()
-    {
-        // request
-        $response = $this->getApplication(true)->request(
-            'DELETE',
-            $this->getCollection(true),
-            ['query' => ['force' => 'true']]
-        );
-
-        return $response->getStatusCode() === 204;
-    }
-
-
     // Key/Value
 
     /**

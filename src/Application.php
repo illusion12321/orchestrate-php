@@ -240,9 +240,13 @@ class Application
      */
     public function deleteCollection($collection)
     {
-        return (new Collection($collection))
-            ->setApplication($this)
-            ->deleteCollection();
+        $response = $this->request(
+            'DELETE',
+            $collection,
+            ['query' => ['force' => 'true']]
+        );
+
+        return $response->getStatusCode() === 204;
     }
 
 
