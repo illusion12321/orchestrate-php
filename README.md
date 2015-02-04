@@ -109,7 +109,7 @@ $item = $collection->delete('key');
 - `Refs`, used for Refs List query
 - `Graph`, used for Graph Get query
 - `Events`, used for Event List query
-- `Search`, used for Search query, with support for aggregates
+- `Search`, used for Search query, with support for Geo and Aggregates
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -126,9 +126,9 @@ $item->put(['title' => 'My Title']); // puts a new value
 $item->delete(); // delete the current ref
 ```
 
-Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Application or Collection. But on a programatically import. for example. it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
+Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Application or Collection. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
 
-Remember, the credentials and the HTTP client are only available at the `Application` object, so all objects must reference to it in order to work. You can do so via the `setApplication` method.
+**Remember**, the credentials and the HTTP client are only available at the `Application` object, so all objects must reference to it in order to work. You can do so via the `setApplication` method.
 
 
 
@@ -233,8 +233,7 @@ All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arraya
 Example:
 
 ```php
-
-// considering KeyValue with the value of {"title": "My Title"}
+// Considering KeyValue with the value of {"title": "My Title"}
 
 $item = $application->get('collection', 'key');
 
@@ -261,7 +260,8 @@ if ($item->isSuccess()) {
 }
 
 
-// if you don't want to use the internal Value Array directly, you can always get it with:
+// if you don't want to use the internal Value Array directly,
+// you can always get it with:
 $value = $item->getValue();
 
 // also all objects provide an additional method, toArray()
@@ -275,9 +275,6 @@ print_r($item->toArray());
 //             [collection] => collection
 //             [key] => key
 //             [ref] => cbb48f9464612f20
-//             [reftime] => 1400085084739
-//             [score] => 1.0
-//             [tombstone] => true
 //         )
 //     [value] => Array
 //         (
@@ -286,11 +283,11 @@ print_r($item->toArray());
 // )
 
 
-// Of course, it gets interesting on List objects like Search:
+// Of course, it gets interesting on List objects like Search
 
 $results = $application->search('collection', 'title:"The Title*"');
 
-// you can iterate over the results directly!
+// where you can iterate over the results directly!
 foreach ($results as $item) {
     
     // get its values
@@ -304,9 +301,12 @@ foreach ($results as $item) {
     // if relation was created successfuly
     if ($item->isSuccess()) {
 
-        // take the opportunity to post an event
-        $values = ['type' => 'relation', 'to' => 'toKey', 'ref' => $item->getRef()];
-
+        // take the opportunity to post an event too
+        $values = [
+            'type' => 'relation',
+            'to' => 'toKey',
+            'ref' => $item->getRef(),
+        ];
         $application->postEvent('collection', $item->getKey(), 'log', $values);
     }
 }
@@ -314,11 +314,10 @@ foreach ($results as $item) {
 
 
 
-Let's go:
 
 
 
-## Orchestrate API
+# Orchestrate API
 
 
 ### Application Ping:
@@ -345,15 +344,18 @@ if ($application->deleteCollection('collection')) {
 > returns KeyValue object
 
 ```php
+// Approach 1 - Application
 $item = $application->get('collection', 'key');
-// or
+
+// Approach 2 (Collection)
 $item = $collection->get('key');
-// or
+
+// Approach 3 (Object)
 $item = new KeyValue('collection', 'key');
 $item->setApplication($application);
 $item->get();
 
-// get the object info
+// example of getting the object info
 $item->getKey(); // string
 $item->getRef(); // string
 $item->getValue(); // array of the Value
