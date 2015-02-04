@@ -89,6 +89,7 @@ use andrefelipe\Orchestrate\Collection;
 $application = new Application();
 
 $collection = new Collection('collection');
+$item->setApplication($application); // link to the client
 
 $item = $collection->get('key');
 $item = $collection->put('key', ['title' => 'My Title']);
@@ -117,13 +118,27 @@ use andrefelipe\Orchestrate\Objects\KeyValue;
 $application = new Application();
 
 $item = new KeyValue('collection', 'key'); // no API calls yet
+$item->setApplication($application); // link to the client
+
 $item->get(); // API call to get the current key
 $item->get('20c14e8965d6cbb0'); // get a specific ref
 $item->put(['title' => 'My Title']); // puts a new value
 $item->delete(); // delete the current ref
 ```
 
-Please note that the result of all operations, in any approach, are exact the same, they all return **Objects**. And **Objects holds the results as well as the response status.**
+Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Application or Collection. But on a programatically import. for example. it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
+
+Remember, the credentials and the HTTP client are only available at the `Application` object, so all objects must reference to it in order to work. You can do so via:
+```php
+$item = new KeyValue('collection', 'key');
+$item->setApplication($application);
+// where $application is an Application instance
+```
+
+
+## Responses
+
+The result of all operations, in any approach, are exact the same, they all return **Objects**. And **Objects holds the results as well as the response status.**
 
 Example:
 
@@ -190,6 +205,9 @@ if ($item->isSuccess()) {
 }
 
 ```
+
+
+## Array Access
 
 All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array.
 
@@ -275,17 +293,6 @@ foreach ($results as $item) {
 }
 
 
-```
-
-**Final note:**
-
-The HTTP client is only available at the `Application` object, so all objects must reference to it in order to work. You can do so via:
-```php
-$item = new KeyValue('collection', 'key');
-$item->setApplication($application);
-// where $application is an Application instance
-
-```
 
 
 Let's go:
