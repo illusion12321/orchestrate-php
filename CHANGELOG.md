@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.6.0 - 2015-02-04
+- Removed the automatic client linking for the Objects, it has to be linked manually with setApplication(). It would create conflicts on larger systems, where multiple clients could be created anywhere.
+- The Collection now has a __toString, to get the collection name
+- Many getters that has required values for the API calls now has the option to throw errors
+- General code cleanup and inline docs improvements
+
 ## 0.5.0 - 2015-01-08
 
 - Implemented Patch operations!
