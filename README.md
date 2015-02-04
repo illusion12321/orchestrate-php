@@ -291,7 +291,7 @@ foreach ($results as $item) {
         $application->postEvent('collection', $item->getKey(), 'log', $values);
     }
 }
-
+```
 
 
 
