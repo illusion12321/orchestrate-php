@@ -20,7 +20,7 @@ class Collection
     }
 
     /**
-     * @return string The collection name
+     * @return string Returns the collection name.
      */
     public function __toString()
     {

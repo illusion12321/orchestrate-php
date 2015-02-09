@@ -1,16 +1,20 @@
 # TODO and IDEAS
 
-- change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
+- Add totalCount method to Collection?
+
+- Study the move of Collection up to a proper Object (merging with KeyValues), adding some common methods like count(), totalCount(), toArray() ? — draft the drawbacks of multiple functionalities built in
+
+- Change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
 
 - Inline Docs
 
+- Work on Query builders for Search (search/sort/aggregate) and Range (list collection and events)??
+
 - Reconsider adding methods of getEvent, postEvent, etc, to KeyValue?
 
-- Work on Query builders for Search (search/sort/aggregate)?
+- Implement some common interfaces, and general organization of the base classes
 
 - Implement Tests
-
-- Implement some common interfaces, and general organization of the base classes
 
 - Add Docs (ApiGen, Sami or something that can be created from the source files)?
 
@@ -20,7 +24,7 @@
 
 - The List results should be associative array? With the keys? (could be nice to have array_keys()) -- confirm later, considering conflicts with the same key
 
-- add sort operations to List objects?
+- Add sort operations to List objects? basically just a map to PHP sort?
 
 - maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
 

@@ -994,9 +994,6 @@ $item->deleteRelation('kind', 'toCollection', 'toKey');
 
 
 
-
-
-
 ## Docs
 
 Please refer to the source code for now, while a proper documentation is made.
@@ -1009,5 +1006,5 @@ Here is a sample of the KeyValue Class methods:
 Here are some useful notes to consider when using the Orchestrate service:
 - Avoid using slashes (/) in the key name, some problems will arise when querying them;
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
-- When adding a field for a date, prefix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date)
+- When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date)
 
