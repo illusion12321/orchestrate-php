@@ -2,7 +2,9 @@
 
 - Add totalCount method to Collection?
 
-- Study the move of Collection up to a proper Object (merging with KeyValues), adding some common methods like count(), totalCount(), toArray() ? — draft the drawbacks of multiple functionalities built in
+- Maybe even a getAll to KeyValues?
+
+- Review the use case of turning KeyValue array access to magic getters, so Phalcon views can be fed easier. Or even have a getObject()?
 
 - Change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
 
