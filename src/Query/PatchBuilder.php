@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Query;
 
-use GuzzleHttp\ToArrayInterface;
+use andrefelipe\Orchestrate\Common\ToArrayInterface;
 
 /**
  * 

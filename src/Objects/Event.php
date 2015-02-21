@@ -1,12 +1,12 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Common\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Common\RefTrait;
-use andrefelipe\Orchestrate\Objects\Common\ValueTrait;
-use andrefelipe\Orchestrate\Objects\Common\TypeTrait;
-use andrefelipe\Orchestrate\Objects\Common\TimestampTrait;
-use andrefelipe\Orchestrate\Objects\Common\OrdinalTrait;
+use andrefelipe\Orchestrate\Common\KeyTrait;
+use andrefelipe\Orchestrate\Common\RefTrait;
+use andrefelipe\Orchestrate\Common\ValueTrait;
+use andrefelipe\Orchestrate\Common\TypeTrait;
+use andrefelipe\Orchestrate\Common\TimestampTrait;
+use andrefelipe\Orchestrate\Common\OrdinalTrait;
 
 class Event extends AbstractObject
 {

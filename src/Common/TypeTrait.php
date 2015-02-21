@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects\Common;
+namespace andrefelipe\Orchestrate\Common;
 
 /**
  * Trait that implements the Type methods.

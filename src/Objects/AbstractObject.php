@@ -1,10 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Common\ApplicationTrait;
-use andrefelipe\Orchestrate\Objects\Common\CollectionTrait;
-use GuzzleHttp\HasDataTrait;
-use GuzzleHttp\ToArrayInterface;
+use andrefelipe\Orchestrate\Common\ApplicationTrait;
+use andrefelipe\Orchestrate\Common\CollectionTrait;
+use andrefelipe\Orchestrate\Common\ArrayAdapterTrait;
+use andrefelipe\Orchestrate\Common\ToArrayInterface;
 
 abstract class AbstractObject extends AbstractResponse implements
     ToArrayInterface,
@@ -14,7 +14,7 @@ abstract class AbstractObject extends AbstractResponse implements
 {
     use ApplicationTrait;
     use CollectionTrait;
-    use HasDataTrait;
+    use ArrayAdapterTrait;
     
     /**
      * @param string $collection

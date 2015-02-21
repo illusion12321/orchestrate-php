@@ -4,7 +4,7 @@
 
 - Maybe even a getAll to KeyValues?
 
-- Review the use case of turning KeyValue array access to magic getters, so Phalcon views can be fed easier. Or even have a getObject()?
+- Review the use case of turning KeyValue array access to magic getters, so Phalcon views can be fed easier. Or even have a toObject()? ... still the best is to have a typed Class, not an abstract object, for that we have Arrays
 
 - Change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
 

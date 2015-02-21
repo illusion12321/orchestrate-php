@@ -1,10 +1,10 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects\Common;
+namespace andrefelipe\Orchestrate\Common;
 
 /**
  * Trait that implements the Value methods.
  * 
- * Requires that the target class also implements GuzzleHttp\HasDataTrait
+ * Requires that the target class also implements andrefelipe\Orchestrate\Common\ArrayAdapterTrait
  * 
  * @internal
  */

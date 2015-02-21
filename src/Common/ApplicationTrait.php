@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects\Common;
+namespace andrefelipe\Orchestrate\Common;
 
 use andrefelipe\Orchestrate\Application;
 
