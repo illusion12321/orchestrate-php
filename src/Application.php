@@ -183,7 +183,7 @@ class Application
         }
         catch (ClientException $e) {
 
-            // have Orchestrate error message
+            // get Orchestrate error message
             $response = $e->getResponse();
         }
         catch (ConnectException $e) {

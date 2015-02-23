@@ -4,8 +4,6 @@ namespace andrefelipe\Orchestrate\Common;
 /**
  * Trait that implements the Value methods.
  * 
- * Requires that the target class also implements andrefelipe\Orchestrate\Common\ArrayAdapterTrait
- * 
  * @internal
  */
 trait ValueTrait
@@ -15,15 +13,21 @@ trait ValueTrait
     */
     public function getValue()
     {
-        return $this->data;
+        return (new ObjectArray())->merge($this);
     }
 
     /**
     * @param array $value
     */
-    public function setValue(array $value)
+    public function setValue(array $data)
     {
-        $this->data = $value;
+        // TODO should reset the object!!
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $key = (string) $key;
+                $this->{$key} = $value;
+            }
+        }
 
         return $this;
     }

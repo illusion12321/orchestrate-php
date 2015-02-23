@@ -1,10 +1,13 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Common\ApplicationTrait;
 use \GuzzleHttp\Message\Response;
 
 abstract class AbstractResponse
 {
+    use ApplicationTrait;
+
     /**
      * @var array
      */
@@ -56,11 +59,8 @@ abstract class AbstractResponse
 
     /**
      * Gets the status of the last response.
-     * If the request was successful the value is the HTTP Reason-Phrase*.
+     * If the request was successful the value is the HTTP Reason-Phrase.
      * If the request was not successful the value is the Orchestrate Error Code.
-     * 
-     * * Note: The status is converted to lowercase and spaces as underline, to match
-     * Orchestrate's error code standard.
      * 
      * @return string
      * @link https://orchestrate.io/docs/apiref#errors
@@ -159,18 +159,6 @@ abstract class AbstractResponse
     }
 
     /**
-     * Resets current object for reuse.
-     */
-    public function reset()
-    {
-        $this->response = null;
-        $this->body = [];
-        $this->status = '';
-        $this->statusCode = 0;
-        $this->statusMessage = '';
-    }
-
-    /**
      * Store Guzzle Response and define body JSON and status.
      * 
      * @param Response $response
@@ -184,7 +172,7 @@ abstract class AbstractResponse
         if ($response) {
             $this->body = $response->json();
             $this->statusMessage = $response->getReasonPhrase();
-            $this->status = str_replace(' ', '_', strtolower($this->statusMessage));
+            $this->status = $this->statusMessage;
             $this->statusCode = $response->getStatusCode();
 
             if ($this->isError()) {
@@ -200,5 +188,26 @@ abstract class AbstractResponse
                 }
             }
         }
+    }
+
+    /**
+     * Resets current object for reuse.
+     */
+    public function reset()
+    {
+        $this->response = null;
+        $this->body = [];
+        $this->status = '';
+        $this->statusCode = 0;
+        $this->statusMessage = '';
+    }
+    
+    protected function request($method, $url = null, array $options = [])
+    {
+        // request at the Application HTTP client
+        $response = $this->getApplication(true)->request($method, $url, $options);
+
+        // and store/process the results
+        $this->setResponse($response);
     }
 }

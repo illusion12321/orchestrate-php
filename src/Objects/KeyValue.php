@@ -30,7 +30,7 @@ class KeyValue extends AbstractObject
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
-            'value' => $this->getValue(),
+            'value' => $this->getValue()->toArray(), //TODO better way? study the Reflection performance after all
         ];
         
         return $result;
@@ -41,7 +41,9 @@ class KeyValue extends AbstractObject
         parent::reset();
         $this->key = null;
         $this->ref = null;
-        $this->data = [];
+
+        // TODO to reset values we might need
+        // print_r((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC));exit;
     }
 
     public function init(array $values)
@@ -93,11 +95,11 @@ class KeyValue extends AbstractObject
 
         // set values
         if ($this->isSuccess()) {
-            $this->data = $this->body;
+            $this->setValue($this->body);
             $this->setRefFromETag();
         }
         else {
-            $this->data = [];
+            $this->data = []; //TODO way to reset object
         }
 
         return $this;
@@ -133,7 +135,6 @@ class KeyValue extends AbstractObject
 
             // set If-None-Match
             $options['headers'] = ['If-None-Match' => '"*"'];
-
         }
 
         // request

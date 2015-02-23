@@ -3,6 +3,12 @@
 - Review the use case of turning KeyValue array access to magic getters, so Phalcon views can be fed easier. Or even have a toObject()? ... still the best is to have a typed Class, not an abstract object, for that we have Arrays
 ** Added the get/setters, now will consider to allow both getters and arrayAccess to read restricted properties like 'key', 'ref' etc... **
 
+- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped
+
+- ! consider returning boolean isSuccess on the objects methods, instead of self — not really useful anymore to be chainable at this point.. in fact returning boolean would save a isSuccess check
+
+- ! consider turning all objects paramaters to a single array!!?? -- long parameter list on constructor is too crazy to follow anyway...
+
 - Add totalCount method to Collection?
 
 - Maybe even a getAll to KeyValues?
@@ -25,7 +31,7 @@
 
 - Implement async operations?
 
-- Study the advantages of turning all objects to resources like: $application['collection']['key'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
+- Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
 - The List results should be associative array? With the keys? (could be nice to have array_keys()) -- confirm later, considering conflicts with the same key
 

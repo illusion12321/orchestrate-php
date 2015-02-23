@@ -1,20 +1,18 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ApplicationTrait;
 use andrefelipe\Orchestrate\Common\CollectionTrait;
-use andrefelipe\Orchestrate\Common\ArrayAdapterTrait;
-use andrefelipe\Orchestrate\Common\ToArrayInterface;
+use andrefelipe\Orchestrate\Common\ObjectArray;
+use andrefelipe\Orchestrate\Common\ObjectArrayTrait;
+use andrefelipe\Orchestrate\Common\ToObjectInterface;
 
 abstract class AbstractObject extends AbstractResponse implements
-    ToArrayInterface,
     \ArrayAccess,
-    \IteratorAggregate,
-    \Countable
-{
-    use ApplicationTrait;
+    \Countable,
+    ToObjectInterface
+{    
     use CollectionTrait;
-    use ArrayAdapterTrait;
+    use ObjectArrayTrait;
     
     /**
      * @param string $collection
@@ -24,12 +22,55 @@ abstract class AbstractObject extends AbstractResponse implements
         $this->setCollection($collection);
     }
 
-    protected function request($method, $url = null, array $options = [])
+    public function __get($key)
     {
-        // request at the Application HTTP client
-        $response = $this->getApplication(true)->request($method, $url, $options);
+        if ($getter = $this->getMethod($key)) {
+            return $this->$getter();
+        }
+        return isset($this->{$key}) ? $this->{$key} : null;
+    }
 
-        // and store/process the results
-        $this->setResponse($response);
+    public function __set($key, $value)
+    {
+        if ($setter = $this->setMethod($key)) {
+            $this->$setter($value);
+        } else if (is_array($value)) {
+            $this->{$key} = new ObjectArray($value);
+        } else {
+            $this->{$key} = $value;
+        }
+    }    
+
+    public function offsetGet($offset)
+    {
+        if ($getter = $this->getMethod($offset)) {
+            return $this->$getter();
+        }
+        return isset($this->{$offset}) ? $this->{$offset} : null;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $offset = (string) $offset;
+
+        if ($setter = $this->setMethod($offset)) {
+            $this->$setter($value);
+        } else if (is_array($value)) {
+            $this->{$offset} = new ObjectArray($value);
+        } else {
+            $this->{$offset} = $value;
+        }
+    }
+
+    private function getMethod($name)
+    {
+        $name = 'get'.ucfirst($name);
+        return method_exists($this, $name) ? $name : false;
+    }
+
+    private function setMethod($name)
+    {
+        $name = 'set'.ucfirst($name);
+        return method_exists($this, $name) ? $name : false;
     }
 }

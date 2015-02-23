@@ -1,8 +1,16 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-abstract class AbstractList extends AbstractObject
+use andrefelipe\Orchestrate\Common\CollectionTrait;
+use andrefelipe\Orchestrate\Common\ToArrayInterface;
+
+abstract class AbstractList extends AbstractResponse implements
+    \IteratorAggregate,
+    \Countable,
+    ToArrayInterface
 {
+    use CollectionTrait;
+
     /**
      * @var int
      */
@@ -23,6 +31,14 @@ abstract class AbstractList extends AbstractObject
      */
     protected $prevUrl = '';
     
+    /**
+     * @param string $collection
+     */
+    public function __construct($collection)
+    {
+        $this->setCollection($collection);
+    }
+
     /**
      * @return array
      */
@@ -162,13 +178,13 @@ abstract class AbstractList extends AbstractObject
             ->init($values);
     }
 
-    public function offsetSet($offset, $value)
+    public function getIterator()
     {
-        throw new \RuntimeException('You cannot mutate a list\'s data, only it\'s children, the KeyValue objects.');
+        return new \ArrayIterator($this->getResults());
     }
 
-    public function offsetUnset($offset)
+    public function count()
     {
-        throw new \RuntimeException('You cannot mutate a list\'s data, only it\'s children, the KeyValue objects.');
+        return count($this->getResults());
     }
 }
