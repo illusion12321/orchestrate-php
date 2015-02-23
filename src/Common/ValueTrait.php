@@ -9,24 +9,44 @@ namespace andrefelipe\Orchestrate\Common;
 trait ValueTrait
 {
     /**
-    * @return array
-    */
+     * Get item Value.
+     * 
+     * @return array
+     */
     public function getValue()
     {
         return (new ObjectArray())->merge($this);
     }
 
     /**
-    * @param array $value
-    */
-    public function setValue(array $data)
+     * Set item Value. Will reset the values before.
+     * 
+     * @param array $values
+     */
+    public function setValue(array $values)
     {
-        // TODO should reset the object!!
-        if ($data) {
-            foreach ($data as $key => $value) {
+        $this->resetValue();
+
+        if ($values) {
+            foreach ($values as $key => $value) {
                 $key = (string) $key;
                 $this->{$key} = $value;
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set all public properties to null.
+     * 
+     * @param array $value
+     */
+    public function resetValue()
+    {
+        $properties = (new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC);
+        foreach ($properties as $property) {
+            $this->{$property->name} = null;
         }
 
         return $this;

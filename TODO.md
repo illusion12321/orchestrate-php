@@ -3,17 +3,19 @@
 - Review the use case of turning KeyValue array access to magic getters, so Phalcon views can be fed easier. Or even have a toObject()? ... still the best is to have a typed Class, not an abstract object, for that we have Arrays
 ** Added the get/setters, now will consider to allow both getters and arrayAccess to read restricted properties like 'key', 'ref' etc... **
 
-- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped
-
 - ! consider returning boolean isSuccess on the objects methods, instead of self — not really useful anymore to be chainable at this point.. in fact returning boolean would save a isSuccess check
 
 - ! consider turning all objects paramaters to a single array!!?? -- long parameter list on constructor is too crazy to follow anyway...
+
+- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped
 
 - Add totalCount method to Collection?
 
 - Maybe even a getAll to KeyValues?
 
 - Add a getFirst to Collection/Application?
+
+- Allow Collection/Application to change the list's children class! Specially important for Models.
 
 - Change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
 

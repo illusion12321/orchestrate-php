@@ -7,7 +7,7 @@ use andrefelipe\Orchestrate\Common\ObjectArrayTrait;
  * 
  * Part of this code was appropriated from:
  * https://github.com/phalcon/cphalcon/blob/2.0.0/phalcon/config.zep
- * Credit goes to Andres Gutierrez and Eduar Carvajal of the Phalcon team.
+ * Which credit goes to Andres Gutierrez and Eduar Carvajal of the Phalcon team.
  */
 class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
 {

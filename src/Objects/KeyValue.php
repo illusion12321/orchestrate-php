@@ -30,7 +30,7 @@ class KeyValue extends AbstractObject
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
-            'value' => $this->getValue()->toArray(), //TODO better way? study the Reflection performance after all
+            'value' => parent::toArray(),
         ];
         
         return $result;
@@ -41,9 +41,7 @@ class KeyValue extends AbstractObject
         parent::reset();
         $this->key = null;
         $this->ref = null;
-
-        // TODO to reset values we might need
-        // print_r((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC));exit;
+        $this->resetValue();
     }
 
     public function init(array $values)
@@ -99,7 +97,7 @@ class KeyValue extends AbstractObject
             $this->setRefFromETag();
         }
         else {
-            $this->data = []; //TODO way to reset object
+            $this->resetValue();
         }
 
         return $this;
@@ -114,13 +112,11 @@ class KeyValue extends AbstractObject
      */
     public function put(array $value = null, $ref = null)
     {
-        if ($value === null) {
-            $value = $this->data;
-        }
+        $newValue = $value === null ? $this->data : $value;
 
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
-        $options = ['json' => $value];
+        $options = ['json' => $newValue];
 
         if ($ref) {
 
@@ -143,7 +139,10 @@ class KeyValue extends AbstractObject
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
-            $this->data = $value;
+
+            if ($value === null) {
+                $this->data = $newValue;
+            }            
         }
 
         return $this;
@@ -359,15 +358,6 @@ class KeyValue extends AbstractObject
         {
             $this->key = $location[2];
             $this->ref = $location[4];
-        }
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_null($offset) || is_int($offset)) {
-           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of KeyValue objects.');
-        } else {
-            $this->data[$offset] = $value;
         }
     }
 }

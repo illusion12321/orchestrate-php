@@ -10,7 +10,7 @@ abstract class AbstractObject extends AbstractResponse implements
     \ArrayAccess,
     \Countable,
     ToObjectInterface
-{    
+{
     use CollectionTrait;
     use ObjectArrayTrait;
     
@@ -28,10 +28,11 @@ abstract class AbstractObject extends AbstractResponse implements
             return $this->$getter();
         }
         return isset($this->{$key}) ? $this->{$key} : null;
-    }
+    }    
 
     public function __set($key, $value)
     {
+        echo 'setter\n';
         if ($setter = $this->setMethod($key)) {
             $this->$setter($value);
         } else if (is_array($value)) {
@@ -39,7 +40,12 @@ abstract class AbstractObject extends AbstractResponse implements
         } else {
             $this->{$key} = $value;
         }
-    }    
+    }
+
+    public function __unset($key)
+    {
+        return $this->{$key} = null;
+    }
 
     public function offsetGet($offset)
     {
