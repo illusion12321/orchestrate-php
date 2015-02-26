@@ -11,17 +11,12 @@ abstract class AbstractObject extends AbstractResponse implements
 {
     public function __get($key)
     {
-        if ($getter = $this->getMethod($key)) {
-            return $this->$getter();
-        }
         return isset($this->{$key}) ? $this->{$key} : null;
     }
 
     public function __set($key, $value)
     {
-        if ($setter = $this->setMethod($key)) {
-            $this->$setter($value);
-        } else if (is_array($value)) {
+        if (is_array($value)) {
             $this->{$key} = new ObjectArray($value);
         } else {
             $this->{$key} = $value;
@@ -59,26 +54,18 @@ abstract class AbstractObject extends AbstractResponse implements
 
     public function count()
     {
-        $properties = (new \ReflectionObject($this))
-            ->getProperties(\ReflectionProperty::IS_PUBLIC);
-
-        return count($properties);
+        return count(get_object_vars($this));
     }
 
     public function toArray()
     {
         $result = [];
-        $properties = (new \ReflectionObject($this))
-            ->getProperties(\ReflectionProperty::IS_PUBLIC);
 
-        foreach ($properties as $property) {
-            $key = $property->name;
-            $value = $this->{$key};
+        foreach (get_object_vars($this) as $key => $value) {
 
             if ($value === null) {
                 continue;
             }
-
             if (is_object($value)) {
                 if (method_exists($value, 'toArray')) {
                     $result[$key] = $value->toArray();
@@ -101,17 +88,5 @@ abstract class AbstractObject extends AbstractResponse implements
     public function toJson($options = 0, $depth = 512)
     {
         return json_encode($this->toArray(), $options, $depth);
-    }
-
-    private function getMethod($name)
-    {
-        $name = 'get'.ucfirst($name);
-        return method_exists($this, $name) ? $name : false;
-    }
-
-    private function setMethod($name)
-    {
-        $name = 'set'.ucfirst($name);
-        return method_exists($this, $name) ? $name : false;
     }
 }

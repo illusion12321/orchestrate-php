@@ -14,27 +14,6 @@ class KeyValue extends AbstractObject
     use RefTrait;
     use ValueTrait;
 
-    private static $reservedProperties = [
-        'application' => true,
-        'collection' => true,
-        'key' => true,
-        'ref' => true,
-        'value' => true,
-        'kind' => true,
-    ];
-
-    /**
-    * Returns an array of the reserved properties that cannot be set on the object directly.
-    *
-    * @return array
-    */
-    public function getReservedProperties()
-    {
-        return 
-            self::$reservedProperties
-        ;
-    }
-
     public function __construct($collection, $key = null)
     {
         $this->setCollection($collection);
@@ -53,7 +32,7 @@ class KeyValue extends AbstractObject
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
-            'value' => $this->getValue()->toArray(),
+            'value' => parent::toArray(),
         ];
         
         return $result;

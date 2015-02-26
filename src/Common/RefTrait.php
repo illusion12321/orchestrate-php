@@ -36,7 +36,7 @@ trait RefTrait
 
     protected function setRefFromETag()
     {
-        if ($etag = $this->response->getHeader('ETag')) {
+        if ($etag = $this->getResponse()->getHeader('ETag')) {
             $this->_ref = trim($etag, '"');
         }
     }

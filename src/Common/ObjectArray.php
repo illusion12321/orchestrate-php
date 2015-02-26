@@ -79,13 +79,13 @@ class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
      */
     public function merge($object)
     {
-        if (is_object($object)) {            
+        if (is_object($object)) {
             
             $this->_mergeObject($object);
 
         } else if (is_array($object)) {
 
-            foreach ($object as $key => $value) {                
+            foreach ($object as $key => $value) {
                 if (isset($this->{$key}) && is_object($value) && is_object($this->{$key})) {
                     $this->_mergeObject($value, $this->{$key});
                 } else {
