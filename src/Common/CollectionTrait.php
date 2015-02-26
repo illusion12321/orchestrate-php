@@ -11,7 +11,7 @@ trait CollectionTrait
     /**
      * @var string
      */
-    protected $collection;
+    private $_collection;
 
     /**
      * @param boolean $required 
@@ -23,7 +23,7 @@ trait CollectionTrait
         if ($required)
             $this->noCollectionException();
 
-        return $this->collection;
+        return $this->_collection;
     }
 
     /**
@@ -31,7 +31,7 @@ trait CollectionTrait
      */
     public function setCollection($collection)
     {
-        $this->collection = (string) $collection;
+        $this->_collection = (string) $collection;
 
         return $this;
     }
@@ -41,7 +41,7 @@ trait CollectionTrait
      */
     protected function noCollectionException()
     {
-        if (!$this->collection) {
+        if (!$this->_collection) {
             throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
         }
     }

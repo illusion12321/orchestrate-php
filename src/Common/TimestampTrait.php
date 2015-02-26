@@ -11,7 +11,7 @@ trait TimestampTrait
     /**
      * @var int
      */
-    protected $timestamp = 0;
+    private $_timestamp = 0;
     
     /**
      * @param boolean $required
@@ -23,15 +23,15 @@ trait TimestampTrait
         if ($required)
             $this->noTimestampException();
 
-        return $this->timestamp;
+        return $this->_timestamp;
     }
 
     /**
-     * @param int|string $timestamp
+     * @param int $timestamp
      */
     public function setTimestamp($timestamp)
     {
-        $this->timestamp = is_string($timestamp) ? strtotime($timestamp) : (int) $timestamp;
+        $this->_timestamp = (int) $timestamp;
 
         return $this;
     }
@@ -41,7 +41,7 @@ trait TimestampTrait
      */
     protected function noTimestampException()
     {
-        if (!$this->timestamp) {
+        if (!$this->_timestamp) {
             throw new \BadMethodCallException('There is no timestamp set yet. Please do so through setTimestamp() method.');
         }
     }    

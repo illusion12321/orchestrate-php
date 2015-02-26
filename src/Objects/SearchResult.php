@@ -6,12 +6,12 @@ class SearchResult extends KeyValue
     /**
      * @var float
      */
-    protected $score = 0;
+    private $score = 0;
 
     /**
      * @var float
      */
-    protected $distance = 0;
+    private $distance = 0;
 
     /**
      * @return float

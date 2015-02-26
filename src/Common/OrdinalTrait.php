@@ -11,7 +11,7 @@ trait OrdinalTrait
     /**
      * @var int
      */
-    protected $ordinal = 0;
+    private $_ordinal = 0;
     
     /**
      * @param boolean $required
@@ -23,7 +23,7 @@ trait OrdinalTrait
         if ($required)
             $this->noOrdinalException();
 
-        return $this->ordinal;
+        return $this->_ordinal;
     }
 
     /**
@@ -31,7 +31,7 @@ trait OrdinalTrait
      */
     public function setOrdinal($ordinal)
     {
-        $this->ordinal = (int) $ordinal;
+        $this->_ordinal = (int) $ordinal;
 
         return $this;
     }
@@ -41,7 +41,7 @@ trait OrdinalTrait
      */
     protected function noOrdinalException()
     {
-        if (!$this->ordinal) {
+        if (!$this->_ordinal) {
             throw new \BadMethodCallException('There is no ordinal set yet. Please do so through setOrdinal() method.');
         }
     }    

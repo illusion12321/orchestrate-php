@@ -11,27 +11,27 @@ abstract class AbstractResponse
     /**
      * @var array
      */
-    protected $body = [];
+    private $body = [];
     
     /**
      * @var Response
      */
-    protected $response = null;
+    private $response = null;
 
     /**
      * @var string
      */
-    protected $status = '';
+    private $status = '';
 
     /**
      * @var string
      */
-    protected $statusCode = 0;
+    private $statusCode = 0;
 
     /**
      * @var string
      */
-    protected $statusMessage = '';
+    private $statusMessage = '';
 
     /**
      * Gets the body of the response, independently if it was an error or not.

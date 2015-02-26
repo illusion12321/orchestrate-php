@@ -6,7 +6,7 @@ class Ref extends KeyValue
     /**
      * @var boolean
      */
-    protected $tombstone = false;    
+    private $tombstone = false;    
 
     /**
      * @return boolean
@@ -19,7 +19,7 @@ class Ref extends KeyValue
     /**
      * @var int
      */
-    protected $reftime = 0;
+    private $reftime = 0;
 
     /**
      * @return int

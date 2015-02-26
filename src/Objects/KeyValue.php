@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Common\CollectionTrait;
 use andrefelipe\Orchestrate\Common\KeyTrait;
 use andrefelipe\Orchestrate\Common\RefTrait;
 use andrefelipe\Orchestrate\Common\ValueTrait;
@@ -8,13 +9,35 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject
 {
+    use CollectionTrait;
     use KeyTrait;
     use RefTrait;
     use ValueTrait;
 
+    private static $reservedProperties = [
+        'application' => true,
+        'collection' => true,
+        'key' => true,
+        'ref' => true,
+        'value' => true,
+        'kind' => true,
+    ];
+
+    /**
+    * Returns an array of the reserved properties that cannot be set on the object directly.
+    *
+    * @return array
+    */
+    public function getReservedProperties()
+    {
+        return 
+            self::$reservedProperties
+        ;
+    }
+
     public function __construct($collection, $key = null)
     {
-        parent::__construct($collection);
+        $this->setCollection($collection);
         $this->setKey($key);
     }
 
@@ -30,7 +53,7 @@ class KeyValue extends AbstractObject
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
-            'value' => parent::toArray(),
+            'value' => $this->getValue()->toArray(),
         ];
         
         return $result;
@@ -39,8 +62,8 @@ class KeyValue extends AbstractObject
     public function reset()
     {
         parent::reset();
-        $this->key = null;
-        $this->ref = null;
+        $this->setKey(null);
+        $this->setRef(null);
         $this->resetValue();
     }
 
@@ -92,12 +115,11 @@ class KeyValue extends AbstractObject
         $this->request('GET', $path);
 
         // set values
+        $this->resetValue();
+
         if ($this->isSuccess()) {
-            $this->setValue($this->body);
+            $this->setValue($this->getBody());
             $this->setRefFromETag();
-        }
-        else {
-            $this->resetValue();
         }
 
         return $this;

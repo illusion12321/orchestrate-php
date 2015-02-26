@@ -5,7 +5,8 @@ namespace andrefelipe\Orchestrate\Common;
  * 
  * Part of this code was appropriated from:
  * https://github.com/phalcon/cphalcon/blob/2.0.0/phalcon/config.zep
- * Which credit goes to Andres Gutierrez and Eduar Carvajal of the Phalcon team.
+ * Which credit goes to Andres Gutierrez and Eduar Carvajal of the
+ * wonderful Phalcon project.
  */
 class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
 {
@@ -16,16 +17,15 @@ class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
     {
         if ($values) {
             foreach ($values as $key => $value) {
-                $key = (string) $key;
-
-                if (is_array($value)) {
-                    $this->{$key} = new self($value);
-                } else {
-                    $this->{$key} = $value;
-                }
+                $this->{(string) $key} = $value;
             }
         }
     }
+
+    // public function __toString()
+    // {
+    //     echo $this->toJson();
+    // }
 
     public function __get($key)
     {
@@ -72,14 +72,28 @@ class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
     }
 
     /**
-     * Merges an object's values into the object.
+     * Merges an array's or object's values into the object.
      *
-     * @param object $object
+     * @param array|object $object
      * @return ObjectArray this 
      */
     public function merge($object)
     {
-        return $this->_merge($object);
+        if (is_object($object)) {            
+            
+            $this->_mergeObject($object);
+
+        } else if (is_array($object)) {
+
+            foreach ($object as $key => $value) {                
+                if (isset($this->{$key}) && is_object($value) && is_object($this->{$key})) {
+                    $this->_mergeObject($value, $this->{$key});
+                } else {
+                    $this->{$key} = $value;
+                }
+            }
+        }
+        return $this;
     }
 
     /**
@@ -90,16 +104,15 @@ class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
      *
      * @return ObjectArray this
      */
-    private function _merge($object, $instance = null)
+    private function _mergeObject($object, $instance = null)
     {
         if (!is_object($instance)) {
             $instance = $this;
         }
-
         foreach (get_object_vars($object) as $key => $value) {
             
             if (isset($instance->{$key}) && is_object($value) && is_object($instance->{$key})) {
-                $this->_merge($value, $instance->{$key});
+                $this->_mergeObject($value, $instance->{$key});
             } else {
                 $instance->{$key} = $value;
             }
@@ -111,7 +124,7 @@ class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
     {
         $result = [];
 
-        foreach (get_object_vars($object) as $key => $value) {
+        foreach (get_object_vars($this) as $key => $value) {
             
             if ($value === null) {
                 continue;

@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\CollectionTrait;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToObjectInterface;
 
@@ -10,23 +9,13 @@ abstract class AbstractObject extends AbstractResponse implements
     \Countable,
     ToObjectInterface
 {
-    use CollectionTrait;
-    
-    /**
-     * @param string $collection
-     */
-    public function __construct($collection)
-    {
-        $this->setCollection($collection);
-    }
-
     public function __get($key)
     {
         if ($getter = $this->getMethod($key)) {
             return $this->$getter();
         }
         return isset($this->{$key}) ? $this->{$key} : null;
-    }    
+    }
 
     public function __set($key, $value)
     {
@@ -51,6 +40,10 @@ abstract class AbstractObject extends AbstractResponse implements
 
     public function offsetSet($offset, $value)
     {
+        if (is_null($offset) || (int) $offset === $offset) {
+           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of '.get_class($this).' objects.');
+        }
+
         $this->{(string) $offset} = $value;
     }
 

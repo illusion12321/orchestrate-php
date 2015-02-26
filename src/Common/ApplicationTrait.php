@@ -13,7 +13,7 @@ trait ApplicationTrait
     /**
      * @var Application 
      */
-    protected $application;
+    private $_application;
 
     /**
      * Get current Application instance.
@@ -27,7 +27,7 @@ trait ApplicationTrait
         if ($required)
             $this->noApplicationException();
 
-        return $this->application;
+        return $this->_application;
     }
 
     /**
@@ -38,7 +38,7 @@ trait ApplicationTrait
      */
     public function setApplication(Application $application)
     {
-        $this->application = $application;
+        $this->_application = $application;
         
         return $this;
     }
@@ -48,7 +48,7 @@ trait ApplicationTrait
      */
     protected function noApplicationException()
     {
-        if (!$this->application) {
+        if (!$this->_application) {
             throw new \BadMethodCallException('There is no application set yet. Please do so through setApplication() method.');
         }
     }

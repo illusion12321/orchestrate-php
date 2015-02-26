@@ -11,7 +11,7 @@ trait KeyTrait
     /**
      * @var string
      */
-    protected $key = null;
+    private $_key = null;
     
     /**
      * @param boolean $required 
@@ -23,7 +23,7 @@ trait KeyTrait
         if ($required)
             $this->noKeyException();
 
-        return $this->key;
+        return $this->_key;
     }
 
     /**
@@ -31,7 +31,7 @@ trait KeyTrait
      */
     public function setKey($key)
     {
-        $this->key = (string) $key;
+        $this->_key = (string) $key;
 
         return $this;
     }
@@ -41,7 +41,7 @@ trait KeyTrait
      */
     protected function noKeyException()
     {
-        if (!$this->key) {
+        if (!$this->_key) {
             throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
         }
     }    

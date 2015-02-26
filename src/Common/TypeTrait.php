@@ -11,7 +11,7 @@ trait TypeTrait
     /**
      * @var string
      */
-    protected $type = null;
+    private $_type = null;
 
     /**
      * @param boolean $required
@@ -23,7 +23,7 @@ trait TypeTrait
         if ($required)
             $this->noTypeException();
 
-        return $this->type;
+        return $this->_type;
     }
 
     /**
@@ -31,7 +31,7 @@ trait TypeTrait
      */
     public function setType($type)
     {
-        $this->type = (string) $type;
+        $this->_type = (string) $type;
 
         return $this;
     }
@@ -41,7 +41,7 @@ trait TypeTrait
      */
     protected function noTypeException()
     {
-        if (!$this->type) {
+        if (!$this->_type) {
             throw new \BadMethodCallException('There is no type set yet. Please do so through setType() method.');
         }
     }    

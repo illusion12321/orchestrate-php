@@ -11,7 +11,7 @@ trait KindTrait
     /**
      * @var array
      */
-    protected $kind = null;
+    private $_kind = null;
     
     /**
      * @param boolean $required
@@ -23,7 +23,7 @@ trait KindTrait
         if ($required)
             $this->noKindException();
 
-        return $this->kind;
+        return $this->_kind;
     }
 
     /**
@@ -31,7 +31,7 @@ trait KindTrait
      */
     public function setKind($kind)
     {
-        $this->kind = (array) $kind;
+        $this->_kind = (array) $kind;
 
         return $this;
     }
@@ -41,7 +41,7 @@ trait KindTrait
      */
     protected function noKindException()
     {
-        if (empty($this->kind)) {
+        if (empty($this->_kind)) {
             throw new \BadMethodCallException('There is no kind set yet. Please do so through setKind() method.');
         }
     }

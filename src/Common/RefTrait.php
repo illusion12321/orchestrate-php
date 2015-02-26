@@ -11,14 +11,17 @@ trait RefTrait
     /**
      * @var string
      */
-    protected $ref = null;
+    private $_ref = null;
 
     /**
      * @return string
      */
-    public function getRef()
+    public function getRef($required = false)
     {
-        return $this->ref;
+        if ($required)
+            $this->noRefException();
+        
+        return $this->_ref;
     }
 
     /**
@@ -26,7 +29,7 @@ trait RefTrait
      */
     public function setRef($ref)
     {
-        $this->ref = (string) $ref;
+        $this->_ref = (string) $ref;
 
         return $this;
     }
@@ -34,7 +37,17 @@ trait RefTrait
     protected function setRefFromETag()
     {
         if ($etag = $this->response->getHeader('ETag')) {
-            $this->ref = trim($etag, '"');
+            $this->_ref = trim($etag, '"');
+        }
+    }
+
+    /**
+     * @throws \BadMethodCallException if 'ref' is not set yet.
+     */
+    protected function noRefException()
+    {
+        if (!$this->_ref) {
+            throw new \BadMethodCallException('There is no ref set yet. Please do so through setRef() method.');
         }
     }
 }

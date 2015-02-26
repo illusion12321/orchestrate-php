@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Common\CollectionTrait;
 use andrefelipe\Orchestrate\Common\KeyTrait;
 use andrefelipe\Orchestrate\Common\RefTrait;
 use andrefelipe\Orchestrate\Common\ValueTrait;
@@ -10,6 +11,7 @@ use andrefelipe\Orchestrate\Common\OrdinalTrait;
 
 class Event extends AbstractObject
 {
+    use CollectionTrait;
     use KeyTrait;
     use RefTrait;
     use ValueTrait;
@@ -19,11 +21,11 @@ class Event extends AbstractObject
 
     public function __construct($collection, $key = null, $type = null, $timestamp = 0, $ordinal = 0)
     {
-        parent::__construct($collection);
-        $this->key = $key;
-        $this->type = $type;
-        $this->timestamp = $timestamp;
-        $this->ordinal = $ordinal;
+        $this->setCollection($collection);
+        $this->setKey($key);
+        $this->setType($type);
+        $this->setTimestamp($timestamp);
+        $this->setOrdinal($ordinal);
     }
     
     /**
@@ -35,15 +37,15 @@ class Event extends AbstractObject
             'kind' => 'event',
             'path' => [
                 'collection' => $this->getCollection(),
-                'key' => $this->key,
-                'ref' => $this->ref,
-                'type' => $this->type,
-                'timestamp' => $this->timestamp,
-                'ordinal' => $this->ordinal,
+                'key' => $this->getKey(),
+                'ref' => $this->getRef(),
+                'type' => $this->getType(),
+                'timestamp' => $this->getTimestamp(),
+                'ordinal' => $this->getOrdinal(),
             ],
-            'value' => $this->data,
-            'timestamp' => $this->timestamp,
-            'ordinal' => $this->ordinal,
+            'value' => $this->getValue()->toArray(),
+            'timestamp' => $this->getTimestamp(),
+            'ordinal' => $this->getOrdinal(),
         ];
 
         return $result;
@@ -277,15 +279,6 @@ class Event extends AbstractObject
 
         if (isset($location[6])) {
             $this->ordinal = (int) $location[6];
-        }
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_null($offset) || (int) $offset === $offset) {
-           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of Event objects.');
-        } else {
-            $this->data[$offset] = $value;
         }
     }
 }
