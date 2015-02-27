@@ -2,12 +2,12 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Common\ToObjectInterface;
+use andrefelipe\Orchestrate\Common\ToJsonInterface;
 
 abstract class AbstractObject extends AbstractResponse implements
     \ArrayAccess,
     \Countable,
-    ToObjectInterface
+    ToJsonInterface
 {
     public function __get($key)
     {
@@ -78,11 +78,6 @@ abstract class AbstractObject extends AbstractResponse implements
         }
 
         return $result;
-    }
-
-    public function toObject()
-    {
-        return new ObjectArray($this->toArray());
     }
 
     public function toJson($options = 0, $depth = 512)

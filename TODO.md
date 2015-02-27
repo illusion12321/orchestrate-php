@@ -1,8 +1,5 @@
 # TODO and IDEAS
 
-- Review the use case of turning KeyValue array access to magic getters, so Phalcon views can be fed easier. Or even have a toObject()? ... still the best is to have a typed Class, not an abstract object, for that we have Arrays
-** Added the get/setters, now will consider to allow both getters and arrayAccess to read restricted properties like 'key', 'ref' etc... **
-
 - ! consider turning all objects paramaters to a single array!!?? -- long parameter list on constructor is too crazy to follow anyway...
 
 - Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped

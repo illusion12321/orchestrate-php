@@ -8,7 +8,7 @@ namespace andrefelipe\Orchestrate\Common;
  * Which credit goes to Andres Gutierrez and Eduar Carvajal of the
  * wonderful Phalcon project.
  */
-class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
+class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
 {
     /**
      * @param array $values Values to set to the object on construct.
@@ -142,11 +142,6 @@ class ObjectArray implements \ArrayAccess, \Countable, ToObjectInterface
         }
 
         return $result;
-    }
-
-    public function toObject()
-    {
-        return new self($this->toArray());
     }
 
     public function toJson($options = 0, $depth = 512)
