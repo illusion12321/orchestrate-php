@@ -7,7 +7,7 @@ class KeyValues extends AbstractList
      * @param int $limit
      * @param array $range
      * 
-     * @return KeyValues self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
     public function listCollection($limit = 10, array $range = null)
@@ -32,6 +32,6 @@ class KeyValues extends AbstractList
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
         
-        return $this;
+        return $this->isSuccess();
     }
 }

@@ -18,7 +18,7 @@ class Refs extends AbstractList
      * @param int $offset
      * @param boolean $values
      * 
-     * @return Refs self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
     public function listRefs($limit = 10, $offset = 0, $values = false)
@@ -37,7 +37,7 @@ class Refs extends AbstractList
         // request
         $this->request('GET', $path, ['query' => $parameters]);
         
-        return $this;
+        return $this->isSuccess();
     }
 
     protected function createChildrenClass(array $values)

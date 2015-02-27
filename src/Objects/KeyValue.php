@@ -41,8 +41,8 @@ class KeyValue extends AbstractObject
     public function reset()
     {
         parent::reset();
-        $this->setKey(null);
-        $this->setRef(null);
+        $this->_key = null;
+        $this->_ref = null;
         $this->resetValue();
     }
 
@@ -78,7 +78,7 @@ class KeyValue extends AbstractObject
     /**
      * @param string $ref
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
     public function get($ref = null)
@@ -101,14 +101,14 @@ class KeyValue extends AbstractObject
             $this->setRefFromETag();
         }
 
-        return $this;
+        return $this->isSuccess();
     }    
     
     /**
      * @param array $value
      * @param string $ref
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
     public function put(array $value = null, $ref = null)
@@ -146,13 +146,13 @@ class KeyValue extends AbstractObject
             }            
         }
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
      * @param array $value
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
     public function post(array $value = null)
@@ -172,7 +172,7 @@ class KeyValue extends AbstractObject
             $this->data = $value;
         }
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
@@ -180,7 +180,7 @@ class KeyValue extends AbstractObject
      * @param string $ref
      * @param boolean $reload
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
     public function patch(PatchBuilder $operations, $ref = null, $reload = false)
@@ -212,7 +212,7 @@ class KeyValue extends AbstractObject
             }
         }
         
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
@@ -220,7 +220,7 @@ class KeyValue extends AbstractObject
      * @param string $ref
      * @param boolean $reload
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
     public function patchMerge(array $value = null, $ref = null, $reload = false)
@@ -256,13 +256,13 @@ class KeyValue extends AbstractObject
             }            
         }
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
      * @param string $ref
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function delete($ref = null)
@@ -284,11 +284,11 @@ class KeyValue extends AbstractObject
         // request
         $this->request('DELETE', $path, $options);
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function purge()
@@ -305,7 +305,7 @@ class KeyValue extends AbstractObject
             $this->ref = null;
         }
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
@@ -313,7 +313,7 @@ class KeyValue extends AbstractObject
      * @param string $toCollection
      * @param string $toKey
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
     public function putRelation($kind, $toCollection, $toKey)
@@ -324,7 +324,7 @@ class KeyValue extends AbstractObject
         // request
         $this->request('PUT', $path);
         
-        return $this;
+        return $this->isSuccess();
     }
     
     /**
@@ -332,7 +332,7 @@ class KeyValue extends AbstractObject
      * @param string $toCollection
      * @param string $toKey
      * 
-     * @return KeyValue self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
     public function deleteRelation($kind, $toCollection, $toKey)
@@ -343,7 +343,7 @@ class KeyValue extends AbstractObject
         // request
         $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
         
-        return $this;
+        return $this->isSuccess();
     }
     
     protected function setKeyRefFromLocation()

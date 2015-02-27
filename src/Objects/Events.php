@@ -12,21 +12,22 @@ class Events extends AbstractList
     public function __construct($collection, $key = null, $type = null)
     {
         parent::__construct($collection);
-        $this->key = $key;
-        $this->type = $type;
+        $this->setKey($key);
+        $this->setType($type);
     }
 
     /**
      * @param int $limit
      * @param array $range
      * 
-     * @return Events self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-list
      */
     public function listEvents($limit = 10, array $range = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/';
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/events/'.$this->getType(true).'/';
         
         $parameters = ['limit' => $limit];
 
@@ -47,7 +48,7 @@ class Events extends AbstractList
         // request
         $this->request('GET', $path, ['query' => $parameters]);
         
-        return $this;
+        return $this->isSuccess();
     }
 
     protected function createChildrenClass(array $values)

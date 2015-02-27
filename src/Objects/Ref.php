@@ -6,27 +6,27 @@ class Ref extends KeyValue
     /**
      * @var boolean
      */
-    private $tombstone = false;    
+    private $_tombstone = false;    
 
     /**
      * @return boolean
      */
     public function isTombstone()
     {
-        return $this->tombstone;
+        return $this->_tombstone;
     }
     
     /**
      * @var int
      */
-    private $reftime = 0;
+    private $_reftime = 0;
 
     /**
      * @return int
      */
     public function getRefTime()
     {
-        return $this->reftime;
+        return $this->_reftime;
     }
 
     /**
@@ -36,10 +36,10 @@ class Ref extends KeyValue
     {
         $result = parent::toArray();
 
-        if ($this->reftime)
-            $result['reftime'] = $this->reftime;
+        if ($this->_reftime)
+            $result['reftime'] = $this->_reftime;
 
-        if ($this->isTombstone())
+        if ($this->_tombstone)
             $result['path']['tombstone'] = true;
         
         return $result;
@@ -48,8 +48,8 @@ class Ref extends KeyValue
     public function reset()
     {
         parent::reset();
-        $this->reftime = 0;
-        $this->tombstone = false;
+        $this->_reftime = 0;
+        $this->_tombstone = false;
     }
 
     public function init(array $values)
@@ -57,11 +57,11 @@ class Ref extends KeyValue
         parent::init($values);
 
         if (!empty($values['reftime'])) {
-            $this->reftime = (int) $values['reftime'];
+            $this->_reftime = (int) $values['reftime'];
         }
 
         if (!empty($values['path']['tombstone'])) {
-            $this->tombstone = true;
+            $this->_tombstone = true;
         }
 
         return $this;

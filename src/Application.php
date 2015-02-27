@@ -262,9 +262,11 @@ class Application
      */
     public function get($collection, $key, $ref = null)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->get($ref);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->get($ref);
+        return $item;
     }
 
     /**
@@ -278,9 +280,11 @@ class Application
      */
     public function put($collection, $key, array $value, $ref = null)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->put($value, $ref);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->put($value, $ref);
+        return $item;
     }
 
     /**
@@ -295,9 +299,11 @@ class Application
      */
     public function patch($collection, $key, PatchBuilder $operations, $ref = null, $reload = false)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->patch($operations, $ref, $reload);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->patch($operations, $ref, $reload);
+        return $item;
     }
 
     /**
@@ -312,9 +318,11 @@ class Application
      */
     public function patchMerge($collection, $key, array $value, $ref = null, $reload = false)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->patchMerge($value, $ref, $reload);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->patchMerge($value, $ref, $reload);
+        return $item;
     }
 
     /**
@@ -326,9 +334,11 @@ class Application
      */
     public function post($collection, array $value)
     {
-        return (new KeyValue($collection))
-            ->setApplication($this)
-            ->post($value);
+        $item = (new KeyValue($collection))
+            ->setApplication($this);
+
+        $item->post($value);
+        return $item;
     }
 
     /**
@@ -341,9 +351,11 @@ class Application
      */
     public function delete($collection, $key, $ref = null)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->delete($ref);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->delete($ref);
+        return $item;
     }
 
     /**
@@ -355,9 +367,11 @@ class Application
      */
     public function purge($collection, $key)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->purge();
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->purge();
+        return $item;
     }
 
     /**
@@ -370,9 +384,11 @@ class Application
      */
     public function listCollection($collection, $limit = 10, array $range = null)
     {
-        return (new KeyValues($collection))
-            ->setApplication($this)
-            ->listCollection($limit, $range);
+        $list = (new KeyValues($collection))
+            ->setApplication($this);
+
+        $list->listCollection($limit, $range);
+        return $list;
     }
     
 
@@ -390,9 +406,11 @@ class Application
      */
     public function listRefs($collection, $key, $limit = 10, $offset = 0, $values = false)
     {
-        return (new Refs($collection, $key))
-            ->setApplication($this)
-            ->listRefs($limit, $offset, $values);
+        $list = (new Refs($collection, $key))
+            ->setApplication($this);
+
+        $list->listRefs($limit, $offset, $values);
+        return $list;
     }
 
 
@@ -411,9 +429,11 @@ class Application
      */
     public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
-        return (new Search($collection))
-            ->setApplication($this)
-            ->search($query, $sort, $aggregate, $limit, $offset);
+        $list = (new Search($collection))
+            ->setApplication($this);
+
+        $list->search($query, $sort, $aggregate, $limit, $offset);
+        return $list;
     }
 
 
@@ -431,9 +451,11 @@ class Application
      */
     public function getEvent($collection, $key, $type, $timestamp, $ordinal)
     {
-        return (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this)
-            ->get();
+        $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this);
+
+        $item->get();
+        return $item;
     }
 
     /**
@@ -450,9 +472,11 @@ class Application
      */
     public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref = null)
     {
-        return (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this)
-            ->put($value, $ref);
+        $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this);
+
+        $item->put($value, $ref);
+        return $item;
     }
 
     /**
@@ -467,9 +491,11 @@ class Application
      */
     public function postEvent($collection, $key, $type, array $value, $timestamp = 0)
     {
-        return (new Event($collection, $key, $type))
-            ->setApplication($this)
-            ->post($value, $timestamp);
+        $item = (new Event($collection, $key, $type))
+            ->setApplication($this);
+
+        $item->post($value, $timestamp);
+        return $item;
     }
 
     /**
@@ -485,9 +511,11 @@ class Application
      */
     public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref = null)
     {
-        return (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this)
-            ->delete($ref);
+        $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this);
+
+        $item->delete($ref);
+        return $item;
     }
 
    /**
@@ -502,9 +530,11 @@ class Application
      */
     public function purgeEvent($collection, $key, $type, $timestamp, $ordinal)
     {
-        return (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this)
-            ->purge();
+        $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
+            ->setApplication($this);
+
+        $item->purge();
+        return $item;
     }
 
     /**
@@ -519,9 +549,11 @@ class Application
      */
     public function listEvents($collection, $key, $type, $limit = 10, array $range = null)
     {
-        return (new Events($collection, $key, $type))
-            ->setApplication($this)
-            ->listEvents($limit, $range);
+        $list = (new Events($collection, $key, $type))
+            ->setApplication($this);
+
+        $list->listEvents($limit, $range);
+        return $list;
     }
 
 
@@ -539,9 +571,11 @@ class Application
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->putRelation($kind, $toCollection, $toKey);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->putRelation($kind, $toCollection, $toKey);
+        return $item;
     }
 
     /**
@@ -556,9 +590,11 @@ class Application
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        return (new KeyValue($collection, $key))
-            ->setApplication($this)
-            ->deleteRelation($kind, $toCollection, $toKey);
+        $item = (new KeyValue($collection, $key))
+            ->setApplication($this);
+
+        $item->deleteRelation($kind, $toCollection, $toKey);
+        return $item;
     }
 
     /**
@@ -573,8 +609,10 @@ class Application
      */
     public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
     {
-        return (new Graph($collection, $key, $kind))
-            ->setApplication($this)
-            ->listRelations($limit, $offset);
+        $list = (new Graph($collection, $key, $kind))
+            ->setApplication($this);
+
+        $list->listRelations($limit, $offset);
+        return $list;
     }
 }

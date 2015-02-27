@@ -6,19 +6,19 @@ class SearchResult extends KeyValue
     /**
      * @var float
      */
-    private $score = 0;
+    private $_score = 0;
 
     /**
      * @var float
      */
-    private $distance = 0;
+    private $_distance = 0;
 
     /**
      * @return float
      */
     public function getScore()
     {
-        return $this->score;
+        return $this->_score;
     }    
 
     /**
@@ -26,7 +26,7 @@ class SearchResult extends KeyValue
      */
     public function getDistance()
     {
-        return $this->distance;
+        return $this->_distance;
     }
 
     /**
@@ -36,11 +36,11 @@ class SearchResult extends KeyValue
     {
         $result = parent::toArray();
 
-        if ($this->score)
-            $result['score'] = $this->score;
+        if ($this->_score)
+            $result['score'] = $this->_score;
 
-        if ($this->distance)
-            $result['distance'] = $this->distance;
+        if ($this->_distance)
+            $result['distance'] = $this->_distance;
         
         return $result;
     }
@@ -48,8 +48,8 @@ class SearchResult extends KeyValue
     public function reset()
     {
         parent::reset();
-        $this->score = 0;
-        $this->distance = 0;
+        $this->_score = 0;
+        $this->_distance = 0;
     }
 
     public function init(array $values)
@@ -57,11 +57,11 @@ class SearchResult extends KeyValue
         parent::init($values);
 
         if (!empty($values['score'])) {
-            $this->score = (float) $values['score'];
+            $this->_score = (float) $values['score'];
         }
 
         if (!empty($values['distance'])) {
-            $this->distance = (float) $values['distance'];
+            $this->_distance = (float) $values['distance'];
         }
 
         return $this;

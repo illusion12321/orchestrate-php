@@ -43,7 +43,7 @@ class Event extends AbstractObject
                 'timestamp' => $this->getTimestamp(),
                 'ordinal' => $this->getOrdinal(),
             ],
-            'value' => $this->getValue()->toArray(),
+            'value' => parent::toArray(),
             'timestamp' => $this->getTimestamp(),
             'ordinal' => $this->getOrdinal(),
         ];
@@ -54,12 +54,12 @@ class Event extends AbstractObject
     public function reset()
     {
         parent::reset();
-        $this->key = null;
-        $this->ref = null;
-        $this->type = null;
-        $this->timestamp = 0;
-        $this->ordinal = 0;
-        $this->data = [];
+        $this->_key = null;
+        $this->_ref = null;
+        $this->_type = null;
+        $this->_timestamp = 0;
+        $this->_ordinal = 0;
+        $this->resetValue();
     }
 
     public function init(array $values)
@@ -79,29 +79,29 @@ class Event extends AbstractObject
                 $this->setCollection($value);
 
             elseif ($key === 'key')
-                $this->key = $value;
+                $this->setKey($value);
 
             elseif ($key === 'ref')
-                $this->ref = $value;
+                $this->setRef($value);
 
             elseif ($key === 'type')
-                $this->type = $value;
+                $this->setType($value);
 
             elseif ($key === 'timestamp')
-                $this->timestamp = (int) $value;
+                $this->setTimestamp((int) $value);
 
             elseif ($key === 'ordinal')
-                $this->ordinal = (int) $value;
+                $this->setOrdinal((int) $value);
 
             elseif ($key === 'value')
-                $this->data = (array) $value;
+                $this->setValue((array) $value);
         }
 
         return $this;
     }
 
     /**
-     * @return Event self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-get
      */
     public function get()
@@ -114,24 +114,22 @@ class Event extends AbstractObject
         $this->request('GET', $path);
 
         // set values
-        $this->ref = null;
+        $this->resetValue();
+        $this->ref = null; //TODO confirm, what's ref on events again? why KeyValue dont reset it
 
         if ($this->isSuccess()) {
-            $this->data = $this->body;
+            $this->setValue($this->getBody());
             $this->setRefFromETag();
         }
-        else {            
-            $this->data = [];
-        }
 
-        return $this;
+        return $this->isSuccess();
     }
     
     /**
      * @param array $value
      * @param string $ref
      * 
-     * @return Event self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-put
      */
     public function put(array $value = null, $ref = null)
@@ -141,7 +139,10 @@ class Event extends AbstractObject
         }
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/events/'.$this->getType(true).'/'.$this->getTimestamp(true)
+            .'/'.$this->getOrdinal(true);
+        
         $options = ['json' => $value];
 
         if ($ref) {
@@ -165,14 +166,14 @@ class Event extends AbstractObject
         // set value as input value, even if not success, so we can retry
         $this->data = $value;
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
      * @param array $value
      * @param int $timestamp
      * 
-     * @return Event self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-post
      */
     public function post(array $value = null, $timestamp = 0)
@@ -205,13 +206,13 @@ class Event extends AbstractObject
         // set value as input value, even if not success, so we can retry
         $this->data = $value;
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
      * @param string $ref
      * 
-     * @return Event self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function delete($ref = null)
@@ -238,12 +239,12 @@ class Event extends AbstractObject
             $this->ref = null;
         }
 
-        return $this;
+        return $this->isSuccess();
     }
 
     /**
      * 
-     * @return Event self
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function purge()
@@ -260,7 +261,7 @@ class Event extends AbstractObject
             $this->ref = null;
         }
 
-        return $this;
+        return $this->isSuccess();
     }
 
     protected function setTimestampFromLocation()
