@@ -23,8 +23,9 @@ class Search extends AbstractList
     {
         $result = parent::toArray();
 
-        if (!empty($this->_aggregates))
+        if (!empty($this->_aggregates)) {
             $result['aggregates'] = $this->_aggregates;
+        }
         
         return $result;
     }
@@ -77,8 +78,8 @@ class Search extends AbstractList
 
         if ($this->isSuccess()) {
 
-            if (!empty($this->body['aggregates'])) {
-                $this->_aggregates = $this->body['aggregates'];
+            if (isset($this->body['aggregates'])) {
+                $this->_aggregates = (array) $this->body['aggregates'];
             }
         }
     }    

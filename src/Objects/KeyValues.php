@@ -34,4 +34,20 @@ class KeyValues extends AbstractList
         
         return $this->isSuccess();
     }
+
+    // if ($this->_totalCount === null) {
+
+    //     // get from Orchestrate
+    //     $response = $this->getApplication(true)
+    //         ->request('GET', $this->getCollection(true), ['query' => ['limit' => 1]]);
+
+    //     if ($response) {
+    //         $body = $response->json();
+    //         print_r($body);
+            
+    //         if (!empty($body['total_count'])) {
+    //             $this->_totalCount = (int) $body['total_count'];
+    //         }
+    //     }                
+    // }
 }

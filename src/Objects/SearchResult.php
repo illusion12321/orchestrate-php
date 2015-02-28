@@ -56,11 +56,11 @@ class SearchResult extends KeyValue
     {
         parent::init($values);
 
-        if (!empty($values['score'])) {
+        if (isset($values['score'])) {
             $this->_score = (float) $values['score'];
         }
 
-        if (!empty($values['distance'])) {
+        if (isset($values['distance'])) {
             $this->_distance = (float) $values['distance'];
         }
 

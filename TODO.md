@@ -4,15 +4,15 @@
 
 - Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped
 
-- Add totalCount method to Collection?
+- Add totalCount method to Collection or KeyValues?
 
 - Maybe even a getAll to KeyValues?
 
 - Add a getFirst to Collection/Application?
 
-- Allow Collection/Application to change the list's children class! Specially important for Models.
+- Add an addNext addPrev to List, so we get the next set of results without erasing the last page?
 
-- Change some direct var accesss ($this->key) to the respective getter ($this->getKey(), $this->setValue()), but review carefully because it's not good for all occasions, like the reset method
+- Allow Collection/Application to change the list's children class! Specially important for Models.
 
 - Inline Docs
 

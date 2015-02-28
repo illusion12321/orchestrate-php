@@ -56,12 +56,12 @@ class Ref extends KeyValue
     {
         parent::init($values);
 
-        if (!empty($values['reftime'])) {
+        if (isset($values['reftime'])) {
             $this->_reftime = (int) $values['reftime'];
         }
 
-        if (!empty($values['path']['tombstone'])) {
-            $this->_tombstone = true;
+        if (isset($values['path']['tombstone'])) {
+            $this->_tombstone = (bool) $values['path']['tombstone'];
         }
 
         return $this;

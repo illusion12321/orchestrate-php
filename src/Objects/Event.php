@@ -4,7 +4,6 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Common\CollectionTrait;
 use andrefelipe\Orchestrate\Common\KeyTrait;
 use andrefelipe\Orchestrate\Common\RefTrait;
-use andrefelipe\Orchestrate\Common\ValueTrait;
 use andrefelipe\Orchestrate\Common\TypeTrait;
 use andrefelipe\Orchestrate\Common\TimestampTrait;
 use andrefelipe\Orchestrate\Common\OrdinalTrait;
@@ -14,7 +13,6 @@ class Event extends AbstractObject
     use CollectionTrait;
     use KeyTrait;
     use RefTrait;
-    use ValueTrait;
     use TypeTrait;
     use TimestampTrait;
     use OrdinalTrait;
@@ -88,10 +86,10 @@ class Event extends AbstractObject
                 $this->setType($value);
 
             elseif ($key === 'timestamp')
-                $this->setTimestamp((int) $value);
+                $this->setTimestamp($value);
 
             elseif ($key === 'ordinal')
-                $this->setOrdinal((int) $value);
+                $this->setOrdinal($value);
 
             elseif ($key === 'value')
                 $this->setValue((array) $value);
@@ -107,7 +105,8 @@ class Event extends AbstractObject
     public function get()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
 
      
         // request
@@ -115,7 +114,7 @@ class Event extends AbstractObject
 
         // set values
         $this->resetValue();
-        $this->ref = null; //TODO confirm, what's ref on events again? why KeyValue dont reset it
+        $this->_ref = null; //TODO confirm, what's ref on events again? why KeyValue dont reset it
 
         if ($this->isSuccess()) {
             $this->setValue($this->getBody());
@@ -134,22 +133,20 @@ class Event extends AbstractObject
      */
     public function put(array $value = null, $ref = null)
     {
-        if ($value === null) {
-            $value = $this->data;
-        }
+        $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true)
             .'/events/'.$this->getType(true).'/'.$this->getTimestamp(true)
             .'/'.$this->getOrdinal(true);
         
-        $options = ['json' => $value];
+        $options = ['json' => $newValue];
 
         if ($ref) {
 
             // set If-Match
             if ($ref === true) {
-                $ref = $this->ref;
+                $ref = $this->getRef();
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
@@ -161,10 +158,11 @@ class Event extends AbstractObject
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
-        }
 
-        // set value as input value, even if not success, so we can retry
-        $this->data = $value;
+            if ($value !== null) {
+                $this->setValue($newValue);
+            }
+        }
 
         return $this->isSuccess();
     }
@@ -177,34 +175,33 @@ class Event extends AbstractObject
      * @link https://orchestrate.io/docs/apiref#events-post
      */
     public function post(array $value = null, $timestamp = 0)
-    {
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true);
+    {        
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/events/'.$this->getType(true);
 
         if ($timestamp === true) {
-            $timestamp = $this->timestamp;
+            $timestamp = $this->getTimestamp();
         }        
         if ($timestamp) {
             $path .= '/'.$timestamp;
         }
 
-        if ($value === null) {
-            $value = $this->data;
-        }
+        $newValue = $value === null ? parent::toArray() : $value;
 
         // request
-        $this->request('POST', $path, ['json' => $value]);
+        $this->request('POST', $path, ['json' => $newValue]);
         
         // set values
         if ($this->isSuccess()) {
-            $this->ref = null;
-            $this->timestamp = 0;
-            $this->ordinal = 0;
+            $this->_ref = null;
+            $this->_timestamp = 0;
+            $this->_ordinal = 0;
             $this->setRefFromETag();
             $this->setTimestampFromLocation();
+            if ($value !== null) {
+                $this->setValue($newValue);
+            }
         }
-
-        // set value as input value, even if not success, so we can retry
-        $this->data = $value;
 
         return $this->isSuccess();
     }
@@ -218,14 +215,16 @@ class Event extends AbstractObject
     public function delete($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
-        $options = ['query' => ['purge' => 'true']];
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+
+        $options = ['query' => ['purge' => 'true']]; // currently required by Orchestrate
 
         if ($ref) {
 
             // set If-Match
             if ($ref === true) {
-                $ref = $this->ref;
+                $ref = $this->getRef();
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
@@ -236,7 +235,7 @@ class Event extends AbstractObject
 
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
-            $this->ref = null;
+            $this->_ref = null;
         }
 
         return $this->isSuccess();
@@ -250,7 +249,9 @@ class Event extends AbstractObject
     public function purge()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'.$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+
         $options = ['query' => ['purge' => 'true']];
 
         // request
@@ -258,7 +259,7 @@ class Event extends AbstractObject
 
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
-            $this->ref = null;
+            $this->_ref = null;
         }
 
         return $this->isSuccess();
@@ -268,18 +269,18 @@ class Event extends AbstractObject
     {
         // Location: /v0/collection/key/events/type/1398286518286/6
 
-        $location = $this->response->getHeader('Location');
+        $location = $this->getResponse()->getHeader('Location');
         if (!$location)
-            $location = $this->response->getHeader('Content-Location');
+            $location = $this->getResponse()->getHeader('Content-Location');
 
         $location = explode('/', trim($location, '/'));
         
         if (isset($location[5])) {
-            $this->timestamp = (int) $location[5];
+            $this->setTimestamp($location[5]);
         }
 
         if (isset($location[6])) {
-            $this->ordinal = (int) $location[6];
+            $this->setOrdinal($location[6]);
         }
     }
 }

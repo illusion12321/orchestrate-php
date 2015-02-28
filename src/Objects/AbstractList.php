@@ -2,35 +2,38 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\CollectionTrait;
-use andrefelipe\Orchestrate\Common\ToArrayInterface;
+use andrefelipe\Orchestrate\Common\ObjectArray;
+use andrefelipe\Orchestrate\Common\ToJsonInterface;
 
 abstract class AbstractList extends AbstractResponse implements
+    \ArrayAccess,
     \IteratorAggregate,
     \Countable,
-    ToArrayInterface
+    ListInterface,
+    ToJsonInterface
 {
     use CollectionTrait;
-
-    /**
-     * @var int
-     */
-    protected $count = 0;
-
-    /**
-     * @var int
-     */
-    protected $totalCount = 0;
-
-    /**
-     * @var string
-     */
-    protected $nextUrl = '';
-
-    /**
-     * @var string
-     */
-    protected $prevUrl = '';
     
+    /**
+     * @var ObjectArray
+     */
+    private $_results;
+
+    /**
+     * @var int
+     */
+    private $_totalCount = null;
+
+    /**
+     * @var string
+     */
+    private $_nextUrl = '';
+
+    /**
+     * @var string
+     */
+    private $_prevUrl = '';
+
     /**
      * @param string $collection
      */
@@ -39,45 +42,76 @@ abstract class AbstractList extends AbstractResponse implements
         $this->setCollection($collection);
     }
 
+    public function offsetGet($offset)
+    {
+        return $this->getResults()[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->getResults()[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        $this->getResults()[$offset] = null;
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->getResults()[$offset]);
+    }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->getResults());
+    }
+
+    public function count()
+    {
+        return count($this->getResults());
+    }
+
+    public function toArray()
+    {
+        $result = [
+            'kind' => 'list',
+            'count' => count($this->getResults()),
+            'total_count' => $this->_totalCount,
+            'results' => $this->getResults()->toArray(),
+        ];
+
+        if ($this->_nextUrl) {
+            $result['next'] = $this->_nextUrl;
+        }
+        if ($this->_prevUrl) {
+            $result['prev'] = $this->_prevUrl;
+        }
+
+        return $result;
+    }
+
+    public function toJson($options = 0, $depth = 512)
+    {
+        return json_encode($this->toArray(), $options, $depth);
+    }
+
     /**
      * @return array
      */
     public function getResults()
     {
-        return $this->data;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $result = [
-            'kind' => 'list',
-            'count' => count($this->data),
-            'total_count' => $this->totalCount,
-            'results' => [],
-        ];
-
-        foreach ($this->getResults() as $object) {
-            $result['results'][] = $object->toArray();
+        if (!$this->_results) {
+            $this->_results = new ObjectArray();
         }
-
-        if ($this->nextUrl)
-            $result['next'] = $this->nextUrl;
-
-        if ($this->prevUrl)
-            $result['prev'] = $this->prevUrl;
-
-        return $result;
+        return $this->_results;
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function mergeResults(ListInterface $list)
     {
-        return $this->count;
+        if ($list) {
+            $this->getResults()->merge($list->getResults());
+        }
     }
 
     /**
@@ -85,7 +119,7 @@ abstract class AbstractList extends AbstractResponse implements
      */
     public function getTotalCount()
     {
-        return $this->totalCount;
+        return $this->_totalCount;
     }
 
     /**
@@ -93,7 +127,7 @@ abstract class AbstractList extends AbstractResponse implements
      */
     public function getNextUrl()
     {
-        return $this->nextUrl;
+        return $this->_nextUrl;
     }
 
     /**
@@ -101,29 +135,69 @@ abstract class AbstractList extends AbstractResponse implements
      */
     public function getPrevUrl()
     {
-        return $this->prevUrl;
+        return $this->_prevUrl;
     }
 
     public function reset()
     {
         parent::reset();
-        $this->count = 0;
-        $this->totalCount = 0;
-        $this->nextUrl = '';
-        $this->prevUrl = '';
-        $this->data = [];
+        $this->_totalCount = null;
+        $this->_nextUrl = '';
+        $this->_prevUrl = '';
+        $this->_results = null;
     }
 
+    /**
+     * @return boolean Success of operation.
+     */
     public function next()
     {
-        return $this->getUrl($this->nextUrl);
+        return $this->getUrl($this->_nextUrl);
     }
 
+    /**
+     * @return boolean Success of operation.
+     */
     public function prev()
     {
-        return $this->getUrl($this->prevUrl);
+        return $this->getUrl($this->_prevUrl);
     }
 
+    /**
+     * Request and parse the results.
+     */
+    protected function request($method, $url = null, array $options = [])
+    {
+        $this->reset();
+        parent::request($method, $url, $options);
+
+        if ($this->isSuccess()) {
+            $body = $this->getBody();
+
+            if (!empty($body['results'])) {
+                $this->_results = new ObjectArray(array_map(
+                    [$this, 'createChildrenClass'],
+                    $body['results']
+                ));
+            }
+
+            if (isset($body['total_count'])) {
+                $this->_totalCount = (int) $body['total_count'];
+            }
+
+            if (!empty($body['next'])) {
+                $this->_nextUrl = $body['next'];
+            }
+
+            if (!empty($body['prev'])) {
+                $this->_prevUrl = $body['prev'];
+            }
+        }
+    }
+
+    /**
+     * Helper for next/prev methods, to sanitize the URL and request.
+     */
     protected function getUrl($url)
     {
         // reset object
@@ -137,38 +211,10 @@ abstract class AbstractList extends AbstractResponse implements
 
             // request
             $this->request('GET', $url);
+            return $this->isSuccess();
         }
 
-        return $this;
-    }
-
-    protected function request($method, $url = null, array $options = [])
-    {
-        $this->reset();
-        parent::request($method, $url, $options);
-
-        if ($this->isSuccess()) {
-            
-            if (!empty($this->body['results'])) {
-                $this->data = array_map([$this, 'createChildrenClass'], $this->body['results']);
-            }
-
-            if (!empty($this->body['count'])) {
-                $this->count = (int) $this->body['count'];
-            }
-
-            if (!empty($this->body['total_count'])) {
-                $this->totalCount = (int) $this->body['total_count'];
-            }
-
-            if (!empty($this->body['next'])) {
-                $this->nextUrl = $this->body['next'];
-            }
-
-            if (!empty($this->body['prev'])) {
-                $this->prevUrl = $this->body['prev'];
-            }
-        }
+        return false;
     }
     
     protected function createChildrenClass(array $values)
@@ -176,15 +222,5 @@ abstract class AbstractList extends AbstractResponse implements
         return (new KeyValue($this->getCollection()))
             ->setApplication($this->getApplication())
             ->init($values);
-    }
-
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->getResults());
-    }
-
-    public function count()
-    {
-        return count($this->getResults());
     }
 }

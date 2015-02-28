@@ -2,36 +2,16 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
+use andrefelipe\Orchestrate\Common\ObjectArrayTrait;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 
 abstract class AbstractObject extends AbstractResponse implements
     \ArrayAccess,
     \Countable,
+    ValueInterface,
     ToJsonInterface
 {
-    public function __get($key)
-    {
-        return isset($this->{$key}) ? $this->{$key} : null;
-    }
-
-    public function __set($key, $value)
-    {
-        if (is_array($value)) {
-            $this->{$key} = new ObjectArray($value);
-        } else {
-            $this->{$key} = $value;
-        }
-    }
-
-    public function __unset($key)
-    {
-        return $this->{$key} = null;
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->{$offset};
-    }
+    use ObjectArrayTrait;
 
     public function offsetSet($offset, $value)
     {
@@ -42,46 +22,37 @@ abstract class AbstractObject extends AbstractResponse implements
         $this->{(string) $offset} = $value;
     }
 
-    public function offsetUnset($offset)
+    public function getValue()
     {
-        $this->{$offset} = null;
+        return (new ObjectArray())->merge($this);
     }
 
-    public function offsetExists($offset)
+    public function setValue(array $values)
     {
-        return isset($this->{$offset});
-    }
-
-    public function count()
-    {
-        return count(get_object_vars($this));
-    }
-
-    public function toArray()
-    {
-        $result = [];
-
-        foreach (get_object_vars($this) as $key => $value) {
-
-            if ($value === null) {
-                continue;
-            }
-            if (is_object($value)) {
-                if (method_exists($value, 'toArray')) {
-                    $result[$key] = $value->toArray();
-                } else {
-                    $result[$key] = $value;
-                }
-            } else {
-                $result[$key] = $value;
+        if ($values) {
+            foreach ($values as $key => $value) {
+                $this->{(string) $key} = $value;
             }
         }
-
-        return $result;
+        return $this;
     }
 
-    public function toJson($options = 0, $depth = 512)
+    public function mergeValue(ValueInterface $item)
     {
-        return json_encode($this->toArray(), $options, $depth);
+        if ($item) {
+            $this->_mergeObject($item);
+        }
+    }
+
+    public function resetValue()
+    {        
+        $properties = (new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC);
+        // strictly gets the public properties, otherwise we would be getting
+        // all properties accessible on this scope (i.e. protected and privates)
+
+        foreach ($properties as $property) {
+            $this->{$property->name} = null;
+        }        
+        return $this;
     }
 }

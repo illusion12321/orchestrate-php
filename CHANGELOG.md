@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## HEAD
+- KeyValue stores values directly in itself, making it a snap to use as Models!
+- Introduces the ObjectArray, a class that makes data accessible either via object syntax or array syntax.
+- Added methods to merge one object into another (merge search results, merge items Value).
+- All object's operations now return boolean of the success, i.e. $keyValue->get(), $keyValue->put(). Application and Collection still returns the respective object instance.
+- Objects now have a handy toJson method.
+
 ## 0.6.0 - 2015-02-04
 - Removed the automatic client linking for the Objects, it has to be linked manually with setApplication(). It would create conflicts on larger systems, where multiple clients could be created anywhere.
 - The Collection now has a __toString, to get the collection name

@@ -4,7 +4,6 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Common\CollectionTrait;
 use andrefelipe\Orchestrate\Common\KeyTrait;
 use andrefelipe\Orchestrate\Common\RefTrait;
-use andrefelipe\Orchestrate\Common\ValueTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject
@@ -12,7 +11,6 @@ class KeyValue extends AbstractObject
     use CollectionTrait;
     use KeyTrait;
     use RefTrait;
-    use ValueTrait;
 
     public function __construct($collection, $key = null)
     {
@@ -113,7 +111,7 @@ class KeyValue extends AbstractObject
      */
     public function put(array $value = null, $ref = null)
     {
-        $newValue = $value === null ? $this->data : $value;
+        $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
@@ -123,7 +121,7 @@ class KeyValue extends AbstractObject
 
             // set If-Match
             if ($ref === true) {
-                $ref = $this->ref;
+                $ref = $this->getRef();
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
@@ -141,9 +139,9 @@ class KeyValue extends AbstractObject
         if ($this->isSuccess()) {
             $this->setRefFromETag();
 
-            if ($value === null) {
-                $this->data = $newValue;
-            }            
+            if ($value !== null) {
+                $this->setValue($newValue);
+            }
         }
 
         return $this->isSuccess();
@@ -157,19 +155,19 @@ class KeyValue extends AbstractObject
      */
     public function post(array $value = null)
     {
-        if ($value === null) {
-            $value = $this->data;
-        }
+        $newValue = $value === null ? parent::toArray() : $value;
 
         // request
-        $this->request('POST', $this->getCollection(true), ['json' => $value]);
+        $this->request('POST', $this->getCollection(true), ['json' => $newValue]);
         
         // set values
         if ($this->isSuccess()) {
-            $this->key = null;
-            $this->ref = null;
+            $this->_key = null;
+            $this->_ref = null;
             $this->setKeyRefFromLocation();
-            $this->data = $value;
+            if ($value !== null) {
+                $this->setValue($newValue);
+            }
         }
 
         return $this->isSuccess();
@@ -193,7 +191,7 @@ class KeyValue extends AbstractObject
 
             // set If-Match
             if ($ref === true) {
-                $ref = $this->ref;
+                $ref = $this->getRef();
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
@@ -225,19 +223,17 @@ class KeyValue extends AbstractObject
      */
     public function patchMerge(array $value = null, $ref = null, $reload = false)
     {
-        if ($value === null) {
-            $value = $this->data;
-        }
+        $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
-        $options = ['json' => $value];
+        $options = ['json' => $newValue];
 
         if ($ref) {
 
             // set If-Match
             if ($ref === true) {
-                $ref = $this->ref;
+                $ref = $this->getRef();
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
@@ -253,7 +249,7 @@ class KeyValue extends AbstractObject
             // reload the Value from API
             if ($reload) {
                 $this->get($this->getRef());
-            }            
+            }
         }
 
         return $this->isSuccess();
@@ -275,7 +271,7 @@ class KeyValue extends AbstractObject
 
             // set If-Match
             if ($ref === true) {
-                $ref = $this->ref;
+                $ref = $this->getRef();
             }
 
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
@@ -302,7 +298,7 @@ class KeyValue extends AbstractObject
         
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
-            $this->ref = null;
+            $this->_ref = null;
         }
 
         return $this->isSuccess();
@@ -319,7 +315,8 @@ class KeyValue extends AbstractObject
     public function putRelation($kind, $toCollection, $toKey)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
         
         // request
         $this->request('PUT', $path);
@@ -338,7 +335,8 @@ class KeyValue extends AbstractObject
     public function deleteRelation($kind, $toCollection, $toKey)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
 
         // request
         $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
@@ -350,15 +348,15 @@ class KeyValue extends AbstractObject
     {
         // Location: /v0/collection/key/refs/ad39c0f8f807bf40
 
-        $location = $this->response->getHeader('Location');
+        $location = $this->getResponse()->getHeader('Location');
         if (!$location)
-            $location = $this->response->getHeader('Content-Location');
+            $location = $this->getResponse()->getHeader('Content-Location');
 
         $location = explode('/', trim($location, '/'));
         if (count($location) > 4)
         {
-            $this->key = $location[2];
-            $this->ref = $location[4];
+            $this->setKey($location[2]);
+            $this->setRef($location[4]);
         }
     }
 }
