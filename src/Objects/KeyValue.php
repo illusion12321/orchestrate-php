@@ -1,9 +1,9 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\CollectionTrait;
-use andrefelipe\Orchestrate\Common\KeyTrait;
-use andrefelipe\Orchestrate\Common\RefTrait;
+use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
+use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
+use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject

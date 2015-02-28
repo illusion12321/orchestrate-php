@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Common;
+namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait that implements the Kind methods.

@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\CollectionTrait;
+use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 

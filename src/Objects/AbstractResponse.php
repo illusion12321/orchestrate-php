@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ApplicationTrait;
+use andrefelipe\Orchestrate\Objects\Properties\ApplicationTrait;
 use \GuzzleHttp\Message\Response;
 
 abstract class AbstractResponse

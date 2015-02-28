@@ -1,8 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Common\ApplicationTrait;
-use andrefelipe\Orchestrate\Common\CollectionTrait;
+use andrefelipe\Orchestrate\Objects\Properties\ApplicationTrait;
+use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**

@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\KeyTrait;
+use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 
 class Refs extends AbstractList
 {

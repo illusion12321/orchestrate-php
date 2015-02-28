@@ -1,8 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\KeyTrait;
-use andrefelipe\Orchestrate\Common\KindTrait;
+use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
+use andrefelipe\Orchestrate\Objects\Properties\KindTrait;
 
 class Graph extends AbstractList
 {
