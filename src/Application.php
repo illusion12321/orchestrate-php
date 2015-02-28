@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\KeyValues;
 use andrefelipe\Orchestrate\Objects\Refs;

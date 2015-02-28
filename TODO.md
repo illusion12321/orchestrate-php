@@ -2,7 +2,13 @@
 
 - Allow Collection/Application to change the list's children class! Specially important for Models.
 
-- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped
+- Rethink the Collection class, turning into a resource-like object, acting as a KeyValue storage, by key
+
+- Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
+
+- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and bring back the static getDefault()
+
+- Study the best way to integrate Refs and Events into a KeyValue for easy access/management ? unite the KeyValues class with Search (turning into Collection), then move Refs and Events into KeyValue?
 
 - Implement some common interfaces, and general organization of the base classes
 
@@ -20,15 +26,11 @@
 
 - Inline Docs
 
-- Reconsider adding methods of getEvent, postEvent, etc, to KeyValue?
-
 - Implement Tests
 
 - Add Docs (ApiGen, Sami or something that can be created from the source files)?
 
 - Implement async operations?
-
-- Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
 - Add sort operations to List objects? basically just a map to PHP sort?
 
@@ -36,3 +38,6 @@
 
 - method to move a KeyValue to another Collection or Application?
 
+- add serialize/unserialize? Review the use case. (unserialize could use init, and serialize toArray)
+
+- event system?

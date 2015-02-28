@@ -114,7 +114,7 @@ class Event extends AbstractObject
 
         // set values
         $this->resetValue();
-        $this->_ref = null; //TODO confirm, what's ref on events again? why KeyValue dont reset it
+        $this->_ref = null;
 
         if ($this->isSuccess()) {
             $this->setValue($this->getBody());

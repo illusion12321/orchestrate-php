@@ -1,17 +1,18 @@
 Orchestrate.io PHP Client
 ======
 
-A very straight forward PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
+A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
 
-- PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in on every response.
-- Orchestrate's error responses are honored.
+- PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members) [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
+- To create an object model, just extend a KeyValue and define the public properties.
+- Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
 - PHP must be 5.4 or higher.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
-- JSON is parsed as, and expected to be, associative array.
-- You may find it a very user-friendly client.
 
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
+
+*This library is still at 0.* version, there is a [lot of ideas](https://github.com/andrefelipe/orchestrate-php/blob/master/TODO.md) to look at*.
 
 [![Latest Stable Version](https://poser.pugx.org/andrefelipe/orchestrate-php/v/stable.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
 [![License](https://poser.pugx.org/andrefelipe/orchestrate-php/license.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
@@ -120,10 +121,47 @@ $application = new Application();
 $item = new KeyValue('collection', 'key'); // no API calls yet
 $item->setApplication($application); // link to the client
 
-$item->get(); // API call to get the current key
+if ($item->get()) { // API call to get the current key
+
+    // returns boolean of success
+}
+
 $item->get('20c14e8965d6cbb0'); // get a specific ref
-$item->put(['title' => 'My Title']); // puts a new value
-$item->delete(); // delete the current ref
+
+// add some values
+$item->name = 'Lorem Ipsum';
+$item->role = ['member', 'user'];
+$item->mergeValue(['role' => ['admin']]); // merge values
+
+// put back
+if ($item->put()) {
+    
+    echo $item->toJson(JSON_PRETTY_PRINT);
+    // {
+    //     "kind": "item",
+    //     "path": {
+    //         "collection": "collection",
+    //         "key": "key",
+    //         "ref": "20c14e8965d6cbb0"
+    //     },
+    //     "value": {
+    //         "name": "Lorem Ipsum",
+    //         "role": [
+    //             "member",
+    //             "user",
+    //             "admin"
+    //         ]
+    //     }
+    // }
+}
+
+// delete the current ref
+$item->delete(); 
+
+// delete the entire key and its history
+$item->purge(); 
+
+// etc
 ```
 
 Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Application or Collection. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
@@ -135,7 +173,7 @@ Choosing one approach over the other is a matter of your use case. For one-stop 
 
 ## Responses
 
-The result of all operations, in any approach, are exact the same, they all return **Objects**. And **Objects holds the results as well as the response status.**
+**Objects holds the results as well as the response status.**
 
 Example:
 
@@ -226,9 +264,9 @@ if ($item->isSuccess()) {
 ```
 
 
-## Array Access
+## Data Access
 
-All objects implements PHP's [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, like a real Array.
+All objects implements PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php), so you can access the results directly, using either Object or Array syntax.
 
 Example:
 
@@ -237,35 +275,26 @@ Example:
 
 $item = $application->get('collection', 'key');
 
-if (count($item)) { // get the property count 
+// Object syntax
+echo $item->title;
 
-    if (isset($item['title'])) {
-        echo $item['title'];  // My Title
-    }
-    
-    foreach ($item as $key => $value) {
-        echo $key; // title
-        echo $value; // My Title
-    }
-}
+// Array syntax
+echo $item['title'];
+echo $item['another_prop']; // returns null if not set, but never error  
 
 // as intended you can change the Value, then put back to Orchestrate
-$item['file_url'] = 'http://myfile.jpg';
-$item->put();
+$item->file_url = 'http://myfile.jpg';
 
-if ($item->isSuccess()) {
+if ($item->put())) {
     echo $item->getRef(); // cbb48f9464612f20 (the new ref)
     echo $item->getStatus();  // ok
     echo $item->getStatusCode();  // 200
 }
 
-
-// if you don't want to use the internal Value Array directly,
-// you can always get it with:
+// at any time, get the Value out if needed
 $value = $item->getValue();
 
-// also all objects provide an additional method, toArray()
-// which returns an Array representation of the object
+// toArray() to returns a Array representation of the object
 print_r($item->toArray());
 // Array
 // (
@@ -282,6 +311,12 @@ print_r($item->toArray());
 //         )
 // )
 
+// to Json too
+$item->toJson(JSON_PRETTY_PRINT); 
+
+// anywhere
+$item->user_data->likes->toJson();
+
 
 // Of course, it gets interesting on List objects like Search
 
@@ -295,11 +330,8 @@ foreach ($results as $item) {
     $item->getScore(); // search score
     $item->getDistance(); // populated if it was a Geo query
 
-    // and manage them
-    $item->putRelation('kind', 'toCollection', 'toKey');
-
     // if relation was created successfuly
-    if ($item->isSuccess()) {
+    if ($item->putRelation('kind', 'toCollection', 'toKey')) {
 
         // take the opportunity to post an event too
         $values = [
@@ -353,12 +385,13 @@ $item = $collection->get('key');
 // Approach 3 - Object
 $item = new KeyValue('collection', 'key');
 $item->setApplication($application);
-$item->get();
+
+if ($item->get()) // returns boolean of operation success
 
 // Example of getting the object info
 $item->getKey(); // string
 $item->getRef(); // string
-$item->getValue(); // array of the Value
+$item->getValue(); // ObjectArray of the Value
 $item->toArray(); // array representation of the object
 $item->getBody(); // array of the unfiltered HTTP response body
 ```
@@ -377,7 +410,7 @@ $item = $collection->put('key', ['title' => 'New Title']);
 // Approach 3 - Object
 $item = new KeyValue('collection', 'key');
 $item->setApplication($application);
-$item['title'] = 'New Title';
+$item->title = 'New Title';
 $item->put(); // puts the whole current Value, only with the title changed
 $item->put(['title' => 'New Title']); // puts an entire new value
 ```
@@ -494,7 +527,7 @@ $item = $collection->patchMerge('key', ['title' => 'New Title']);
 // Approach 3 - Object
 $item = new KeyValue('collection', 'key');
 $item->setApplication($application);
-$item['title'] = 'New Title';
+$item->title = 'New Title';
 $item->patchMerge(); // merges the current Value
 $item->patchMerge(['title' => 'New Title']); // or merge with new value
 // also has a 'reload' parameter as mentioned above
@@ -535,7 +568,7 @@ $item = $collection->post(['title' => 'New Title']);
 // Approach 3 - Object
 $item = new KeyValue('collection');
 $item->setApplication($application);
-$item['title'] = 'New Title';
+$item->title = 'New Title';
 $item->post(); // posts the current Value
 $item->post(['title' => 'New Title']); // posts a new value
 ```
@@ -555,7 +588,7 @@ $item = $collection->delete('key');
 $item = new KeyValue('collection', 'key');
 $item->setApplication($application);
 $item->delete();
-$item->delete('20c14e8965d6cbb0'); // delete the specific ref
+$item->delete('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
 
@@ -616,13 +649,13 @@ $list->setApplication($application);
 $list->listCollection();
 
 
-// now get array of the results (KeyValue objects)
+// now get array of the results
 $list->getResults();
 
 // or go ahead and iterate over the results directly!
 foreach ($list as $item) {
     
-    $item->getValue();
+    echo $item->title;
     // items are KeyValue objects
 }
 
@@ -673,14 +706,14 @@ $list->setApplication($application);
 $list->listRefs();
 
 
-// now get array of the results (Ref objects)
+// now get array of the results
 $list->getResults();
 
 // or go ahead and iterate over the results directly!
 foreach ($list as $item) {
     
-    $item->getValue();
-    // items are KeyValue objects
+    echo $item->title;
+    // items are Ref objects (KeyValue subclass)
 }
 
 // pagination
@@ -710,14 +743,14 @@ $results->setApplication($application);
 $results->search('title:"The Title*"');
 
 
-// now get array of the search results (SearchResult objects)
+// now get array of the search results
 $list_of_items = $results->getResults();
 
 // or go ahead and iterate over the results directly!
 foreach ($results as $item) {
     
-    $item->getValue();
-    // items are SearchResult objects
+    echo $item->title;
+    // items are SearchResult objects, KeyValue subclass
 
     $item->getScore(); // search score
     $item->getDistance(); // populated if it was a Geo query
@@ -780,7 +813,7 @@ $event = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New
 // Approach 3 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
 $event->setApplication($application);
-$event['title'] = 'New Title';
+$event->title = 'New Title';
 $event->put(); // puts the whole current value, only with the title changed
 $event->put(['title' => 'New Title']); // puts an entire new value
 ```
@@ -800,7 +833,7 @@ $event = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New
 // Approach 3 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
 $event->setApplication($application);
-$event['title'] = 'New Title';
+$event->title = 'New Title';
 $event->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $event->put(['title' => 'New Title'], true); // uses the current object Ref
 ```
@@ -819,7 +852,7 @@ $event = $collection->postEvent('key', 'type', ['title' => 'New Title']);
 // Approach 3 - Object
 $event = new Event('collection', 'key', 'type');
 $event->setApplication($application);
-$event['title'] = 'New Title';
+$event->title = 'New Title';
 $event->post(); // posts the current Value
 $event->post(['title' => 'New Title']); // posts a new value
 $event->post(['title' => 'New Title'], 1400684480732); // optional timestamp
@@ -884,13 +917,13 @@ $events->setApplication($application);
 $events->listEvents();
 
 
-// now get array of the results (Event objects)
+// now get array of the results
 $events->getResults();
 
 // or go ahead and iterate over the results directly!
 foreach ($events as $event) {
     
-    $event->getValue();
+    echo $event->title;
     // items are Event objects
 }
 
@@ -940,7 +973,7 @@ $list->getResults();
 // or go ahead and iterate over the results directly
 foreach ($list as $item) {
     
-    $item->getValue();
+    echo $item->title;
     // items are KeyValue objects
 }
 
@@ -1005,6 +1038,6 @@ Here is a sample of the KeyValue Class methods:
 
 Here are some useful notes to consider when using the Orchestrate service:
 - Avoid using slashes (/) in the key name, some problems will arise when querying them;
+- When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date);
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
-- When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date)
 

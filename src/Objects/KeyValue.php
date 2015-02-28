@@ -93,6 +93,7 @@ class KeyValue extends AbstractObject
 
         // set values
         $this->resetValue();
+        $this->_ref = null;
 
         if ($this->isSuccess()) {
             $this->setValue($this->getBody());

@@ -107,11 +107,12 @@ abstract class AbstractList extends AbstractResponse implements
         return $this->_results;
     }
 
-    public function mergeResults(ListInterface $list)
+    public function mergeResults($list)
     {
-        if ($list) {
+        if ($list instanceof ListInterface) {
             $this->getResults()->merge($list->getResults());
         }
+        return $this;
     }
 
     /**
@@ -222,5 +223,11 @@ abstract class AbstractList extends AbstractResponse implements
         return (new KeyValue($this->getCollection()))
             ->setApplication($this->getApplication())
             ->init($values);
+
+        // let reflection = new \ReflectionClass(name),
+        //     instance = reflection->newInstance();
+
+        // let reflection = new \ReflectionClass(name),
+        //     instance = reflection->newInstanceArgs(parameters);
     }
 }

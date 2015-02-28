@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## HEAD
+## 0.7.0 - 2015-02-28
 - KeyValue stores values directly in itself, making it a snap to use as Models!
 - Introduces the ObjectArray, a class that makes data accessible either via object syntax or array syntax.
 - Added methods to merge one object into another (merge search results, merge items Value).
