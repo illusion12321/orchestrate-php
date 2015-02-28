@@ -24,22 +24,22 @@ class Application
 	/**
 	 * @var string
 	 */
-	protected $host;
+	private $host;
 	
 	/**
 	 * @var string
 	 */
-	protected $apiVersion;
+	private $apiVersion;
 
 	/**
 	 * @var string
 	 */
-	protected $apiKey;
+	private $apiKey;
 
 	/**
 	 * @var ClientInterface
 	 */
-	protected $client;
+	private $client;
     
 	/**
 	 * @param string $apiKey

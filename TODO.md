@@ -1,8 +1,14 @@
 # TODO and IDEAS
 
-- ! consider turning all objects paramaters to a single array!!?? -- long parameter list on constructor is too crazy to follow anyway...
+- Allow Collection/Application to change the list's children class! Specially important for Models.
 
 - Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and have an interface, so can easily be swaped
+
+- Implement some common interfaces, and general organization of the base classes
+
+- ! consider turning all objects paramaters to a single array!!?? -- long parameter list on constructor is too crazy to follow anyway...
+
+- Work on Query builders for Search (search/sort/aggregate) and Range (list collection and events)??
 
 - Add totalCount method to Collection or KeyValues?
 
@@ -12,15 +18,9 @@
 
 - Add an addNext addPrev to List, so we get the next set of results without erasing the last page?
 
-- Allow Collection/Application to change the list's children class! Specially important for Models.
-
 - Inline Docs
 
-- Work on Query builders for Search (search/sort/aggregate) and Range (list collection and events)??
-
 - Reconsider adding methods of getEvent, postEvent, etc, to KeyValue?
-
-- Implement some common interfaces, and general organization of the base classes
 
 - Implement Tests
 
@@ -30,11 +30,9 @@
 
 - Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
-- The List results should be associative array? With the keys? (could be nice to have array_keys()) -- confirm later, considering conflicts with the same key
-
 - Add sort operations to List objects? basically just a map to PHP sort?
 
 - maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
 
-- method to move a KeyValue to another Collection or Application ?
+- method to move a KeyValue to another Collection or Application?
 

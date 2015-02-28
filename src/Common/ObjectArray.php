@@ -38,7 +38,15 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
 
         } else if (is_array($object)) {
 
+            $index = count($this);
+
             foreach ($object as $key => $value) {
+
+                if (is_int($key)) {
+                    $key = $index++;
+                }
+                $key = (string) $key;
+
                 if (isset($this->{$key}) && is_object($value) && is_object($this->{$key})) {
                     $this->_mergeObject($value, $this->{$key});
                 } else {
