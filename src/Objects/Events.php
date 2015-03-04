@@ -9,7 +9,7 @@ class Events extends AbstractList
     use KeyTrait;
     use TypeTrait;
 
-    public function __construct($collection, $key = null, $type = null)
+    public function __construct($collection = null, $key = null, $type = null)
     {
         parent::__construct($collection);
         $this->setKey($key);

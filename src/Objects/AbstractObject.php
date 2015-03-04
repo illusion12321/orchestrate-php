@@ -13,6 +13,30 @@ abstract class AbstractObject extends AbstractResponse implements
 {
     use ObjectArrayTrait;
 
+    public function __get($key)
+    {
+
+
+        return isset($this->{$key}) ? $this->{$key} : null;
+    }
+
+    public function __set($key, $value)
+    {
+        // testing this..
+        // would need a 'addProperty' method that stores a PropertyMap
+
+        // $possibleSetter = 'set'.ucfirst($key);
+        // if (method_exists($this, $possibleSetter)) {
+        //     $this->{$possibleSetter}($value);
+        // } else 
+
+        if (is_array($value)) {
+            $this->{$key} = new ObjectArray($value);
+        } else {
+            $this->{$key} = $value;
+        }
+    }
+
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || is_int($offset)) {

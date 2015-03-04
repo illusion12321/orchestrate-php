@@ -9,7 +9,7 @@ class Graph extends AbstractList
     use KeyTrait;
     use KindTrait; // TODO review other clients, 'kind' feels a bad naming, 'type' also
 
-    public function __construct($collection, $key = null, $kind = null)
+    public function __construct($collection = null, $key = null, $kind = null)
     {
         parent::__construct($collection);
         $this->setKey($key);

@@ -24,7 +24,7 @@ class Ref extends KeyValue
     /**
      * @return int
      */
-    public function getRefTime()
+    public function getReftime()
     {
         return $this->_reftime;
     }

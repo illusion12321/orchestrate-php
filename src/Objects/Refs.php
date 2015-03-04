@@ -7,7 +7,7 @@ class Refs extends AbstractList
 {
     use KeyTrait;
 
-    public function __construct($collection, $key = null)
+    public function __construct($collection = null, $key = null)
     {
         parent::__construct($collection);
         $this->setKey($key);

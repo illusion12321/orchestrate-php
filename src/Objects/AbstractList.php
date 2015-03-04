@@ -37,7 +37,7 @@ abstract class AbstractList extends AbstractResponse implements
     /**
      * @param string $collection
      */
-    public function __construct($collection)
+    public function __construct($collection = null)
     {
         $this->setCollection($collection);
     }
@@ -107,11 +107,9 @@ abstract class AbstractList extends AbstractResponse implements
         return $this->_results;
     }
 
-    public function mergeResults($list)
+    public function mergeResults(ListInterface $list)
     {
-        if ($list instanceof ListInterface) {
-            $this->getResults()->merge($list->getResults());
-        }
+        $this->getResults()->merge($list->getResults());
         return $this;
     }
 
