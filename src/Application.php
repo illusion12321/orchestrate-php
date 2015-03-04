@@ -179,13 +179,12 @@ class Application
 
         try {
             $response = $this->getClient()->send($request);
-        }
-        catch (ClientException $e) {
-
+        
+        } catch (ClientException $e) {
             // get Orchestrate error message
             $response = $e->getResponse();
-        }
-        catch (ConnectException $e) {
+        
+        } catch (ConnectException $e) {
 
             // assemble the best possible error response
             if ($e->hasResponse()) {
@@ -206,7 +205,7 @@ class Application
         } catch (\Exception $e) {
             $response = new Response(
                 500,
-                ['Date' => 'Thu, 24 Oct 2013 15:20:42 GMT'],
+                ['Date' => gmdate('D, d M Y H:i:s').' GMT'],
                 null,
                 ['reason_phrase' => 'Probably a Request Timeout'
             ]);
