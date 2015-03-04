@@ -59,18 +59,20 @@ class Collection
     }
 
 
-    public function item($keyValue = null)
+    public function item($keyValue = null, $autoload = false)
     {
-        if (is_string($key)) {
+        if (is_string($keyValue)) {
             $keyValue = ['key' => $keyValue];
         }
         
         $item = $this->getChildClass()->newInstance()
             ->setApplication($this->getApplication(true))
             ->setCollection($this->getCollection(true))
-            ->init($values);
-            
+            ->init($keyValue);            
 
+        if ($autoload && $item->getKey()) {
+            $item->get($item->getRef());
+        }
         return $item;
     }
 }
