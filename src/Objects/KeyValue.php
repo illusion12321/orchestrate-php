@@ -12,28 +12,10 @@ class KeyValue extends AbstractObject
     use KeyTrait;
     use RefTrait;
 
-    public function __construct($collection, $key = null)
+    public function __construct($collection = null, $key = null)
     {
         $this->setCollection($collection);
         $this->setKey($key);
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $result = [
-            'kind' => 'item',
-            'path' => [
-                'collection' => $this->getCollection(),
-                'key' => $this->getKey(),
-                'ref' => $this->getRef(),
-            ],
-            'value' => parent::toArray(),
-        ];
-        
-        return $result;
     }
 
     public function reset()
@@ -45,9 +27,7 @@ class KeyValue extends AbstractObject
     }
 
     public function init(array $values)
-    {
-        $this->reset();
-        
+    {        
         if (empty($values))
             return;
 
@@ -71,6 +51,21 @@ class KeyValue extends AbstractObject
         }
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        $result = [
+            'kind' => 'item',
+            'path' => [
+                'collection' => $this->getCollection(),
+                'key' => $this->getKey(),
+                'ref' => $this->getRef(),
+            ],
+            'value' => parent::toArray(),
+        ];
+        
+        return $result;
     }
 
     /**
@@ -224,7 +219,7 @@ class KeyValue extends AbstractObject
      */
     public function patchMerge(array $value = null, $ref = null, $reload = false)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? parent::toArray() : $value; // TODO rethink, should not use the current data
 
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
@@ -345,13 +340,16 @@ class KeyValue extends AbstractObject
         return $this->isSuccess();
     }
     
-    protected function setKeyRefFromLocation()
+    /**
+     * Helper to set the Key and Ref from a Orchestrate Location HTTP header.
+     * For example: Location: /v0/collection/key/refs/ad39c0f8f807bf40
+     */
+    private function setKeyRefFromLocation()
     {
-        // Location: /v0/collection/key/refs/ad39c0f8f807bf40
-
         $location = $this->getResponse()->getHeader('Location');
-        if (!$location)
+        if (!$location) {
             $location = $this->getResponse()->getHeader('Content-Location');
+        }
 
         $location = explode('/', trim($location, '/'));
         if (count($location) > 4)

@@ -17,7 +17,7 @@ class Event extends AbstractObject
     use TimestampTrait;
     use OrdinalTrait;
 
-    public function __construct($collection, $key = null, $type = null, $timestamp = 0, $ordinal = 0)
+    public function __construct($collection = null, $key = null, $type = null, $timestamp = 0, $ordinal = 0)
     {
         $this->setCollection($collection);
         $this->setKey($key);
@@ -62,8 +62,6 @@ class Event extends AbstractObject
 
     public function init(array $values)
     {
-        $this->reset();
-        
         if (empty($values))
             return;
 
