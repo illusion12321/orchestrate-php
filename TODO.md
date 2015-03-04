@@ -2,19 +2,19 @@
 
 - Allow Collection/Application to change the list's children class! Specially important for Models.
 
+- Study the best way to integrate Refs and Events into a KeyValue for easy access/management ? unite the KeyValues class with Search (turning into Collection), then move Refs and Events into KeyValue?
+
 - Rethink the Collection class, turning into a resource-like object, acting as a KeyValue storage, by key
 
 - Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
-- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and bring back the static getDefault()
+- Check out https://github.com/jmespath/jmespath.php
 
-- Study the best way to integrate Refs and Events into a KeyValue for easy access/management ? unite the KeyValues class with Search (turning into Collection), then move Refs and Events into KeyValue?
+- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and bring back the static getDefault()
 
 - Implement some common interfaces, and general organization of the base classes
 
-- ! consider turning all objects paramaters to a single array!!?? -- long parameter list on constructor is too crazy to follow anyway...
-
-- Work on Query builders for Search (search/sort/aggregate) and Range (list collection and events)??
+- Work on Query builders (query builder (search) / sort / aggregate builder / range builder
 
 - Add totalCount method to Collection or KeyValues?
 

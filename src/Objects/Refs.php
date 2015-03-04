@@ -11,6 +11,7 @@ class Refs extends AbstractList
     {
         parent::__construct($collection);
         $this->setKey($key);
+        $this->setChildClass('\andrefelipe\Orchestrate\Objects\Ref');
     }
 
     /**
@@ -38,12 +39,5 @@ class Refs extends AbstractList
         $this->request('GET', $path, ['query' => $parameters]);
         
         return $this->isSuccess();
-    }
-
-    protected function createChildrenClass(array $values)
-    {
-        return (new Ref($this->getCollection()))
-            ->setApplication($this->getApplication())
-            ->init($values);
     }
 }

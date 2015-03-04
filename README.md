@@ -3,7 +3,7 @@ Orchestrate.io PHP Client
 
 A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
 
-- PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members) [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
+- PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
 - To create an object model, just extend a KeyValue and define the public properties.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
@@ -12,7 +12,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
-*This library is still at 0.* version, there is a [lot of ideas](https://github.com/andrefelipe/orchestrate-php/blob/master/TODO.md) to look at*.
+*This library is still at 0.x version, there is a [lot of ideas](https://github.com/andrefelipe/orchestrate-php/blob/master/TODO.md) to look at*.
 
 [![Latest Stable Version](https://poser.pugx.org/andrefelipe/orchestrate-php/v/stable.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
 [![License](https://poser.pugx.org/andrefelipe/orchestrate-php/license.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
@@ -233,7 +233,7 @@ if ($item->isSuccess()) {
     // 404
     // — the HTTP response status code
 
-    echo $item->getStatusMessage();\
+    echo $item->getStatusMessage();
     // The requested items could not be found.
     // — the status message, in case of error, the Orchestrate message is used
     // intead of the default HTTP Reason-Phrases
@@ -294,7 +294,7 @@ if ($item->put())) {
 // at any time, get the Value out if needed
 $value = $item->getValue();
 
-// toArray() to returns a Array representation of the object
+// toArray() returns an Array representation of the object
 print_r($item->toArray());
 // Array
 // (

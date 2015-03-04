@@ -14,6 +14,7 @@ class Events extends AbstractList
         parent::__construct($collection);
         $this->setKey($key);
         $this->setType($type);
+        $this->setChildClass('\andrefelipe\Orchestrate\Objects\Event');
     }
 
     /**
@@ -51,10 +52,4 @@ class Events extends AbstractList
         return $this->isSuccess();
     }
 
-    protected function createChildrenClass(array $values)
-    {
-        return (new Event($this->getCollection()))
-            ->setApplication($this->getApplication())
-            ->init($values);
-    }
 }

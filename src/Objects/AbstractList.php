@@ -35,6 +35,11 @@ abstract class AbstractList extends AbstractResponse implements
     private $_prevUrl = '';
 
     /**
+     * @var \ReflectionClass
+     */
+    private $_childClass;
+
+    /**
      * @param string $collection
      */
     public function __construct($collection = null)
@@ -215,17 +220,37 @@ abstract class AbstractList extends AbstractResponse implements
 
         return false;
     }
+
+
+    
+
+    public function setChildClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_childClass = $class;
+        } else {
+            $this->_childClass = new \ReflectionClass($class);
+        }
+        // when interface is define add a check here
+        // if (!$this->_childClass->isSubclassOf(KEY_VALUE_CLASS)) {
+        //     throw new \RuntimeException('Child classes can only extend the  class.');
+        // }
+    }
+
+    public function getChildClass()
+    {
+        if (!isset($this->_childClass)) {
+            $this->_childClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\KeyValue');
+        }
+
+        return $this->_childClass;
+    }
     
     protected function createChildrenClass(array $values)
     {
-        return (new KeyValue($this->getCollection()))
-            ->setApplication($this->getApplication())
+        return $this->getChildClass()->newInstance()
+            ->setApplication($this->getApplication(true))
+            ->setCollection($this->getCollection(true))
             ->init($values);
-
-        // let reflection = new \ReflectionClass(name),
-        //     instance = reflection->newInstance();
-
-        // let reflection = new \ReflectionClass(name),
-        //     instance = reflection->newInstanceArgs(parameters);
     }
 }

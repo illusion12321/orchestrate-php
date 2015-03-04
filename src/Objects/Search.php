@@ -8,6 +8,14 @@ class Search extends AbstractList
      */
     private $_aggregates = [];
 
+
+    public function __construct($collection = null)
+    {
+        parent::__construct($collection);
+        $this->setChildClass('\andrefelipe\Orchestrate\Objects\SearchResult');
+    }
+
+
     /**
      * @return float
      */
@@ -82,12 +90,5 @@ class Search extends AbstractList
                 $this->_aggregates = (array) $this->body['aggregates'];
             }
         }
-    }    
-
-    protected function createChildrenClass(array $values)
-    {
-        return (new SearchResult($this->getCollection()))
-            ->setApplication($this->getApplication())
-            ->init($values);
     }
 }
