@@ -315,7 +315,7 @@ print_r($item->toArray());
 $item->toJson(JSON_PRETTY_PRINT); 
 
 // anywhere
-$item->user_data->likes->toJson();
+$item->myprop->likes->toJson();
 
 
 // Of course, it gets interesting on List objects like Search
