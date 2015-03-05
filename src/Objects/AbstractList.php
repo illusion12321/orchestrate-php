@@ -40,6 +40,11 @@ abstract class AbstractList extends AbstractResponse implements
     private $_childClass;
 
     /**
+     * @var \ReflectionClass
+     */
+    private $_childEventClass;
+
+    /**
      * @param string $collection
      */
     public function __construct($collection = null)
@@ -242,9 +247,26 @@ abstract class AbstractList extends AbstractResponse implements
         if (!isset($this->_childClass)) {
             $this->_childClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\KeyValue');
         }
-
         return $this->_childClass;
     }
+
+    public function setChildEventClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_childEventClass = $class;
+        } else {
+            $this->_childEventClass = new \ReflectionClass($class);
+        }
+    }
+
+    public function getChildEventClass()
+    {
+        if (!$this->_childEventClass) {
+            $this->_childEventClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\Event');
+        }
+        return $this->_childEventClass;
+    }
+
     
     protected function createChildrenClass(array $values)
     {
@@ -253,4 +275,6 @@ abstract class AbstractList extends AbstractResponse implements
             ->setCollection($this->getCollection(true))
             ->init($values);
     }
+
+
 }

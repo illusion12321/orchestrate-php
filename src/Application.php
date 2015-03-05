@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
+use andrefelipe\Orchestrate\Collection;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
@@ -42,6 +43,11 @@ class Application
         $this->setApiKey($apiKey);
         $this->setHost($host);
         $this->setApiVersion($apiVersion);
+    }
+
+    public function collection($name)
+    {
+        return new Collection($this, $name);
     }
 
     /**

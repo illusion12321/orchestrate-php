@@ -31,7 +31,7 @@ abstract class AbstractResponse
     /**
      * @var string
      */
-    private $statusMessage = '';
+    private $statusMessage = 'Not loaded yet.';
 
     /**
      * Gets the body of the response, independently if it was an error or not.
