@@ -11,7 +11,6 @@ class Refs extends AbstractList
     {
         parent::__construct($collection);
         $this->setKey($key);
-        $this->setChildClass('\andrefelipe\Orchestrate\Objects\Ref');
     }
 
     /**

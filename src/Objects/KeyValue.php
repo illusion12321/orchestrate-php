@@ -12,10 +12,66 @@ class KeyValue extends AbstractObject
     use KeyTrait;
     use RefTrait;
 
+    /**
+     * @var float
+     */
+    private $_score = null;
+
+    /**
+     * @var float
+     */
+    private $_distance = null;
+
+    /**
+     * @var boolean
+     */
+    private $_tombstone = false;    
+
+    /**
+     * @var int
+     */
+    private $_reftime = null;
+
+    /**
+     * @param string $collection
+     * @param string $key
+     */
     public function __construct($collection = null, $key = null)
     {
         $this->setCollection($collection);
         $this->setKey($key);
+    }
+
+    /**
+     * @return float
+     */
+    public function getScore()
+    {
+        return $this->_score;
+    }    
+
+    /**
+     * @return float
+     */
+    public function getDistance()
+    {
+        return $this->_distance;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTombstone()
+    {
+        return $this->_tombstone;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReftime()
+    {
+        return $this->_reftime;
     }
 
     public function reset()
@@ -23,6 +79,10 @@ class KeyValue extends AbstractObject
         parent::reset();
         $this->_key = null;
         $this->_ref = null;
+        $this->_score = null;
+        $this->_distance = null;
+        $this->_reftime = null;
+        $this->_tombstone = false;
         $this->resetValue();
     }
 
@@ -30,7 +90,7 @@ class KeyValue extends AbstractObject
     {        
         if (empty($values)) {
             return;
-        }            
+        }
 
         if (!empty($values['path'])) {
             $values = array_merge($values, $values['path']);
@@ -49,6 +109,18 @@ class KeyValue extends AbstractObject
 
             elseif ($key === 'value')
                 $this->setValue((array) $value);
+
+            elseif ($key === 'score')
+                $this->_score = (float) $value;
+
+            elseif ($key === 'distance')
+                $this->_distance = (float) $value;
+
+            elseif ($key === 'reftime')
+                $this->_reftime = (int) $value;
+
+            elseif ($key === 'tombstone')
+                $this->_tombstone = (boolean) $value;
         }
 
         return $this;
@@ -65,6 +137,18 @@ class KeyValue extends AbstractObject
             ],
             'value' => parent::toArray(),
         ];
+
+        if ($this->_score !== null)
+            $result['score'] = $this->_score;
+
+        if ($this->_distance !== null)
+            $result['distance'] = $this->_distance;
+
+        if ($this->_reftime !== null)
+            $result['path']['reftime'] = $this->_reftime;
+
+        if ($this->_tombstone)
+            $result['path']['tombstone'] = $this->_tombstone;
         
         return $result;
     }

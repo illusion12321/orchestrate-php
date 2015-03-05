@@ -12,9 +12,7 @@ class Search extends AbstractList
     public function __construct($collection = null)
     {
         parent::__construct($collection);
-        $this->setChildClass('\andrefelipe\Orchestrate\Objects\SearchResult');
     }
-
 
     /**
      * @return float
