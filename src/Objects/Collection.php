@@ -2,22 +2,22 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\ApplicationTrait;
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
+// use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
  * 
  * @link https://orchestrate.io/docs/apiref
  */
-class Collection
+class Collection extends AbstractList
 {
     use ApplicationTrait;
-    use CollectionTrait;
+    // use CollectionTrait;
 
-    public function __construct($collection)
-    {
-        $this->setCollection($collection);
-    }
+    // public function __construct($collection)
+    // {
+        // $this->setCollection($collection);
+    // }
 
     private $childClass;
     private $childEventClass;
@@ -33,7 +33,7 @@ class Collection
 
     public function getChildClass()
     {
-        if (!isset($this->childClass)) {
+        if (!$this->childClass) {
             $this->childClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\KeyValue');
         }
 
@@ -51,7 +51,7 @@ class Collection
 
     public function getChildEventClass()
     {
-        if (!isset($this->childEventClass)) {
+        if (!$this->childEventClass) {
             $this->childEventClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\Event');
         }
 
@@ -59,20 +59,22 @@ class Collection
     }
 
 
-    public function item($keyValue = null, $autoload = false)
+    public function item($path = null, $autoload = false)
     {
-        if (is_string($keyValue)) {
-            $keyValue = ['key' => $keyValue];
+        if (is_string($path)) {
+            $path = ['key' => $path];
         }
         
         $item = $this->getChildClass()->newInstance()
             ->setApplication($this->getApplication(true))
             ->setCollection($this->getCollection(true))
-            ->init($keyValue);            
+            ->init($path); //setPath after all?
 
         if ($autoload && $item->getKey()) {
             $item->get($item->getRef());
         }
         return $item;
     }
+
+
 }

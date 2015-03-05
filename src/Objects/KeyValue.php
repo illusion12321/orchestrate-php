@@ -28,8 +28,9 @@ class KeyValue extends AbstractObject
 
     public function init(array $values)
     {        
-        if (empty($values))
+        if (empty($values)) {
             return;
+        }            
 
         if (!empty($values['path'])) {
             $values = array_merge($values, $values['path']);
@@ -66,6 +67,18 @@ class KeyValue extends AbstractObject
         ];
         
         return $result;
+    }
+
+    private $graph;
+    public function relations()
+    {
+        if (!$graph) {
+            $graph = (new Graph())
+                ->setApplication($this->getApplication(true))
+                ->setCollection($this->getCollection(true))
+                ->setKey($this->getKey(true));
+        }
+        return $graph;
     }
 
     /**
@@ -217,13 +230,11 @@ class KeyValue extends AbstractObject
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge(array $value = null, $ref = null, $reload = false)
+    public function patchMerge(array $value, $ref = null, $reload = false)
     {
-        $newValue = $value === null ? parent::toArray() : $value; // TODO rethink, should not use the current data
-
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
-        $options = ['json' => $newValue];
+        $options = ['json' => $value];
 
         if ($ref) {
 

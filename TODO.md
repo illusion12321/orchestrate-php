@@ -8,6 +8,8 @@
 
 - Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
 
+- Consider removing post from KeyValue?
+
 - Check out https://github.com/jmespath/jmespath.php
 
 - Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and bring back the static getDefault()
