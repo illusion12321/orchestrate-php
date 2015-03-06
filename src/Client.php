@@ -2,9 +2,7 @@
 namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Objects\KeyValue;
-use andrefelipe\Orchestrate\Objects\KeyValues;
 use andrefelipe\Orchestrate\Objects\Refs;
-use andrefelipe\Orchestrate\Objects\Search;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Graph;
@@ -14,13 +12,8 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
  * 
  * @link https://orchestrate.io/docs/apiref
  */
-class Client extends Application
+class Client extends AbstractClient
 {
-	public function __construct($apiKey = null, $host = null, $apiVersion = null)
-	{
-        parent::__construct($apiKey, $host, $apiVersion);
-	}
-
 
     // Collection
 
@@ -37,6 +30,41 @@ class Client extends Application
         );
 
         return $response->getStatusCode() === 204;
+    }
+
+    /**
+     * @param string $collection
+     * @param int $limit
+     * @param array $range
+     * 
+     * @return Collection
+     * @link https://orchestrate.io/docs/apiref#keyvalue-list
+     */
+    public function listCollection($collection, $limit = 10, array $range = null)
+    {
+        $list = new Collection($this->getApplication(true), $collection);
+
+        $list->get($limit, $range);
+        return $list;
+    }
+
+    /**
+     * @param string $collection
+     * @param string $query
+     * @param string|array $sort
+     * @param string|array $aggregate
+     * @param int $limit
+     * @param int $offset
+     * 
+     * @return Collection
+     * @link https://orchestrate.io/docs/apiref#search-collection
+     */
+    public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
+    {
+        $list = new Collection($this->getApplication(true), $collection);
+        
+        $list->search($query, $sort, $aggregate, $limit, $offset);
+        return $list;
     }
 
 
@@ -163,23 +191,6 @@ class Client extends Application
         $item->purge();
         return $item;
     }
-
-    /**
-     * @param string $collection
-     * @param int $limit
-     * @param array $range
-     * 
-     * @return KeyValues
-     * @link https://orchestrate.io/docs/apiref#keyvalue-list
-     */
-    public function listCollection($collection, $limit = 10, array $range = null)
-    {
-        $list = (new KeyValues($collection))
-            ->setApplication($this);
-
-        $list->listCollection($limit, $range);
-        return $list;
-    }
     
 
     // Refs
@@ -200,29 +211,6 @@ class Client extends Application
             ->setApplication($this);
 
         $list->listRefs($limit, $offset, $values);
-        return $list;
-    }
-
-
-    // Search
-
-    /**
-     * @param string $collection
-     * @param string $query
-     * @param string|array $sort
-     * @param string|array $aggregate
-     * @param int $limit
-     * @param int $offset
-     * 
-     * @return Search
-     * @link https://orchestrate.io/docs/apiref#search-collection
-     */
-    public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
-    {
-        $list = (new Search($collection))
-            ->setApplication($this);
-
-        $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
     }
 
