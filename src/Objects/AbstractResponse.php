@@ -1,37 +1,67 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\ApplicationTrait;
+use andrefelipe\Orchestrate\ClientInterface;
 use \GuzzleHttp\Message\Response;
 
 abstract class AbstractResponse
 {
-    use ApplicationTrait;
-
     /**
      * @var array
      */
-    private $body = [];
+    private $_body = [];
     
     /**
      * @var Response
      */
-    private $response = null;
+    private $_response = null;
 
     /**
      * @var string
      */
-    private $status = '';
+    private $_status = '';
 
     /**
      * @var string
      */
-    private $statusCode = 0;
+    private $_statusCode = 0;
 
     /**
      * @var string
      */
-    private $statusMessage = 'Not loaded yet.';
+    private $_statusMessage = 'Not loaded yet.';
+
+    /**
+     * @var ClientInterface 
+     */
+    private $_client;
+
+    /**
+     * Get current client instance, either of Application or Client class.
+     * 
+     * @param boolean $required
+     * 
+     * @return ClientInterface
+     */
+    public function getClient($required = false)
+    {
+        if ($required)
+            $this->noClientException();
+
+        return $this->_client;
+    }
+
+    /**
+     * Set the client which the object will use to make API requests.
+     * 
+     * @param ClientInterface $client
+     */
+    public function setClient(ClientInterface $client)
+    {
+        $this->_client = $client;
+        
+        return $this;
+    }    
 
     /**
      * Gets the body of the response, independently if it was an error or not.
@@ -44,7 +74,7 @@ abstract class AbstractResponse
      */
     public function getBody()
     {
-        return $this->body;
+        return $this->_body;
     }
 
     /**
@@ -54,7 +84,7 @@ abstract class AbstractResponse
      */
     public function getResponse()
     {
-        return $this->response;
+        return $this->_response;
     }
 
     /**
@@ -67,7 +97,7 @@ abstract class AbstractResponse
      */
     public function getStatus()
     {
-        return $this->status;
+        return $this->_status;
     }
 
     /**
@@ -77,7 +107,7 @@ abstract class AbstractResponse
      */
     public function getStatusCode()
     {
-        return $this->statusCode;
+        return $this->_statusCode;
     }
 
     /**
@@ -90,7 +120,7 @@ abstract class AbstractResponse
      */
     public function getStatusMessage()
     {
-        return $this->statusMessage;
+        return $this->_statusMessage;
     }
 
     /**
@@ -100,8 +130,8 @@ abstract class AbstractResponse
      */
     public function getRequestId()
     {
-        return $this->response
-            ? $this->response->getHeader('X-ORCHESTRATE-REQ-ID')
+        return $this->_response
+            ? $this->_response->getHeader('X-ORCHESTRATE-REQ-ID')
             : '';
     }
 
@@ -112,8 +142,8 @@ abstract class AbstractResponse
      */
     public function getRequestDate()
     {
-        return $this->response
-            ? $this->response->getHeader('Date')
+        return $this->_response
+            ? $this->_response->getHeader('Date')
             : '';
     }
 
@@ -128,8 +158,8 @@ abstract class AbstractResponse
      */
     public function getRequestUrl()
     {
-        return $this->response
-            ? $this->response->getEffectiveUrl()
+        return $this->_response
+            ? $this->_response->getEffectiveUrl()
             : '';
     }
     
@@ -154,8 +184,8 @@ abstract class AbstractResponse
      */
     public function isError()
     {
-        return !$this->statusCode
-            || ($this->statusCode >= 400 && $this->statusCode <= 599);
+        return !$this->_statusCode
+            || ($this->_statusCode >= 400 && $this->_statusCode <= 599);
     }
 
     /**
@@ -166,27 +196,32 @@ abstract class AbstractResponse
     protected function setResponse(Response $response)
     {
         // store
-        $this->response = $response;
+        $this->_response = $response;
 
         // process
         if ($response) {
-            $this->body = $response->json();
-            $this->statusMessage = $response->getReasonPhrase();
-            $this->status = $this->statusMessage;
-            $this->statusCode = $response->getStatusCode();
+            $this->_body = $response->json();
+            $this->_statusMessage = $response->getReasonPhrase();
+            $this->_status = $this->_statusMessage;
+            $this->_statusCode = $response->getStatusCode();
 
             if ($this->isError()) {
 
                 // try to get the Orchestrate error messages
 
-                if (isset($this->body['code'])) {
-                    $this->status = $this->body['code'];
+                if (isset($this->_body['code'])) {
+                    $this->_status = $this->_body['code'];
                 }
 
-                if (isset($this->body['message'])) {
-                    $this->statusMessage = $this->body['message'];
+                if (isset($this->_body['message'])) {
+                    $this->_statusMessage = $this->_body['message'];
                 }
             }
+        } else {
+            $this->_body = [];
+            $this->_status = 'Internal Server Error';
+            $this->_statusCode = 500;
+            $this->_statusMessage = 'Invalid Response';
         }
     }
 
@@ -195,19 +230,29 @@ abstract class AbstractResponse
      */
     public function reset()
     {
-        $this->response = null;
-        $this->body = [];
-        $this->status = '';
-        $this->statusCode = 0;
-        $this->statusMessage = '';
+        $this->_response = null;
+        $this->_body = [];
+        $this->_status = '';
+        $this->_statusCode = 0;
+        $this->_statusMessage = '';
     }
     
     protected function request($method, $url = null, array $options = [])
     {
-        // request at the Application HTTP client
-        $response = $this->getApplication(true)->request($method, $url, $options);
+        // request at the Client HTTP client
+        $response = $this->getClient(true)->request($method, $url, $options);
 
         // and store/process the results
         $this->setResponse($response);
+    }
+
+    /**
+     * @throws \BadMethodCallException if 'client' is not set yet.
+     */
+    protected function noClientException()
+    {
+        if (!$this->_client) {
+            throw new \BadMethodCallException('There is no client set yet. Please do so through setClient() method.');
+        }
     }
 }

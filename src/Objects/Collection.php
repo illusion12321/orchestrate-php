@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Application;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
@@ -16,16 +15,6 @@ class Collection extends AbstractList
     private $_aggregates = [];
 
     /**
-     * @param Application $application
-     * @param string $name
-     */
-    public function __construct(Application $application, $name)
-    {
-        $this->setApplication($application);
-        $this->setCollection($name);
-    }
-
-    /**
      * @param string $key
      * @param string $ref
      * 
@@ -35,7 +24,7 @@ class Collection extends AbstractList
     {
         return $this->getChildClass()
             ->newInstance($this->getCollection(true), $key, $ref)
-            ->setApplication($this->getApplication(true));
+            ->setClient($this->getClient(true));
     }
 
     /**
@@ -101,7 +90,7 @@ class Collection extends AbstractList
     // if ($this->_totalCount === null) {
 
     //     // get from Orchestrate
-    //     $response = $this->getApplication(true)
+    //     $response = $this->getClient(true)
     //         ->request('GET', $this->getCollection(true), ['query' => ['limit' => 1]]);
 
     //     if ($response) {

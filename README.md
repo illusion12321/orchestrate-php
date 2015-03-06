@@ -44,8 +44,14 @@ require 'vendor/autoload.php';
 
 
 
-## Instantiation
+
+## Getting Started
+You can use our library in two distinct ways:
+
+1- **Client** — straightforward API interface to Orchestrate.
+
 ```php
+
 use andrefelipe\Orchestrate\Client;
 
 // provide the parameters, in order: apiKey, host, version
@@ -61,40 +67,41 @@ $client = new Client();
 // use the default host 'https://api.orchestrate.io'
 // and the default API version 'v0'
 
-// check the success with Ping
-$client->ping(); // (boolean)
-```
+// check the connection success with Ping, returns boolean
+if ($client->ping()) {
+    // OK
+}
 
-## Getting Started
-You can use our library in two distinct ways:
-
-1- **Client** — straightforward API interface to Orchestrate.
-
-```php
-use andrefelipe\Orchestrate\Client;
-
-$client = new Client();
-
+// use it
 $item = $client->get('collection', 'key'); // returns a KeyValue object
 $item = $client->put('collection', 'key', ['title' => 'My Title']);
 $item = $client->delete('collection', 'key');
 
-// The result of all operation are Objects, explained below.
+// The result of all operations are Objects, whose are explained below.
+// So to check the success of an operation use:
+if ($item->isSuccess()) {
+    // ok
+
+    // More on responses
+}
 ```
 
-2- **Objects** — the actual Orchestrate objects, which provides per object API as well as the response status.
+2- **Objects** — the actual Orchestrate objects, which provides an object API as well as the response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
 
 $app = new Application();
-$collection = $app->collection('collection');
+// same credentials constructor as the Client above applies
+// they both share the same client capabilities
 
-$item = $collection->item('key'); // no API calls yet
+$collection = $client->collection('collection');
+$item = $collection->item('key');
+// no API calls where made yet
 
 if ($item->get()) { // API call to get the current key
 
-    // The result of all operations in Objects are boolean!
+    // IMPORTANT: The result of all operations in Objects are boolean!
 
     // let's add some values
     $item->name = 'Lorem Ipsum';
@@ -104,6 +111,21 @@ if ($item->get()) { // API call to get the current key
     // put back
     if ($item->put()) {
         
+        print_r($this->getValue());
+        // andrefelipe\Orchestrate\Common\ObjectArray Object
+        // (
+        //     [name] => Lorem Ipsum
+        //     [role] => andrefelipe\Orchestrate\Common\ObjectArray Object
+        //         (
+        //             [0] => member
+        //             [1] => user
+        //             [2] => admin
+        //         )
+        // )
+        // ObjectArray is our little cherished class, it allows object or array syntax access
+        // i.e. $item->name or $item['name'], plus a few other helpful methods.
+        // More on that below
+
         echo $item->toJson(JSON_PRETTY_PRINT);
         // {
         //     "kind": "item",
@@ -136,23 +158,20 @@ if ($item->get()) { // API call to get the current key
 
 Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Client. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
 
-**Remember**, the credentials and the HTTP client are only available at the `Application` or `Client` objects, so all objects must reference to them in order to do API class. You can do so via the `setClient` method.
+**Note**, the credentials and the HTTP client are only available at the `Application` or `Client` objects, so all objects must reference to them in order to do API class. You can do so via the `setClient` method. But that's only needed if you want to instantiate the objects directly. If you use the methods as described above, that's handled automatically.
 
 
 
 ## Responses
 
-**Objects holds the results as well as the response status.**
+**Important: Objects holds the results as well as the response status.**
 
 Example:
 
 ```php
-use andrefelipe\Orchestrate\Client;
-$client = new Client();
+$item = $collection->item('key'); // returns a KeyValue object
 
-$item = $client->get('collection', 'key'); // returns a KeyValue object
-
-if ($item->isSuccess()) {
+if ($item->get()) {
 
     print_r($item->getValue());
     // Array
@@ -285,7 +304,7 @@ if ($item->get()) {
     // to Json too
     $item->toJson(JSON_PRETTY_PRINT); 
 
-    // anywhere
+    // any property that is an array inherits the same functionality
     $item->myprop->likes->toJson();
 }
 
@@ -302,18 +321,6 @@ if ($collection->search('collection', 'title:"The Title*"')) {
         $item->getValue(); // the Value
         $item->getScore(); // search score
         $item->getDistance(); // populated if it was a Geo query
-
-        // if relation was created successfuly
-        if ($item->putRelation('kind', 'toCollection', 'toKey')) {
-
-            // take the opportunity to post an event too
-            $values = [
-                'type' => 'relation',
-                'to' => 'toKey',
-                'ref' => $item->getRef(),
-            ];
-            $client->postEvent('collection', $item->getKey(), 'log', $values);
-        }
     }
 }
 
@@ -338,7 +345,7 @@ if ($client->ping()) {
 }
 
 // Approach 2 - Object
-if ($app->ping()) {
+if ($client->ping()) {
     // success
 }
 ```
@@ -365,8 +372,8 @@ if ($collection->delete()) {
 
 ```php
 // Approach 1 - Client
-$item = $app->get('collection', 'key');
-// returns KeyValue object
+$item = $client->get('collection', 'key'); // returns KeyValue object
+
 // check operation success with:
 if ($item->isSuccess()) {
     // ok, request was successful
@@ -375,6 +382,7 @@ if ($item->isSuccess()) {
 // Approach 2 - Object
 $item = $collection->item('key');
 
+// you can check operation success direcly
 if ($item->get()) {
     // returns boolean of operation success
 }
@@ -395,17 +403,13 @@ $item->getBody(); // Array of the unfiltered HTTP response body
 
 ```php
 // Approach 1 - Client
-$item = $app->put('collection', 'key', ['title' => 'New Title']);
+$item = $client->put('collection', 'key', ['title' => 'New Title']);
 
-// Approach 2 - Collection
-$item = $collection->put('key', ['title' => 'New Title']);
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key'); // no API calls yet
 $item->title = 'New Title';
-$item->put(); // puts the whole current Value, only with the title changed
-$item->put(['title' => 'New Title']); // puts an entire new value
+$item->put(); // puts the current Value, which in this case is only title
+$item->put(['title' => 'New Title']); // strictly puts a new value
 ```
 
 
@@ -415,14 +419,10 @@ Stores the value for the key only if the value of the ref matches the current st
 
 ```php
 // Approach 1 - Client
-$item = $app->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+$item = $client->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$item = $collection->put('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $item->put(['title' => 'New Title'], true); // uses the current object Ref
 ```
@@ -434,14 +434,10 @@ Stores the value for the key if no key/value already exists.
 
 ```php
 // Approach 1 - Client
-$item = $app->put('collection', 'key', ['title' => 'New Title'], false);
+$item = $client->put('collection', 'key', ['title' => 'New Title'], false);
 
-// Approach 2 - Collection
-$item = $collection->put('key', ['title' => 'New Title'], false);
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->put(['title' => 'New Title'], false);
 ```
 
@@ -460,14 +456,10 @@ $patch = (new PatchBuilder())
     ->copy('full_name', 'name');
 
 // Approach 1 - Client
-$item = $app->patch('collection', 'key', $patch);
+$item = $client->patch('collection', 'key', $patch);
 
-// Approach 2 - Collection
-$item = $collection->patch('key', $patch);
-
-// Approach 3 - Object 
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object 
+$item = $collection->item('key');
 $item->patch($patch);
 
 // Warning: when patching, the object Value (retrievable with $item->getValue())
@@ -493,14 +485,10 @@ $patch = (new PatchBuilder())
     ->copy('full_name', 'name');
 
 // Approach 1 - Client
-$item = $app->patch('collection', 'key', $patch, '20c14e8965d6cbb0');
+$item = $client->patch('collection', 'key', $patch, '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$item = $collection->patch('key', $patch, '20c14e8965d6cbb0');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->patch($patch, '20c14e8965d6cbb0');
 $item->patch($patch, true); // uses the current object Ref
 $item->patch($patch, true, true); // with the reload as mentioned above
@@ -512,14 +500,10 @@ $item->patch($patch, true, true); // with the reload as mentioned above
 
 ```php
 // Approach 1 - Client
-$item = $app->patchMerge('collection', 'key', ['title' => 'New Title']);
+$item = $client->patchMerge('collection', 'key', ['title' => 'New Title']);
 
-// Approach 2 - Collection
-$item = $collection->patchMerge('key', ['title' => 'New Title']);
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->title = 'New Title';
 $item->patchMerge(); // merges the current Value
 $item->patchMerge(['title' => 'New Title']); // or merge with new value
@@ -533,14 +517,10 @@ Stores the value for the key only if the value of the ref matches the current st
 
 ```php
 // Approach 1 - Client
-$item = $app->patchMerge('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
+$item = $client->patchMerge('collection', 'key', ['title' => 'New Title'], '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$item = $collection->patchMerge('key', ['title' => 'New Title'], '20c14e8965d6cbb0');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->patchMerge(['title' => 'New Title'], '20c14e8965d6cbb0');
 $item->patchMerge(['title' => 'New Title'], true); // uses the current object Ref
 // also has a 'reload' parameter as mentioned above
@@ -553,14 +533,10 @@ $item->patchMerge(['title' => 'New Title'], true); // uses the current object Re
 
 ```php
 // Approach 1 - Client
-$item = $app->post('collection', ['title' => 'New Title']);
+$item = $client->post('collection', ['title' => 'New Title']);
 
-// Approach 2 - Collection
-$item = $collection->post(['title' => 'New Title']);
-
-// Approach 3 - Object
-$item = new KeyValue('collection');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->title = 'New Title';
 $item->post(); // posts the current Value
 $item->post(['title' => 'New Title']); // posts a new value
@@ -572,14 +548,10 @@ $item->post(['title' => 'New Title']); // posts a new value
 
 ```php
 // Approach 1 - Client
-$item = $app->delete('collection', 'key');
+$item = $client->delete('collection', 'key');
 
-// Approach 3 - Collection
-$item = $collection->delete('key');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->delete();
 $item->delete('20c14e8965d6cbb0'); // delete a specific ref
 ```
@@ -591,15 +563,11 @@ The If-Match header specifies that the delete operation will succeed if and only
 
 ```php
 // Approach 1 - Client
-$item = $app->delete('collection', 'key', '20c14e8965d6cbb0');
+$item = $client->delete('collection', 'key', '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$item = $collection->delete('key', '20c14e8965d6cbb0');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
-// first get or set a ref:
+// Approach 2 - Object
+$item = $collection->item('key');
+// first get the item, or set a ref:
 // $item->get();
 // or $item->setRef('20c14e8965d6cbb0');
 $item->delete(true); // delete the current ref
@@ -613,52 +581,43 @@ The KV object and all of its ref history will be permanently deleted. This opera
 
 ```php
 // Approach 1 - Client
-$item = $app->purge('collection', 'key');
+$item = $client->purge('collection', 'key');
 
-// Approach 2 - Collection
-$item = $collection->purge('key');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->purge();
 ```
 
 
 
 ### Key/Value List:
-> returns KeyValues object, with results as KeyValue objects
+> returns Collection object, with child results as KeyValue objects
 
 ```php
 // Approach 1 - Client
-$list = $app->listCollection('collection');
+$collection = $client->listCollection('collection', 100, ['startKey' => 'example']);
 
-// Approach 2 - Collection
-$list = $collection->listCollection();
-
-// Approach 3 - Object
-$list = new KeyValues('collection'); // note the plural
-$list->setApplication($app);
-$list->listCollection();
+// Approach 2 - Object
+$collection->get(100, ['startKey' => 'example']);
 
 
 // now get array of the results
-$list->getResults();
+$collection->getResults();
 
 // or go ahead and iterate over the results directly!
-foreach ($list as $item) {
+foreach ($collection as $item) {
     
     echo $item->title;
     // items are KeyValue objects
 }
 
 // pagination
-$list->getNextUrl(); // string
-$list->getPrevUrl(); // string
-$list->getCount(); // count of the current set of results
-$list->getTotalCount(); // count of the total results available
-$list->next(); // loads next set of results
-$list->prev(); // loads previous set of results
+$collection->getNextUrl(); // string
+$collection->getPrevUrl(); // string
+$collection->getCount(); // count of the current set of results
+$collection->getTotalCount(); // count of the total results available
+$collection->next(); // loads next set of results
+$collection->prev(); // loads previous set of results
 ```
 
 
@@ -670,32 +629,25 @@ Returns the specified version of a value.
 
 ```php
 // Approach 1 - Client
-$item = $app->get('collection', 'key', '20c14e8965d6cbb0');
+$item = $client->get('collection', 'key', '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$item = $collection->get('key', '20c14e8965d6cbb0');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->get('20c14e8965d6cbb0');
 ```
 
 ### Refs List:
-> returns Refs object, with results as Ref objects (a KeyValue subclass)
+> returns Refs object, with results as KeyValue objects
 
 Get the specified version of a value.
 
 ```php
 // Approach 1 - Client
-$list = $app->listRefs('collection', 'key');
+$list = $client->listRefs('collection', 'key');
 
-// Approach 2 - Collection
-$list = $collection->listRefs('key');
-
-// Approach 3 - Object
+// Approach 2 - Object
 $list = new Refs('collection', 'key');
-$list->setApplication($app);
+$list->setClient($app);
 $list->listRefs();
 
 
@@ -706,7 +658,6 @@ $list->getResults();
 foreach ($list as $item) {
     
     echo $item->title;
-    // items are Ref objects (KeyValue subclass)
 }
 
 // pagination
@@ -721,44 +672,38 @@ $list->prev(); // loads previous set of results
 
 
 ### Search:
-> returns Search object, with results as SearchResult objects (a KeyValue subclass)
+> returns Search object, with results as KeyValue objects
 
 ```php
 // Approach 1 - Client
-$results = $app->search('collection', 'title:"The Title*"');
+$collection = $client->search('collection', 'title:"The Title*"');
 
-// Approach 2 - Collection
-$results = $collection->search('title:"The Title*"');
-
-// Approach 3 - Object
-$results = new Search('collection');
-$results->setApplication($app);
-$results->search('title:"The Title*"');
+// Approach 2 - Object
+$collection->search('title:"The Title*"');
 
 
 // now get array of the search results
-$list_of_items = $results->getResults();
+$itemList = $results->getResults();
 
 // or go ahead and iterate over the results directly!
-foreach ($results as $item) {
+foreach ($collection as $item) {
     
     echo $item->title;
-    // items are SearchResult objects, KeyValue subclass
 
     $item->getScore(); // search score
     $item->getDistance(); // populated if it was a Geo query
 }
 
 // aggregates
-$results->getAggregates(); // array of the Aggregate results, if any 
+$collection->getAggregates(); // array of the Aggregate results, if any 
 
 // pagination
-$results->getNextUrl(); // string
-$results->getPrevUrl(); // string
-$results->getCount(); // count of the current set of results
-$results->getTotalCount(); // count of the total results available
-$results->next(); // loads next set of results
-$results->prev(); // loads previous set of results
+$collection->getNextUrl(); // string
+$collection->getPrevUrl(); // string
+$collection->getCount(); // count of the current set of results
+$collection->getTotalCount(); // count of the total results available
+$collection->next(); // loads next set of results
+$collection->prev(); // loads previous set of results
 ```
 
 All Search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
@@ -782,14 +727,11 @@ $results = $collection->search(
 
 ```php
 // Approach 1 - Client
-$event = $app->getEvent('collection', 'key', 'type', 1400684480732, 1);
+$event = $client->getEvent('collection', 'key', 'type', 1400684480732, 1);
 
-// Approach 2 - Collection
-$event = $collection->getEvent('key', 'type', 1400684480732, 1);
-
-// Approach 3 - Object
+// Approach 2 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setApplication($app);
+$event->setClient($app);
 $event->get();
 ```
 
@@ -798,14 +740,11 @@ $event->get();
 
 ```php
 // Approach 1 - Client
-$event = $app->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title']);
+$event = $client->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title']);
 
-// Approach 2 - Collection
-$event = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title']);
-
-// Approach 3 - Object
+// Approach 2 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setApplication($app);
+$event->setClient($app);
 $event->title = 'New Title';
 $event->put(); // puts the whole current value, only with the title changed
 $event->put(['title' => 'New Title']); // puts an entire new value
@@ -818,14 +757,11 @@ Stores the value for the key only if the value of the ref matches the current st
 
 ```php
 // Approach 1 - Client
-$event = $app->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
+$event = $client->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$event = $collection->putEvent('key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
-
-// Approach 3 - Object
+// Approach 2 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setApplication($app);
+$event->setClient($app);
 $event->title = 'New Title';
 $event->put(['title' => 'New Title'], '20c14e8965d6cbb0');
 $event->put(['title' => 'New Title'], true); // uses the current object Ref
@@ -837,14 +773,11 @@ $event->put(['title' => 'New Title'], true); // uses the current object Ref
 
 ```php
 // Approach 1 - Client
-$event = $app->postEvent('collection', 'key', 'type', ['title' => 'New Title']);
+$event = $client->postEvent('collection', 'key', 'type', ['title' => 'New Title']);
 
-// Approach 2 - Collection
-$event = $collection->postEvent('key', 'type', ['title' => 'New Title']);
-
-// Approach 3 - Object
+// Approach 2 - Object
 $event = new Event('collection', 'key', 'type');
-$event->setApplication($app);
+$event->setClient($app);
 $event->title = 'New Title';
 $event->post(); // posts the current Value
 $event->post(['title' => 'New Title']); // posts a new value
@@ -860,14 +793,11 @@ Warning: Orchestrate do not support full history of each event, so the delete op
 
 ```php
 // Approach 1 - Client
-$event = $app->deleteEvent('collection', 'key', 'type', 1400684480732, 1);
+$event = $client->deleteEvent('collection', 'key', 'type', 1400684480732, 1);
 
-// Approach 2 - Collection
-$event = $collection->deleteEvent('key', 'type', 1400684480732, 1);
-
-// Approach 3 - Object
+// Approach 2 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setApplication($app);
+$event->setClient($app);
 $event->delete();
 ```
 
@@ -878,14 +808,11 @@ The If-Match header specifies that the delete operation will succeed if and only
 
 ```php
 // Approach 1 - Client
-$event = $app->deleteEvent('collection', 'key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
+$event = $client->deleteEvent('collection', 'key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
 
-// Approach 2 - Collection
-$event = $collection->deleteEvent('key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
-
-// Approach 3 - Object
+// Approach 2 - Object
 $event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setApplication($app);
+$event->setClient($app);
 // first get or set a ref:
 $event->get();
 // or $event->setRef('20c14e8965d6cbb0');
@@ -899,14 +826,11 @@ $event->delete('20c14e8965d6cbb0'); // delete a specific ref
 
 ```php
 // Approach 1 - Client
-$events = $app->listEvents('collection', 'key', 'type');
+$events = $client->listEvents('collection', 'key', 'type');
 
-// Approach 2 - Collection
-$events = $collection->listEvents('key', 'type');
-
-// Approach 3 - Object
+// Approach 2 - Object
 $events = new Events('collection', 'key', 'type'); // note the plural
-$events->setApplication($app);
+$events->setClient($app);
 $events->listEvents();
 
 
@@ -944,19 +868,16 @@ Returns relation's collection, key, ref, and values. The "kind" parameter(s) ind
 
 ```php
 // Approach 1 - Client
-$list = $app->listRelations('collection', 'key', 'kind');
+$list = $client->listRelations('collection', 'key', 'kind');
 
-// Approach 2 - Collection
-$list = $collection->listRelations('key', 'kind');
-
-// Approach 3 - Object
+// Approach 2 - Object
 $list = new Graph('collection', 'key', 'kind');
-$list->setApplication($app);
+$list->setClient($app);
 $list->listRelations();
 
 
 // the kind parameter accepts an array of strings to request the relatioship depth:
-$list = $app->listRelations('collection', 'key', ['kind', 'kind2']);
+$list = $client->listRelations('collection', 'key', ['kind', 'kind2']);
 // two hops
 
 
@@ -986,14 +907,10 @@ $list->prev(); // loads previous set of results
 
 ```php
 // Approach 1 - Client
-$item = $app->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+$item = $client->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
 
-// Approach 2 - Collection
-$item = $collection->putRelation('key', 'kind', 'toCollection', 'toKey');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->putRelation('kind', 'toCollection', 'toKey');
 ```
 
@@ -1005,14 +922,10 @@ Deletes a relationship between two objects. Relations don't have a history, so t
 
 ```php
 // Approach 1 - Client
-$item = $app->deleteRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+$item = $client->deleteRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
 
-// Approach 2 - Collection
-$item = $collection->deleteRelation('key', 'kind', 'toCollection', 'toKey');
-
-// Approach 3 - Object
-$item = new KeyValue('collection', 'key');
-$item->setApplication($app);
+// Approach 2 - Object
+$item = $collection->item('key');
 $item->deleteRelation('kind', 'toCollection', 'toKey');
 ```
 

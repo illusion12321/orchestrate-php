@@ -1,15 +1,8 @@
 # TODO and IDEAS
 
-!!!
-ver se o parametro Application fica ou sai dos constructors --- fica, quase nunca vamos criar um objeto via o constructor.. e se for, fica mais facil usar os parametros... usar setClient é bonito, mas é um parametro obrigatório........ ou não!!! não é necessáriamente obrigatório, não compõe a identidade do objeto, e teoriocamente podemos criar objetos sem precisar de cliente, só para servir de referencia e tal...? --- podemos tirar do Collection dai tambem
-
-!!!
-mudar o setApplication para setClient anyway!??? ele seria um ClientInterface?
-
 o lance do naming do 'kind' e 'type', principalmente o kind porque conflita com o toArray
 
 resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precisa reorganizar a estrutura de pastas, objetos viram top level, properties volta para common, ou quebra Objects em Lists tambem?
-
 
 - Allow Collection/Application to change the list's children class! Specially important for Models. --- improve setItemClass, setListClass, setEventClass and make it pass from one class to another
 
@@ -35,6 +28,8 @@ resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precis
 
 - Improve the Guzzle implementation, and add async operations
 
+- Add Cache interface right!?
+
 - Implement Tests
 
 - Add Docs (ApiGen, Sami or something that can be created from the source files)?
@@ -47,4 +42,8 @@ resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precis
 
 - add serialize/unserialize? Review the use case. (unserialize could use init, and serialize toArray)
 
-- event system?
+- Later, can a 'toView' method bring something new, to help template engines or views? (getValue suffices for most cases)
+
+- Event system?
+
+- Implement Guzzle logger interface?

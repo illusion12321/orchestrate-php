@@ -11,6 +11,6 @@ class Application extends AbstractClient
 {
     public function collection($name)
     {
-        return new Collection($this, $name);
+        return (new Collection($name))->setClient($this);
     }
 }

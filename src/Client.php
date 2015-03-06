@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
+use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Event;
@@ -42,7 +43,8 @@ class Client extends AbstractClient
      */
     public function listCollection($collection, $limit = 10, array $range = null)
     {
-        $list = new Collection($this->getApplication(true), $collection);
+        $list = (new Collection($collection))
+            ->setClient($this);
 
         $list->get($limit, $range);
         return $list;
@@ -61,7 +63,8 @@ class Client extends AbstractClient
      */
     public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
-        $list = new Collection($this->getApplication(true), $collection);
+        $list = (new Collection($collection))
+            ->setClient($this);
         
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
@@ -81,7 +84,7 @@ class Client extends AbstractClient
     public function get($collection, $key, $ref = null)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->get($ref);
         return $item;
@@ -99,7 +102,7 @@ class Client extends AbstractClient
     public function put($collection, $key, array $value, $ref = null)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->put($value, $ref);
         return $item;
@@ -118,7 +121,7 @@ class Client extends AbstractClient
     public function patch($collection, $key, PatchBuilder $operations, $ref = null, $reload = false)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->patch($operations, $ref, $reload);
         return $item;
@@ -137,7 +140,7 @@ class Client extends AbstractClient
     public function patchMerge($collection, $key, array $value, $ref = null, $reload = false)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->patchMerge($value, $ref, $reload);
         return $item;
@@ -153,7 +156,7 @@ class Client extends AbstractClient
     public function post($collection, array $value)
     {
         $item = (new KeyValue($collection))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->post($value);
         return $item;
@@ -170,7 +173,7 @@ class Client extends AbstractClient
     public function delete($collection, $key, $ref = null)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->delete($ref);
         return $item;
@@ -186,7 +189,7 @@ class Client extends AbstractClient
     public function purge($collection, $key)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->purge();
         return $item;
@@ -208,7 +211,7 @@ class Client extends AbstractClient
     public function listRefs($collection, $key, $limit = 10, $offset = 0, $values = false)
     {
         $list = (new Refs($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $list->listRefs($limit, $offset, $values);
         return $list;
@@ -230,7 +233,7 @@ class Client extends AbstractClient
     public function getEvent($collection, $key, $type, $timestamp, $ordinal)
     {
         $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->get();
         return $item;
@@ -251,7 +254,7 @@ class Client extends AbstractClient
     public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref = null)
     {
         $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->put($value, $ref);
         return $item;
@@ -270,7 +273,7 @@ class Client extends AbstractClient
     public function postEvent($collection, $key, $type, array $value, $timestamp = 0)
     {
         $item = (new Event($collection, $key, $type))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->post($value, $timestamp);
         return $item;
@@ -290,7 +293,7 @@ class Client extends AbstractClient
     public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref = null)
     {
         $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->delete($ref);
         return $item;
@@ -309,7 +312,7 @@ class Client extends AbstractClient
     public function purgeEvent($collection, $key, $type, $timestamp, $ordinal)
     {
         $item = (new Event($collection, $key, $type, $timestamp, $ordinal))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->purge();
         return $item;
@@ -328,7 +331,7 @@ class Client extends AbstractClient
     public function listEvents($collection, $key, $type, $limit = 10, array $range = null)
     {
         $list = (new Events($collection, $key, $type))
-            ->setApplication($this);
+            ->setClient($this);
 
         $list->listEvents($limit, $range);
         return $list;
@@ -350,7 +353,7 @@ class Client extends AbstractClient
     public function putRelation($collection, $key, $kind, $toCollection, $toKey)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->putRelation($kind, $toCollection, $toKey);
         return $item;
@@ -369,7 +372,7 @@ class Client extends AbstractClient
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
     {
         $item = (new KeyValue($collection, $key))
-            ->setApplication($this);
+            ->setClient($this);
 
         $item->deleteRelation($kind, $toCollection, $toKey);
         return $item;
@@ -388,7 +391,7 @@ class Client extends AbstractClient
     public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
     {
         $list = (new Graph($collection, $key, $kind))
-            ->setApplication($this);
+            ->setClient($this);
 
         $list->listRelations($limit, $offset);
         return $list;

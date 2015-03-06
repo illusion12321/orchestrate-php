@@ -216,7 +216,7 @@ abstract class AbstractList extends AbstractResponse implements
         if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($url, '/'.$this->getApplication(true)->getApiVersion().'/');
+            $url = ltrim($url, '/'.$this->getClient(true)->getApiVersion().'/');
 
             // request
             $this->request('GET', $url);
@@ -271,7 +271,7 @@ abstract class AbstractList extends AbstractResponse implements
     protected function createChildrenClass(array $values)
     {
         return $this->getChildClass()->newInstance()
-            ->setApplication($this->getApplication(true))
+            ->setClient($this->getClient(true))
             ->setCollection($this->getCollection(true))
             ->init($values);
     }

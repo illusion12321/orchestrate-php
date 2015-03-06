@@ -44,6 +44,18 @@ class KeyValue extends AbstractObject
         $this->setRef($ref);
     }
 
+    // private $graph;
+    // public function relations()
+    // {
+    //     if (!$graph) {
+    //         $graph = (new Graph())
+    //             ->setClient($this->getClient(true))
+    //             ->setCollection($this->getCollection(true))
+    //             ->setKey($this->getKey(true));
+    //     }
+    //     return $graph;
+    // }
+
     /**
      * @return float
      */
@@ -153,18 +165,6 @@ class KeyValue extends AbstractObject
             $result['path']['tombstone'] = $this->_tombstone;
         
         return $result;
-    }
-
-    private $graph;
-    public function relations()
-    {
-        if (!$graph) {
-            $graph = (new Graph())
-                ->setApplication($this->getApplication(true))
-                ->setCollection($this->getCollection(true))
-                ->setKey($this->getKey(true));
-        }
-        return $graph;
     }
 
     /**

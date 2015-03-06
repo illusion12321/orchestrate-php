@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\ConnectException;
  * 
  * @link https://orchestrate.io/docs/apiref
  */
-abstract class AbstractClient
+abstract class AbstractClient implements ClientInterface
 {
     /**
      * @var string
@@ -44,9 +44,7 @@ abstract class AbstractClient
         $this->setApiVersion($apiVersion);
     }
 
-    /**
-     * @param string $key 
-     */
+    
     public function setApiKey($key = null)
     {
         if ($key)
