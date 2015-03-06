@@ -1,7 +1,7 @@
 # TODO and IDEAS
 
 !!!
-ver se o parametro Application fica ou sai dos constructors
+ver se o parametro Application fica ou sai dos constructors --- fica, quase nunca vamos criar um objeto via o constructor.. e se for, fica mais facil usar os parametros... usar setClient é bonito, mas é um parametro obrigatório........ ou não!!! não é necessáriamente obrigatório, não compõe a identidade do objeto, e teoriocamente podemos criar objetos sem precisar de cliente, só para servir de referencia e tal...? --- podemos tirar do Collection dai tambem
 
 !!!
 mudar o setApplication para setClient anyway!??? ele seria um ClientInterface?
@@ -33,11 +33,11 @@ resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precis
 
 - Inline Docs
 
+- Improve the Guzzle implementation, and add async operations
+
 - Implement Tests
 
 - Add Docs (ApiGen, Sami or something that can be created from the source files)?
-
-- Implement async operations?
 
 - Add sort operations to List objects? basically just a map to PHP sort?
 

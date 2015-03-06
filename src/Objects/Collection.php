@@ -26,6 +26,19 @@ class Collection extends AbstractList
     }
 
     /**
+     * @param string $key
+     * @param string $ref
+     * 
+     * @return KeyValue Construct a collection item instance. A KeyValue or a custom class you set with setChildClass().
+     */
+    public function item($key = null, $ref = null)
+    {
+        return $this->getChildClass()
+            ->newInstance($this->getCollection(true), $key, $ref)
+            ->setApplication($this->getApplication(true));
+    }
+
+    /**
      * @return float
      */
     public function getAggregates()
@@ -51,19 +64,6 @@ class Collection extends AbstractList
     {
         parent::reset();
         $this->_aggregates = [];
-    }
-    
-    /**
-     * @param string $key
-     * @param string $ref
-     * 
-     * @return KeyValue Construct a collection item instance. A KeyValue or a custom class you set with setChildClass().
-     */
-    public function item($key = null, $ref = null)
-    {
-        return $this->getChildClass()
-            ->newInstance($this->getCollection(true), $key, $ref)
-            ->setApplication($this->getApplication(true));
     }
 
     /**

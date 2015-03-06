@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Collection;
+use andrefelipe\Orchestrate\Objects\Collection;
 
 /**
  * 
