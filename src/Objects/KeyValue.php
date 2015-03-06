@@ -35,11 +35,13 @@ class KeyValue extends AbstractObject
     /**
      * @param string $collection
      * @param string $key
+     * @param string $ref
      */
-    public function __construct($collection = null, $key = null)
+    public function __construct($collection = null, $key = null, $ref = null)
     {
         $this->setCollection($collection);
         $this->setKey($key);
+        $this->setRef($ref);
     }
 
     /**

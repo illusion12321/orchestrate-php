@@ -1,18 +1,25 @@
 # TODO and IDEAS
 
-- Allow Collection/Application to change the list's children class! Specially important for Models.
+!!!
+ver se o parametro Application fica ou sai dos constructors
 
-- Study the best way to integrate Refs and Events into a KeyValue for easy access/management ? unite the KeyValues class with Search (turning into Collection), then move Refs and Events into KeyValue?
+!!!
+mudar o setApplication para setClient anyway!??? ele seria um ClientInterface?
 
-- Rethink the Collection class, turning into a resource-like object, acting as a KeyValue storage, by key
+o lance do naming do 'kind' e 'type', principalmente o kind porque conflita com o toArray
 
-- Study the advantages of turning all objects to resources like: $application['collection']['key']['some_property'] that loads automatically the object, if not already on cache  - more ideas on https://github.com/awslabs/aws-sdk-php-resources
+resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precisa reorganizar a estrutura de pastas, objetos viram top level, properties volta para common, ou quebra Objects em Lists tambem?
+
+
+- Allow Collection/Application to change the list's children class! Specially important for Models. --- improve setItemClass, setListClass, setEventClass and make it pass from one class to another
+
+- Study the best way to integrate Refs and Events into a KeyValue for easy access/management
 
 - Consider removing post from KeyValue?
 
-- Check out https://github.com/jmespath/jmespath.php
+- Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
 
-- Maybe move out the Client from the application, so every object would consistently have ->setClient — Client could extend Guzzle\Client and bring back the static getDefault()
+- Check out https://github.com/jmespath/jmespath.php
 
 - Implement some common interfaces, and general organization of the base classes
 
@@ -20,11 +27,9 @@
 
 - Add totalCount method to Collection or KeyValues?
 
-- Maybe even a getAll to KeyValues?
+- Maybe even a getAll to Collection? getFirst?
 
-- Add a getFirst to Collection/Application?
-
-- Add an addNext addPrev to List, so we get the next set of results without erasing the last page?
+- Add an appendNextPage appendPrevPage to List, so we get the next set of results without erasing the last page?
 
 - Inline Docs
 

@@ -159,7 +159,7 @@ abstract class AbstractList extends AbstractResponse implements
     /**
      * @return boolean Success of operation.
      */
-    public function next()
+    public function next() // TODO change to getNextPage? nextPage?
     {
         return $this->getUrl($this->_nextUrl);
     }

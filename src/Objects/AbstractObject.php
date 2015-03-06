@@ -15,8 +15,6 @@ abstract class AbstractObject extends AbstractResponse implements
 
     public function __get($key)
     {
-
-
         return isset($this->{$key}) ? $this->{$key} : null;
     }
 
