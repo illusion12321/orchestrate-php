@@ -11,7 +11,7 @@ trait TimestampTrait
     /**
      * @var int
      */
-    private $_timestamp = 0;
+    private $_timestamp = null;
     
     /**
      * @param boolean $required

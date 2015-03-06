@@ -11,7 +11,7 @@ trait OrdinalTrait
     /**
      * @var int
      */
-    private $_ordinal = 0;
+    private $_ordinal = null;
     
     /**
      * @param boolean $required

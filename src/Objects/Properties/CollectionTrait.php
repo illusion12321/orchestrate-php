@@ -11,7 +11,7 @@ trait CollectionTrait
     /**
      * @var string
      */
-    private $_collection;
+    private $_collection = null;
 
     /**
      * @param boolean $required 
