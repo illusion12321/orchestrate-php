@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 
 /**
+ * Class that implements the ClientInterface methods and the children classes. 
  * 
  * @link https://orchestrate.io/docs/apiref
  */
@@ -14,22 +15,32 @@ abstract class AbstractClient implements ClientInterface
     /**
      * @var string
      */
-    private $host;
+    private $_host;
     
     /**
      * @var string
      */
-    private $apiVersion;
+    private $_apiVersion;
 
     /**
      * @var string
      */
-    private $apiKey;
+    private $_apiKey;
 
     /**
      * @var \GuzzleHttp\ClientInterface
      */
-    private $client;
+    private $_client;
+
+    /**
+     * @var \ReflectionClass
+     */
+    private $_itemClass;
+
+    /**
+     * @var \ReflectionClass
+     */
+    private $_eventClass;
     
     /**
      * @param string $apiKey
@@ -44,13 +55,24 @@ abstract class AbstractClient implements ClientInterface
         $this->setApiVersion($apiVersion);
     }
 
-    
-    public function setApiKey($key = null)
+    /**
+     * @return string
+     */
+    public function getApiKey()
     {
-        if ($key)
-            $this->apiKey = $key;
-        else
-            $this->apiKey = getenv('ORCHESTRATE_API_KEY');
+        return $this->_apiKey;
+    }
+
+    /**
+     * @param string
+     */
+    public function setApiKey($key)
+    {
+        if ($key) {
+            $this->_apiKey = $key;
+        } else {
+            $this->_apiKey = getenv('ORCHESTRATE_API_KEY');
+        }            
     }
 
     /**
@@ -58,18 +80,19 @@ abstract class AbstractClient implements ClientInterface
      */
     public function getHost()
     {
-        return $this->host;
+        return $this->_host;
     }
 
     /**
      * @param string $host 
      */
-    public function setHost($host = null)
+    public function setHost($host)
     {
-        if ($host)
-            $this->host = trim($host, '/'); 
-        else
-            $this->host = 'https://api.orchestrate.io';
+        if ($host) {
+            $this->_host = trim($host, '/');
+        } else {
+            $this->_host = 'https://api.orchestrate.io';
+        }
     }
 
     /**
@@ -77,15 +100,15 @@ abstract class AbstractClient implements ClientInterface
      */
     public function getApiVersion()
     {
-        return $this->apiVersion;
+        return $this->_apiVersion;
     }
 
     /**
      * @param string $version 
      */
-    public function setApiVersion($version = null)
+    public function setApiVersion($version)
     {
-        $this->apiVersion = $version ? $version : 'v0';
+        $this->_apiVersion = $version ? $version : 'v0';
     }
 
     /**
@@ -93,22 +116,22 @@ abstract class AbstractClient implements ClientInterface
      */
     public function getHttpClient()
     {
-        if (!$this->client)
+        if (!$this->_client)
         {
             // create the default http client
-            $this->client = new \GuzzleHttp\Client(
+            $this->_client = new \GuzzleHttp\Client(
             [
-                'base_url' => $this->host.'/'.$this->apiVersion.'/',
+                'base_url' => $this->getHost().'/'.$this->getApiVersion().'/',
                 'defaults' => [
                     'headers' => [
                         'Content-Type' => 'application/json',
                     ],
-                    'auth' => [ $this->apiKey, null ],
+                    'auth' => [ $this->getApiKey(), null ],
                 ]
             ]);
         }
 
-        return $this->client;
+        return $this->_client;
     }
 
     /**
@@ -116,7 +139,7 @@ abstract class AbstractClient implements ClientInterface
      */
     public function setHttpClient(\GuzzleHttp\ClientInterface $client)
     {
-        $this->client = $client;
+        $this->_client = $client;
     }
 
     /**
@@ -207,5 +230,67 @@ abstract class AbstractClient implements ClientInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Set which class should be used to instantiate this list's KeyValue instances.
+     * 
+     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     */
+    public function setItemClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_itemClass = $class;
+        } else {
+            $this->_itemClass = new \ReflectionClass($class);
+        }
+        // when interface are defined add a better check here
+        // if (!$this->_itemClass->isSubclassOf(KEY_VALUE_CLASS)) {
+        //     throw new \RuntimeException('Child classes can only extend the  class.');
+        // }
+    }
+
+    /**
+     * Get the ReflectionClass that is being used to instantiate this list's KeyValue instances.
+     * 
+     * @return \ReflectionClass
+     */
+    public function getItemClass()
+    {
+        if (!isset($this->_itemClass)) {
+            $this->_itemClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\KeyValue');
+        }
+        return $this->_itemClass;
+    }
+
+    /**
+     * Set which class should be used to instantiate this list's events instances.
+     * 
+     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     */
+    public function setEventClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_eventClass = $class;
+        } else {
+            $this->_eventClass = new \ReflectionClass($class);
+        }
+        // when interface are defined add a better check here
+        // if (!$this->_eventClass->isSubclassOf(KEY_VALUE_CLASS)) {
+        //     throw new \RuntimeException('Child classes can only extend the  class.');
+        // }
+    }
+    
+    /**
+     * Get the ReflectionClass that is being used to instantiate this list's events instances.
+     * 
+     * @return \ReflectionClass
+     */
+    public function getEventClass()
+    {
+        if (!isset($this->_eventClass)) {
+            $this->_eventClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\Event');
+        }
+        return $this->_eventClass;
     }
 }

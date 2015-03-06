@@ -4,8 +4,6 @@ o lance do naming do 'kind' e 'type', principalmente o kind porque conflita com 
 
 resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precisa reorganizar a estrutura de pastas, objetos viram top level, properties volta para common, ou quebra Objects em Lists tambem?
 
-- Allow Collection/Application to change the list's children class! Specially important for Models. --- improve setItemClass, setListClass, setEventClass and make it pass from one class to another
-
 - Study the best way to integrate Refs and Events into a KeyValue for easy access/management
 
 - Consider removing post from KeyValue?

@@ -40,11 +40,6 @@ abstract class AbstractList extends AbstractResponse implements
     private $_childClass;
 
     /**
-     * @var \ReflectionClass
-     */
-    private $_childEventClass;
-
-    /**
      * @param string $collection
      */
     public function __construct($collection = null)
@@ -225,10 +220,12 @@ abstract class AbstractList extends AbstractResponse implements
 
         return false;
     }
-
-
     
-
+    /**
+     * Set which class should be used to instantiate this list's children.
+     * 
+     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     */
     public function setChildClass($class)
     {
         if ($class instanceof \ReflectionClass) {
@@ -236,12 +233,16 @@ abstract class AbstractList extends AbstractResponse implements
         } else {
             $this->_childClass = new \ReflectionClass($class);
         }
-        // when interface is define add a check here
+        // when interface are defined add a better check here
         // if (!$this->_childClass->isSubclassOf(KEY_VALUE_CLASS)) {
         //     throw new \RuntimeException('Child classes can only extend the  class.');
         // }
     }
-
+    /**
+     * Get the ReflectionClass that is being used to instantiate this list's children.
+     * 
+     * @return \ReflectionClass
+     */
     public function getChildClass()
     {
         if (!isset($this->_childClass)) {
@@ -249,24 +250,6 @@ abstract class AbstractList extends AbstractResponse implements
         }
         return $this->_childClass;
     }
-
-    public function setChildEventClass($class)
-    {
-        if ($class instanceof \ReflectionClass) {
-            $this->_childEventClass = $class;
-        } else {
-            $this->_childEventClass = new \ReflectionClass($class);
-        }
-    }
-
-    public function getChildEventClass()
-    {
-        if (!$this->_childEventClass) {
-            $this->_childEventClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\Event');
-        }
-        return $this->_childEventClass;
-    }
-
     
     protected function createChildrenClass(array $values)
     {
@@ -275,6 +258,4 @@ abstract class AbstractList extends AbstractResponse implements
             ->setCollection($this->getCollection(true))
             ->init($values);
     }
-
-
 }

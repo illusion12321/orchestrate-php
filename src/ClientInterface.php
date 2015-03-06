@@ -13,7 +13,7 @@ interface ClientInterface
     /**
      * @param string $key 
      */
-    public function setApiKey($key = null);
+    public function setApiKey($key);
 
     /**
      * @return string
@@ -23,7 +23,7 @@ interface ClientInterface
     /**
      * @param string $host 
      */
-    public function setHost($host = null);
+    public function setHost($host);
 
     /**
      * @return string
@@ -33,7 +33,7 @@ interface ClientInterface
     /**
      * @param string $version 
      */
-    public function setApiVersion($version = null);
+    public function setApiVersion($version);
 
     /**
      * @return \GuzzleHttp\ClientInterface
