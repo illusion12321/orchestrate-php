@@ -24,7 +24,7 @@ class Events extends AbstractList
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function listEvents($limit = 10, array $range = null)
+    public function get($limit, array $range = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true)

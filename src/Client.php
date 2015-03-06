@@ -263,7 +263,7 @@ class Client extends AbstractClient
      * @return Event
      * @link https://orchestrate.io/docs/apiref#events-post
      */
-    public function postEvent($collection, $key, $type, array $value, $timestamp = 0)
+    public function postEvent($collection, $key, $type, array $value, $timestamp = null)
     {
         $item = newEvent($collection, $key, $type);
 
@@ -324,7 +324,7 @@ class Client extends AbstractClient
             ->setClient($this)
             ->setChildClass($this->getEventClass());
 
-        $list->listEvents($limit, $range);
+        $list->get($limit, $range);
         return $list;
     }
 
@@ -398,8 +398,8 @@ class Client extends AbstractClient
         $collection = null,
         $key = null,
         $type = null,
-        $timestamp = 0,
-        $ordinal = 0
+        $timestamp = null,
+        $ordinal = null
     )
     {
         return $this->getEventClass()
