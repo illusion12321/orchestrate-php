@@ -66,51 +66,23 @@ $client->ping(); // (boolean)
 ```
 
 ## Getting Started
-We define our classes following the same convention as Orchestrate, so we have:
+You can use our library in two distinct ways:
 
-1- **Application** — which holds the credentials and HTTP client, and provides a client-like API interface to Orchestrate.
-
-```php
-use andrefelipe\Orchestrate\Application;
-
-$app = new Application();
-
-$item = $app->get('collection', 'key'); // returns a KeyValue object
-$item = $app->put('collection', 'key', ['title' => 'My Title']);
-$item = $app->delete('collection', 'key');
-// you can name the $app var as '$client' to feel more like a client
-```
-
-2- **Collection** — which holds a collection name and provides the same client-like API, but with one level-deeper.
+1- **Client** — straightforward API interface to Orchestrate.
 
 ```php
-use andrefelipe\Orchestrate\Application;
-use andrefelipe\Orchestrate\Collection;
+use andrefelipe\Orchestrate\Client;
 
-$app = new Application();
+$client = new Client();
 
-$collection = new Collection('collection');
-$collection->setApplication($app); // link to the client
+$item = $client->get('collection', 'key'); // returns a KeyValue object
+$item = $client->put('collection', 'key', ['title' => 'My Title']);
+$item = $client->delete('collection', 'key');
 
-$item = $collection->get('key');
-$item = $collection->put('key', ['title' => 'My Title']);
-$item = $collection->delete('key');
+// The result of all operation are Objects, explained below.
 ```
 
-3- **Objects** — the actual Orchestrate objects, which provides a object-like API, as well as the results, response status, and pagination methods. They split in two categories:
-
-**Single Objects**, which provides methods to manage a single entity (get/put/delete/etc):
-- `KeyValue`, core to Orchestrate and our client, handles key/ref/value;
-- `Ref`, a KeyValue subclass, adds the tombstone and reftime properties;
-- `Event`, provides a similar API as the KeyValue, for the Event object;
-- `SearchResult`, a KeyValue subclass, adds the score and distance properties.
-
-**List of Objects**, which provides the results and pagination methods: 
-- `KeyValues`, used for KeyValue List query
-- `Refs`, used for Refs List query
-- `Graph`, used for Graph Get query
-- `Events`, used for Event List query
-- `Search`, used for Search query, with support for Geo and Aggregates
+2- **Objects** — the actual Orchestrate objects, which provides per object API as well as the response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -122,51 +94,49 @@ $item = $collection->item('key'); // no API calls yet
 
 if ($item->get()) { // API call to get the current key
 
-    // returns boolean of success
+    // The result of all operations in Objects are boolean!
+
+    // let's add some values
+    $item->name = 'Lorem Ipsum';
+    $item->role = ['member', 'user'];
+    $item->mergeValue(['role' => ['admin']]); // merge values
+
+    // put back
+    if ($item->put()) {
+        
+        echo $item->toJson(JSON_PRETTY_PRINT);
+        // {
+        //     "kind": "item",
+        //     "path": {
+        //         "collection": "collection",
+        //         "key": "key",
+        //         "ref": "20c14e8965d6cbb0"
+        //     },
+        //     "value": {
+        //         "name": "Lorem Ipsum",
+        //         "role": [
+        //             "member",
+        //             "user",
+        //             "admin"
+        //         ]
+        //     }
+        // }
+    }
+
+    // delete the current ref
+    $item->delete(); 
+
+    // delete the entire key and its history
+    $item->purge(); 
+
+    // etc
 }
 
-$item->get('20c14e8965d6cbb0'); // get a specific ref
-
-// add some values
-$item->name = 'Lorem Ipsum';
-$item->role = ['member', 'user'];
-$item->mergeValue(['role' => ['admin']]); // merge values
-
-// put back
-if ($item->put()) {
-    
-    echo $item->toJson(JSON_PRETTY_PRINT);
-    // {
-    //     "kind": "item",
-    //     "path": {
-    //         "collection": "collection",
-    //         "key": "key",
-    //         "ref": "20c14e8965d6cbb0"
-    //     },
-    //     "value": {
-    //         "name": "Lorem Ipsum",
-    //         "role": [
-    //             "member",
-    //             "user",
-    //             "admin"
-    //         ]
-    //     }
-    // }
-}
-
-// delete the current ref
-$item->delete(); 
-
-// delete the entire key and its history
-$item->purge(); 
-
-// etc
 ```
 
 Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Client. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
 
 **Remember**, the credentials and the HTTP client are only available at the `Application` or `Client` objects, so all objects must reference to them in order to do API class. You can do so via the `setClient` method.
-
 
 
 
@@ -272,77 +242,84 @@ Example:
 ```php
 // Considering KeyValue with the value of {"title": "My Title"}
 
-$item = $app->get('collection', 'key');
+$item = $collection->item('key');
 
-// Object syntax
-echo $item->title;
+if ($item->get()) {
 
-// Array syntax
-echo $item['title'];
-echo $item['another_prop']; // returns null if not set, but never error  
+    // Object syntax
+    echo $item->title;
 
-// as intended you can change the Value, then put back to Orchestrate
-$item->file_url = 'http://myfile.jpg';
+    // Array syntax
+    echo $item['title'];
+    echo $item['another_prop']; // returns null if not set, but never error  
 
-if ($item->put())) {
-    echo $item->getRef(); // cbb48f9464612f20 (the new ref)
-    echo $item->getStatus();  // ok
-    echo $item->getStatusCode();  // 200
+    // as intended you can change the Value, then put back to Orchestrate
+    $item->file_url = 'http://myfile.jpg';
+
+    if ($item->put())) {
+        echo $item->getRef(); // cbb48f9464612f20 (the new ref)
+        echo $item->getStatus();  // ok
+        echo $item->getStatusCode();  // 200
+    }
+
+    // at any time, get the Value out if needed
+    $value = $item->getValue();
+
+    // toArray() returns an Array representation of the object
+    print_r($item->toArray());
+    // Array
+    // (
+    //     [kind] => item
+    //     [path] => Array
+    //         (
+    //             [collection] => collection
+    //             [key] => key
+    //             [ref] => cbb48f9464612f20
+    //         )
+    //     [value] => Array
+    //         (
+    //             [title] => My Title
+    //         )
+    // )
+
+    // to Json too
+    $item->toJson(JSON_PRETTY_PRINT); 
+
+    // anywhere
+    $item->myprop->likes->toJson();
 }
 
-// at any time, get the Value out if needed
-$value = $item->getValue();
-
-// toArray() returns an Array representation of the object
-print_r($item->toArray());
-// Array
-// (
-//     [kind] => item
-//     [path] => Array
-//         (
-//             [collection] => collection
-//             [key] => key
-//             [ref] => cbb48f9464612f20
-//         )
-//     [value] => Array
-//         (
-//             [title] => My Title
-//         )
-// )
-
-// to Json too
-$item->toJson(JSON_PRETTY_PRINT); 
-
-// anywhere
-$item->myprop->likes->toJson();
 
 
 // Of course, it gets interesting on a collection of items, like Search
 
-$results = $client->search('collection', 'title:"The Title*"');
+if ($collection->search('collection', 'title:"The Title*"')) {
 
-// where you can iterate over the results directly!
-foreach ($results as $item) {
-    
-    // get its values
-    $item->getValue(); // the Value
-    $item->getScore(); // search score
-    $item->getDistance(); // populated if it was a Geo query
+    // where you can iterate over the results directly!
+    foreach ($results as $item) {
+        
+        // get its values
+        $item->getValue(); // the Value
+        $item->getScore(); // search score
+        $item->getDistance(); // populated if it was a Geo query
 
-    // if relation was created successfuly
-    if ($item->putRelation('kind', 'toCollection', 'toKey')) {
+        // if relation was created successfuly
+        if ($item->putRelation('kind', 'toCollection', 'toKey')) {
 
-        // take the opportunity to post an event too
-        $values = [
-            'type' => 'relation',
-            'to' => 'toKey',
-            'ref' => $item->getRef(),
-        ];
-        $client->postEvent('collection', $item->getKey(), 'log', $values);
+            // take the opportunity to post an event too
+            $values = [
+                'type' => 'relation',
+                'to' => 'toKey',
+                'ref' => $item->getRef(),
+            ];
+            $client->postEvent('collection', $item->getKey(), 'log', $values);
+        }
     }
 }
+
 ```
 
+Tip: Send the objects directly to your prefered template engine!
 
 
 
