@@ -62,7 +62,7 @@ class Collection extends AbstractList
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function get($limit, array $range = null)
+    public function get($limit = 10, array $range = null)
     {
         // define request options
         $parameters = ['limit' => $limit];

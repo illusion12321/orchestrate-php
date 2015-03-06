@@ -648,7 +648,7 @@ $list = $client->listRefs('collection', 'key');
 // Approach 2 - Object
 $list = new Refs('collection', 'key');
 $list->setClient($app);
-$list->listRefs();
+$list->get();
 
 
 // now get array of the results

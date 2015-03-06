@@ -21,7 +21,7 @@ class Refs extends AbstractList
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
-    public function listRefs($limit = 10, $offset = 0, $values = false)
+    public function get($limit = 10, $offset = 0, $values = false)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/refs/';

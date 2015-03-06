@@ -208,7 +208,7 @@ class Client extends AbstractClient
             ->setClient($this)
             ->setChildClass($this->getItemClass());
 
-        $list->listRefs($limit, $offset, $values);
+        $list->get($limit, $offset, $values);
         return $list;
     }
 
