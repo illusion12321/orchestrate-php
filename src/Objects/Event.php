@@ -3,21 +3,29 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
 use andrefelipe\Orchestrate\Objects\Properties\OrdinalTrait;
+use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
+use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
 
 class Event extends AbstractObject
 {
     use CollectionTrait;
     use KeyTrait;
-    use RefTrait;
     use TypeTrait;
     use TimestampTrait;
     use OrdinalTrait;
+    use RefTrait;
+    use ReftimeTrait;
 
-    public function __construct($collection = null, $key = null, $type = null, $timestamp = 0, $ordinal = 0)
+    /**
+    * @var string
+    */
+    private $_ordinalStr = null;
+
+
+    public function __construct($collection = null, $key = null, $type = null, $timestamp = null, $ordinal = null)
     {
         $this->setCollection($collection);
         $this->setKey($key);
@@ -25,6 +33,14 @@ class Event extends AbstractObject
         $this->setTimestamp($timestamp);
         $this->setOrdinal($ordinal);
     }
+
+    /**
+      * @return string
+      */
+     public function getOrdinalStr()
+     {
+         return $this->_ordinalStr;
+     }
     
     /**
      * @return array
@@ -32,18 +48,22 @@ class Event extends AbstractObject
     public function toArray()
     {
         $result = [
-            'kind' => 'event',
+            
             'path' => [
                 'collection' => $this->getCollection(),
+                'kind' => 'event',
                 'key' => $this->getKey(),
-                'ref' => $this->getRef(),
                 'type' => $this->getType(),
                 'timestamp' => $this->getTimestamp(),
                 'ordinal' => $this->getOrdinal(),
+                'ref' => $this->getRef(),
+                'reftime' => $this->getReftime(),
+                'ordinal_str' => $this->getOrdinalStr(),
             ],
             'value' => parent::toArray(),
             'timestamp' => $this->getTimestamp(),
             'ordinal' => $this->getOrdinal(),
+            'reftime' => $this->getReftime(),
         ];
 
         return $result;
@@ -52,11 +72,13 @@ class Event extends AbstractObject
     public function reset()
     {
         parent::reset();
-        $this->_key = null;
-        $this->_ref = null;
+        $this->_key = null;        
         $this->_type = null;
-        $this->_timestamp = 0;
-        $this->_ordinal = 0;
+        $this->_timestamp = null;
+        $this->_ordinal = null;
+        $this->_ref = null;
+        $this->_reftime = null;
+        $this->_ordinalStr = null;
         $this->resetValue();
     }
 
@@ -75,10 +97,7 @@ class Event extends AbstractObject
                 $this->setCollection($value);
 
             elseif ($key === 'key')
-                $this->setKey($value);
-
-            elseif ($key === 'ref')
-                $this->setRef($value);
+                $this->setKey($value);            
 
             elseif ($key === 'type')
                 $this->setType($value);
@@ -88,6 +107,15 @@ class Event extends AbstractObject
 
             elseif ($key === 'ordinal')
                 $this->setOrdinal($value);
+
+            elseif ($key === 'ref')
+                $this->setRef($value);
+
+            elseif ($key === 'reftime')
+                $this->_reftime = (int) $value;
+
+            elseif ($key === 'ordinal_str')
+                $this->_ordinalStr = $value;
 
             elseif ($key === 'value')
                 $this->setValue((array) $value);
@@ -105,7 +133,6 @@ class Event extends AbstractObject
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
             .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
-
      
         // request
         $this->request('GET', $path);
@@ -113,10 +140,11 @@ class Event extends AbstractObject
         // set values
         $this->resetValue();
         $this->_ref = null;
+        $this->_reftime = null;
+        $this->_ordinalStr = null;
 
         if ($this->isSuccess()) {
-            $this->setValue($this->getBody());
-            $this->setRefFromETag();
+            $this->init($this->getBody());
         }
 
         return $this->isSuccess();
@@ -134,9 +162,8 @@ class Event extends AbstractObject
         $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/events/'.$this->getType(true).'/'.$this->getTimestamp(true)
-            .'/'.$this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
         
         $options = ['json' => $newValue];
 
@@ -155,7 +182,9 @@ class Event extends AbstractObject
         
         // set values
         if ($this->isSuccess()) {
+            $this->_reftime = null;
             $this->setRefFromETag();
+            $this->setTimestampAndOrdinalFromLocation();
 
             if ($value !== null) {
                 $this->setValue($newValue);
@@ -172,7 +201,7 @@ class Event extends AbstractObject
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-post
      */
-    public function post(array $value = null, $timestamp = 0)
+    public function post(array $value = null, $timestamp = null)
     {        
         $path = $this->getCollection(true).'/'.$this->getKey(true)
             .'/events/'.$this->getType(true);
@@ -191,11 +220,13 @@ class Event extends AbstractObject
         
         // set values
         if ($this->isSuccess()) {
+            $this->_timestamp = null;
+            $this->_ordinal = null;
             $this->_ref = null;
-            $this->_timestamp = 0;
-            $this->_ordinal = 0;
+            $this->_reftime = null;
+            $this->_ordinalStr = null;
             $this->setRefFromETag();
-            $this->setTimestampFromLocation();
+            $this->setTimestampAndOrdinalFromLocation();
             if ($value !== null) {
                 $this->setValue($newValue);
             }
@@ -234,6 +265,8 @@ class Event extends AbstractObject
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->_ref = null;
+            $this->_reftime = null;
+            $this->_ordinalStr = null;
         }
 
         return $this->isSuccess();
@@ -258,12 +291,14 @@ class Event extends AbstractObject
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->_ref = null;
+            $this->_reftime = null;
+            $this->_ordinalStr = null;
         }
 
         return $this->isSuccess();
     }
 
-    protected function setTimestampFromLocation()
+    private function setTimestampAndOrdinalFromLocation()
     {
         // Location: /v0/collection/key/events/type/1398286518286/6
 
