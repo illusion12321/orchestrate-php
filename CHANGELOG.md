@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## HEAD
+## 0.8.0 - 2015-03-06
 - Radical change on classes, Application is now rightfully 'Client'.
 - Application is defined as the entry point to the object API.
 - Collection is defined as an Object, merging KeyValues (list query) and Search classes.
