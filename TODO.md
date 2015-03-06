@@ -1,10 +1,24 @@
 # TODO and IDEAS
 
-o lance do naming do 'kind' e 'type', principalmente o kind porque conflita com o toArray
+- Integrate Refs and Events directly into a KeyValue for easy access/management:
 
-resumir os traits, e testar, numa dessa eles somem! Rever mais uma vez se precisa reorganizar a estrutura de pastas, objetos viram top level, properties volta para common, ou quebra Objects em Lists tambem?
+Some API like:
+```php
+$item->relations('kind')->get()
+$item->relation('kind')->put($item)
+$item->relation('kind')->delete()
 
-- Study the best way to integrate Refs and Events into a KeyValue for easy access/management
+$item->events('type')->get() // get list
+$item->event('type')->get()
+$item->event('type')->put()
+$item->event('type')->post()
+$item->event('type')->delete()
+$item->event('type')->purge()
+
+$item->refs()->get()
+```
+
+- Review the naming of the properties 'kind' and 'type' — too weak and 'kind' conflicts with toArray
 
 - Consider removing post from KeyValue?
 
