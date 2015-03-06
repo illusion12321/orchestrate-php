@@ -831,7 +831,7 @@ $events = $client->listEvents('collection', 'key', 'type');
 // Approach 2 - Object
 $events = new Events('collection', 'key', 'type'); // note the plural
 $events->setClient($app);
-$events->listEvents();
+$events->get();
 
 
 // now get array of the results

@@ -4,6 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
+use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject
@@ -11,6 +12,7 @@ class KeyValue extends AbstractObject
     use CollectionTrait;
     use KeyTrait;
     use RefTrait;
+    use ReftimeTrait;
 
     /**
      * @var float
@@ -28,11 +30,6 @@ class KeyValue extends AbstractObject
     private $_tombstone = false;    
 
     /**
-     * @var int
-     */
-    private $_reftime = null;
-
-    /**
      * @param string $collection
      * @param string $key
      * @param string $ref
@@ -42,6 +39,18 @@ class KeyValue extends AbstractObject
         $this->setCollection($collection);
         $this->setKey($key);
         $this->setRef($ref);
+    }
+
+    public function events($type)
+    {
+        return (new Events($this->getCollection(true), $this->getKey(true), $type))
+            ->setClient($this->getClient(true));
+    }
+
+    public function event($type, $timestamp = null, $ordinal = null)
+    {
+        return (new Event($this->getCollection(true), $this->getKey(true), $type, $timestamp, $ordinal))
+            ->setClient($this->getClient(true));
     }
 
     // private $graph;
@@ -80,13 +89,7 @@ class KeyValue extends AbstractObject
         return $this->_tombstone;
     }
 
-    /**
-     * @return int
-     */
-    public function getReftime()
-    {
-        return $this->_reftime;
-    }
+    
 
     public function reset()
     {
