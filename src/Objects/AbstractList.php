@@ -102,7 +102,21 @@ abstract class AbstractList extends AbstractResponse implements
     }
 
     /**
-     * @return array
+     * @return ObjectArray
+     */
+    public function getValues()
+    {
+        $values = [];
+        foreach ($this->getResults() as $item) {
+            if (method_exists($item, 'getValue')) {
+                $values[] = $item->getValue();
+            }
+        }
+        return new ObjectArray($values);
+    }
+
+    /**
+     * @return ObjectArray
      */
     public function getResults()
     {
@@ -112,6 +126,9 @@ abstract class AbstractList extends AbstractResponse implements
         return $this->_results;
     }
 
+    /**
+     * @return self
+     */
     public function mergeResults(ListInterface $list)
     {
         $this->getResults()->merge($list->getResults());
