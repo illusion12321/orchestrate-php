@@ -38,10 +38,10 @@ interface ListInterface
     /**
      * @return boolean Success of operation.
      */
-    public function next();
+    public function nextPage();
 
     /**
      * @return boolean Success of operation.
      */
-    public function prev();
+    public function prevPage();
 }

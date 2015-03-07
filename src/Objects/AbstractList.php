@@ -13,7 +13,7 @@ abstract class AbstractList extends AbstractResponse implements
     ToJsonInterface
 {
     use CollectionTrait;
-    
+
     /**
      * @var ObjectArray
      */
@@ -171,7 +171,7 @@ abstract class AbstractList extends AbstractResponse implements
     /**
      * @return boolean Success of operation.
      */
-    public function next() // TODO change to getNextPage? nextPage?
+    public function nextPage()
     {
         return $this->getUrl($this->_nextUrl);
     }
@@ -179,7 +179,7 @@ abstract class AbstractList extends AbstractResponse implements
     /**
      * @return boolean Success of operation.
      */
-    public function prev()
+    public function prevPage()
     {
         return $this->getUrl($this->_prevUrl);
     }
