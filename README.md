@@ -871,36 +871,32 @@ Returns relation's collection, key, ref, and values. The "kind" parameter(s) ind
 
 ```php
 // Approach 1 - Client
-$list = $client->listRelations('collection', 'key', 'kind');
+$relations = $client->listRelations('collection', 'key', 'kind');
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$relations = $item->graph('kind');
+$relations = $item->relations('kind');
 $relations->get(100);
-// kind param can be array too, to indicate the depth to walk
 
-// the kind parameter accepts an array of strings to request the relatioship depth:
-$list = $client->listRelations('collection', 'key', ['kind', 'kind2']);
-// two hops
-
+// Kind param can be array too, to indicate the depth to walk
 
 // get array of the results (KeyValue objects)
-$list->getResults();
+$relations->getResults();
 
 // or go ahead and iterate over the results directly
-foreach ($list as $item) {
+foreach ($relations as $item) {
     
     echo $item->title;
     // items are KeyValue objects
 }
 
 // pagination
-$list->getNextUrl(); // string
-$list->getPrevUrl(); // string
-$list->getCount(); // count of the current set of results
-$list->getTotalCount(); // count of the total results available
-$list->nextPage(); // loads next set of results
-$list->prevPage(); // loads previous set of results
+$relations->getNextUrl(); // string
+$relations->getPrevUrl(); // string
+$relations->getCount(); // count of the current set of results
+$relations->getTotalCount(); // count of the total results available
+$relations->nextPage(); // loads next set of results
+$relations->prevPage(); // loads previous set of results
 
 ```
 

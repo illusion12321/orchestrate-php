@@ -61,12 +61,56 @@ class KeyValue extends AbstractObject
             ->setClient($this->getClient(true));
     }
 
-    public function graph($kind)
+    public function relations($kind)
     {
         return (new Graph($this->getCollection(true), $this->getKey(true), $kind))
             ->setClient($this->getClient(true))
             ->setChildClass(new \ReflectionClass($this));
     }
+
+
+    /**
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * 
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#graph-put
+     */
+    public function putRelation($kind, $toCollection, $toKey)
+    {
+        // define request options
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+        
+        // request
+        $this->request('PUT', $path);
+        
+        return $this->isSuccess();
+    }
+    
+    /**
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * 
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#graph-delete
+     */
+    public function deleteRelation($kind, $toCollection, $toKey)
+    {
+        // define request options
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+            .'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
+
+        // request
+        $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
+        
+        return $this->isSuccess();
+    }
+
+
+    
 
     /**
      * @return float
@@ -400,46 +444,6 @@ class KeyValue extends AbstractObject
             $this->_ref = null;
         }
 
-        return $this->isSuccess();
-    }
-
-    /**
-     * @param string $kind
-     * @param string $toCollection
-     * @param string $toKey
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#graph-put
-     */
-    public function putRelation($kind, $toCollection, $toKey)
-    {
-        // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
-        
-        // request
-        $this->request('PUT', $path);
-        
-        return $this->isSuccess();
-    }
-    
-    /**
-     * @param string $kind
-     * @param string $toCollection
-     * @param string $toKey
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#graph-delete
-     */
-    public function deleteRelation($kind, $toCollection, $toKey)
-    {
-        // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/relation/'.$kind.'/'.$toCollection.'/'.$toKey;
-
-        // request
-        $this->request('DELETE', $path, ['query' => ['purge' => 'true']]);
-        
         return $this->isSuccess();
     }
     
