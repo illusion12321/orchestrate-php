@@ -23,7 +23,7 @@ class Graph extends AbstractList
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function listRelations($limit = 10, $offset = 0)
+    public function get($limit = 10, $offset = 0)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true)

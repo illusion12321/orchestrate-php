@@ -616,8 +616,8 @@ $collection->getNextUrl(); // string
 $collection->getPrevUrl(); // string
 $collection->getCount(); // count of the current set of results
 $collection->getTotalCount(); // count of the total results available
-$collection->next(); // loads next set of results
-$collection->prev(); // loads previous set of results
+$collection->nextPage(); // loads next set of results
+$collection->prevPage(); // loads previous set of results
 ```
 
 
@@ -664,8 +664,8 @@ $refs->getNextUrl(); // string
 $refs->getPrevUrl(); // string
 $refs->getCount(); // count of the current set of results
 $refs->getTotalCount(); // count of the total results available
-$refs->next(); // loads next set of results
-$refs->prev(); // loads previous set of results
+$refs->nextPage(); // loads next set of results
+$refs->prevPage(); // loads previous set of results
 ```
 
 
@@ -701,8 +701,8 @@ $collection->getNextUrl(); // string
 $collection->getPrevUrl(); // string
 $collection->getCount(); // count of the current set of results
 $collection->getTotalCount(); // count of the total results available
-$collection->next(); // loads next set of results
-$collection->prev(); // loads previous set of results
+$collection->nextPage(); // loads next set of results
+$collection->prevPage(); // loads previous set of results
 ```
 
 All Search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
@@ -852,8 +852,8 @@ $events->getNextUrl(); // string
 $events->getPrevUrl(); // string
 $events->getCount(); // count of the current set of results
 $events->getTotalCount(); // count of the total results available
-$events->next(); // loads next set of results
-$events->prev(); // loads previous set of results
+$events->nextPage(); // loads next set of results
+$events->prevPage(); // loads previous set of results
 ```
 
 
@@ -874,10 +874,10 @@ Returns relation's collection, key, ref, and values. The "kind" parameter(s) ind
 $list = $client->listRelations('collection', 'key', 'kind');
 
 // Approach 2 - Object
-$list = new Graph('collection', 'key', 'kind');
-$list->setClient($app);
-$list->listRelations();
-
+$item = $collection->item('key');
+$relations = $item->graph('kind');
+$relations->get(100);
+// kind param can be array too, to indicate the depth to walk
 
 // the kind parameter accepts an array of strings to request the relatioship depth:
 $list = $client->listRelations('collection', 'key', ['kind', 'kind2']);
@@ -899,8 +899,8 @@ $list->getNextUrl(); // string
 $list->getPrevUrl(); // string
 $list->getCount(); // count of the current set of results
 $list->getTotalCount(); // count of the total results available
-$list->next(); // loads next set of results
-$list->prev(); // loads previous set of results
+$list->nextPage(); // loads next set of results
+$list->prevPage(); // loads previous set of results
 
 ```
 

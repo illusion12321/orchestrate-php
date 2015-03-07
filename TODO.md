@@ -18,7 +18,7 @@ $item->event('type')->purge()
 $item->refs()->get()
 ```
 
-- Review the naming of the properties 'kind' and 'type' — too weak and 'kind' conflicts with toArray
+- Review the naming of the properties 'kind' and 'type' — too weak and 'kind' conflicts with toArray --- relationKind - eventType ?
 
 - Consider removing post from KeyValue?
 

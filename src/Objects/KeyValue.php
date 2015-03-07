@@ -52,6 +52,7 @@ class KeyValue extends AbstractObject
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))
             ->setClient($this->getClient(true));
+            // TODO child classes
     }
 
     public function event($type, $timestamp = null, $ordinal = null)
@@ -60,17 +61,12 @@ class KeyValue extends AbstractObject
             ->setClient($this->getClient(true));
     }
 
-    // private $graph;
-    // public function relations()
-    // {
-    //     if (!$graph) {
-    //         $graph = (new Graph())
-    //             ->setClient($this->getClient(true))
-    //             ->setCollection($this->getCollection(true))
-    //             ->setKey($this->getKey(true));
-    //     }
-    //     return $graph;
-    // }
+    public function graph($kind)
+    {
+        return (new Graph($this->getCollection(true), $this->getKey(true), $kind))
+            ->setClient($this->getClient(true))
+            ->setChildClass(new \ReflectionClass($this));
+    }
 
     /**
      * @return float

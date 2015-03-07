@@ -383,10 +383,13 @@ class Client extends AbstractClient
             ->setClient($this)
             ->setChildClass($this->getItemClass());
 
-        $list->listRelations($limit, $offset);
+        $list->get($limit, $offset);
         return $list;
     }
 
+    /**
+     * Helper to create KeyValue instances.
+     */
     private function newItem($collection = null, $key = null, $ref = null)
     {
         return $this->getItemClass()
@@ -394,6 +397,9 @@ class Client extends AbstractClient
             ->setClient($this);
     }
 
+    /**
+     * Helper to create Event instances.
+     */
     private function newEvent(
         $collection = null,
         $key = null,

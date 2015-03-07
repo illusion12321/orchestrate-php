@@ -2,7 +2,7 @@
 namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
- * Trait that implements the Kind methods.
+ * Trait that implements the Kind methods for Graphs.
  * 
  * @internal
  */
