@@ -28,6 +28,8 @@ trait KindTrait
 
     /**
      * @param string|array $kind
+     * 
+     * @return self
      */
     public function setKind($kind)
     {

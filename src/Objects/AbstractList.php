@@ -242,6 +242,8 @@ abstract class AbstractList extends AbstractResponse implements
      * Set which class should be used to instantiate this list's children.
      * 
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     * 
+     * @return AbstractList self
      */
     public function setChildClass($class)
     {
@@ -254,7 +256,10 @@ abstract class AbstractList extends AbstractResponse implements
         // if (!$this->_childClass->isSubclassOf(KEY_VALUE_CLASS)) {
         //     throw new \RuntimeException('Child classes can only extend the  class.');
         // }
+
+        return $this;
     }
+
     /**
      * Get the ReflectionClass that is being used to instantiate this list's children.
      * 

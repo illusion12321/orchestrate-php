@@ -28,6 +28,8 @@ trait TimestampTrait
 
     /**
      * @param int $timestamp
+     * 
+     * @return self
      */
     public function setTimestamp($timestamp)
     {

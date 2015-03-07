@@ -407,9 +407,10 @@ $item = $client->put('collection', 'key', ['title' => 'New Title']);
 
 // Approach 2 - Object
 $item = $collection->item('key'); // no API calls yet
+$item->put(['title' => 'New Title']); // puts a new value
+// or manage the value then put later
 $item->title = 'New Title';
-$item->put(); // puts the current Value, which in this case is only title
-$item->put(['title' => 'New Title']); // strictly puts a new value
+$item->put();
 ```
 
 
@@ -470,9 +471,7 @@ $item->patch($patch);
 // As a solution, you can fetch the resulting Value, using the
 // third parameter 'reload' as:
 $item->patch($patch, null, true);
-
-// it will reload the data with $item->get($item->getRef());
-// if the patch was successful
+// it will reload the data if the patch was successful
 ```
 
 **Conditional Patch (Operations) If-Match**:
@@ -537,9 +536,10 @@ $item = $client->post('collection', ['title' => 'New Title']);
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->title = 'New Title';
-$item->post(); // posts the current Value
 $item->post(['title' => 'New Title']); // posts a new value
+// or manage the object values then post later
+$item->title = 'New Title';
+$item->post();
 ```
 
 
@@ -643,30 +643,29 @@ Get the specified version of a value.
 
 ```php
 // Approach 1 - Client
-$list = $client->listRefs('collection', 'key');
+$refs = $client->listRefs('collection', 'key');
 
 // Approach 2 - Object
-$list = new Refs('collection', 'key');
-$list->setClient($app);
-$list->get();
-
+$item = $collection->item('key');
+$refs = $item->refs();
+$refs->get(100);
 
 // now get array of the results
-$list->getResults();
+$refs->getResults();
 
 // or go ahead and iterate over the results directly!
-foreach ($list as $item) {
+foreach ($refs as $item) {
     
     echo $item->title;
 }
 
 // pagination
-$list->getNextUrl(); // string
-$list->getPrevUrl(); // string
-$list->getCount(); // count of the current set of results
-$list->getTotalCount(); // count of the total results available
-$list->next(); // loads next set of results
-$list->prev(); // loads previous set of results
+$refs->getNextUrl(); // string
+$refs->getPrevUrl(); // string
+$refs->getCount(); // count of the current set of results
+$refs->getTotalCount(); // count of the total results available
+$refs->next(); // loads next set of results
+$refs->prev(); // loads previous set of results
 ```
 
 
@@ -730,8 +729,8 @@ $results = $collection->search(
 $event = $client->getEvent('collection', 'key', 'type', 1400684480732, 1);
 
 // Approach 2 - Object
-$event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setClient($app);
+$item = $collection->item('key');
+$event = $item->event('type', 1400684480732, 1);
 $event->get();
 ```
 
@@ -743,11 +742,12 @@ $event->get();
 $event = $client->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title']);
 
 // Approach 2 - Object
-$event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setClient($app);
+$item = $collection->item('key');
+$event = $item->event('type', 1400684480732, 1);
+$event->put(['title' => 'New Title']); // puts a new value
+// or manage the value then put later
 $event->title = 'New Title';
-$event->put(); // puts the whole current value, only with the title changed
-$event->put(['title' => 'New Title']); // puts an entire new value
+$event->put();
 ```
 
 
@@ -760,11 +760,10 @@ Stores the value for the key only if the value of the ref matches the current st
 $event = $client->putEvent('collection', 'key', 'type', 1400684480732, 1, ['title' => 'New Title'], '20c14e8965d6cbb0');
 
 // Approach 2 - Object
-$event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setClient($app);
-$event->title = 'New Title';
+$item = $collection->item('key');
+$event = $item->event('type', 1400684480732, 1);
 $event->put(['title' => 'New Title'], '20c14e8965d6cbb0');
-$event->put(['title' => 'New Title'], true); // uses the current object Ref
+$event->put(['title' => 'New Title'], true); // uses the current object Ref, in case you have or loaded before with ->get()
 ```
 
 
@@ -776,9 +775,16 @@ $event->put(['title' => 'New Title'], true); // uses the current object Ref
 $event = $client->postEvent('collection', 'key', 'type', ['title' => 'New Title']);
 
 // Approach 2 - Object
-$event = new Event('collection', 'key', 'type');
-$event->setClient($app);
-$event->title = 'New Title';
+$item = $collection->item('key');
+$event = $item->event('type');
+
+if ($event->post(['title' => 'New Title'])) {
+    // success
+
+    // you can also chain the methods if you like:
+    // $item->event('type')->post(['title' => 'New Title'])
+}
+
 $event->post(); // posts the current Value
 $event->post(['title' => 'New Title']); // posts a new value
 $event->post(['title' => 'New Title'], 1400684480732); // optional timestamp
@@ -796,8 +802,8 @@ Warning: Orchestrate do not support full history of each event, so the delete op
 $event = $client->deleteEvent('collection', 'key', 'type', 1400684480732, 1);
 
 // Approach 2 - Object
-$event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setClient($app);
+$item = $collection->item('key');
+$event = $item->event('type', 1400684480732, 1);
 $event->delete();
 ```
 
@@ -811,11 +817,8 @@ The If-Match header specifies that the delete operation will succeed if and only
 $event = $client->deleteEvent('collection', 'key', 'type', 1400684480732, 1, '20c14e8965d6cbb0');
 
 // Approach 2 - Object
-$event = new Event('collection', 'key', 'type', 1400684480732, 1);
-$event->setClient($app);
-// first get or set a ref:
-$event->get();
-// or $event->setRef('20c14e8965d6cbb0');
+$item = $collection->item('key');
+$event = $item->event('type', 1400684480732, 1);
 $event->delete(true); // delete the current ref
 $event->delete('20c14e8965d6cbb0'); // delete a specific ref
 ```
@@ -829,9 +832,9 @@ $event->delete('20c14e8965d6cbb0'); // delete a specific ref
 $events = $client->listEvents('collection', 'key', 'type');
 
 // Approach 2 - Object
-$events = new Events('collection', 'key', 'type'); // note the plural
-$events->setClient($app);
-$events->get();
+$item = $collection->item('key');
+$events = $item->events('type'); // note the plural 'events'
+$events->get(100);
 
 
 // now get array of the results

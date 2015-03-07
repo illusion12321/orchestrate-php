@@ -41,6 +41,13 @@ class KeyValue extends AbstractObject
         $this->setRef($ref);
     }
 
+    public function refs()
+    {
+        return (new Refs($this->getCollection(true), $this->getKey(true)))
+            ->setClient($this->getClient(true))
+            ->setChildClass(new \ReflectionClass($this));
+    }
+
     public function events($type)
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))

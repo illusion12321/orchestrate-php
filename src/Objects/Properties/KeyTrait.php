@@ -28,6 +28,8 @@ trait KeyTrait
 
     /**
      * @param string $key
+     * 
+     * @return self
      */
     public function setKey($key)
     {

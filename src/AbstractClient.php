@@ -49,10 +49,9 @@ abstract class AbstractClient implements ClientInterface
      */
     public function __construct($apiKey = null, $host = null, $apiVersion = null)
     {
-        // set client options
-        $this->setApiKey($apiKey);
-        $this->setHost($host);
-        $this->setApiVersion($apiVersion);
+        $this->setApiKey($apiKey)
+            ->setHost($host)
+            ->setApiVersion($apiVersion);
     }
 
     /**
@@ -65,6 +64,8 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * @param string
+     * 
+     * @return AbstractClient self
      */
     public function setApiKey($key)
     {
@@ -72,7 +73,9 @@ abstract class AbstractClient implements ClientInterface
             $this->_apiKey = $key;
         } else {
             $this->_apiKey = getenv('ORCHESTRATE_API_KEY');
-        }            
+        }
+
+        return $this;
     }
 
     /**
@@ -85,6 +88,8 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * @param string $host 
+     * 
+     * @return AbstractClient self
      */
     public function setHost($host)
     {
@@ -93,6 +98,8 @@ abstract class AbstractClient implements ClientInterface
         } else {
             $this->_host = 'https://api.orchestrate.io';
         }
+
+        return $this;
     }
 
     /**
@@ -105,10 +112,14 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * @param string $version 
+     * 
+     * @return AbstractClient self
      */
     public function setApiVersion($version)
     {
         $this->_apiVersion = $version ? $version : 'v0';
+
+        return $this;
     }
 
     /**
@@ -136,10 +147,14 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * @param \GuzzleHttp\ClientInterface $client
+     * 
+     * @return AbstractClient self
      */
     public function setHttpClient(\GuzzleHttp\ClientInterface $client)
     {
         $this->_client = $client;
+
+        return $this;
     }
 
     /**
@@ -236,6 +251,8 @@ abstract class AbstractClient implements ClientInterface
      * Set which class should be used to instantiate this list's KeyValue instances.
      * 
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     * 
+     * @return AbstractClient self
      */
     public function setItemClass($class)
     {
@@ -248,6 +265,8 @@ abstract class AbstractClient implements ClientInterface
         // if (!$this->_itemClass->isSubclassOf(KEY_VALUE_CLASS)) {
         //     throw new \RuntimeException('Child classes can only extend the  class.');
         // }
+
+        return $this;
     }
 
     /**
@@ -267,6 +286,8 @@ abstract class AbstractClient implements ClientInterface
      * Set which class should be used to instantiate this list's events instances.
      * 
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     * 
+     * @return AbstractClient self
      */
     public function setEventClass($class)
     {
@@ -279,6 +300,8 @@ abstract class AbstractClient implements ClientInterface
         // if (!$this->_eventClass->isSubclassOf(KEY_VALUE_CLASS)) {
         //     throw new \RuntimeException('Child classes can only extend the  class.');
         // }
+
+        return $this;
     }
     
     /**

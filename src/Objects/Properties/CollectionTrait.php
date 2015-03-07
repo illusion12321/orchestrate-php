@@ -28,6 +28,8 @@ trait CollectionTrait
 
     /**
      * @param string $collection
+     * 
+     * @return self
      */
     public function setCollection($collection)
     {

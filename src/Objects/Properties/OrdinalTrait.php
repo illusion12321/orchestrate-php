@@ -28,6 +28,8 @@ trait OrdinalTrait
 
     /**
      * @param int|string $ordinal
+     * 
+     * @return self
      */
     public function setOrdinal($ordinal)
     {

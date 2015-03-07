@@ -28,6 +28,8 @@ trait TypeTrait
 
     /**
      * @param string $type
+     * 
+     * @return self
      */
     public function setType($type)
     {

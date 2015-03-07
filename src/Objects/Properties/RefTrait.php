@@ -26,6 +26,8 @@ trait RefTrait
 
     /**
      * @param string $ref
+     * 
+     * @return self
      */
     public function setRef($ref)
     {
@@ -34,7 +36,7 @@ trait RefTrait
         return $this;
     }
 
-    protected function setRefFromETag()
+    private function setRefFromETag()
     {
         if ($etag = $this->getResponse()->getHeader('ETag')) {
             $this->_ref = trim($etag, '"');
