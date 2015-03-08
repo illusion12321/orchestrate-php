@@ -3,10 +3,14 @@ Orchestrate.io PHP Client
 
 A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
 
+- Choose which approach you prefer, client-like or object-like.
 - PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
+- Template engine friendly.
 - To create an object model, just extend a KeyValue and define the public properties.
-- Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
+- Easily change which class the list objects should use to create their children.
+- toArray, and therefore toJson, methods produces the same output format as Orchestrate's export.
 - Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
+- Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - PHP must be 5.4 or higher.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
 
@@ -48,7 +52,7 @@ require 'vendor/autoload.php';
 ## Getting Started
 You can use our library in two distinct ways:
 
-1- **Client** — straightforward API interface to Orchestrate.
+### 1- **Client** — straightforward API interface to Orchestrate.
 
 ```php
 
@@ -86,7 +90,7 @@ if ($item->isSuccess()) {
 }
 ```
 
-2- **Objects** — the actual Orchestrate objects, which provides an object API as well as the response status.
+### 2- **Objects** — the actual Orchestrate objects, which provides an object API as well as the response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -124,7 +128,7 @@ if ($item->get()) { // API call to get the current key
         // )
         // ObjectArray is our little cherished class, it allows object or array syntax access
         // i.e. $item->name or $item['name'], plus a few other helpful methods.
-        // More on that below
+        // This means you can feel free to send it to your template engine.
 
         echo $item->toJson(JSON_PRETTY_PRINT);
         // {
@@ -143,6 +147,21 @@ if ($item->get()) { // API call to get the current key
         //         ]
         //     }
         // }
+
+        // take the opportunity to create a relation to another item
+        $anotherItem = $collection->item('another-key');
+
+        if ($item->relation('kind', $anotherItem)->put()) {
+
+            // if the relation was successful
+            // take the opportunity to post an event too
+            $values = [
+                'type' => 'relation',
+                'to_item' => $anotherItem->getKey(),
+                'current_ref' => $item->getRef(),
+            ];
+            $item->event('log')->post($values);
+        }
     }
 
     // delete the current ref
@@ -174,7 +193,7 @@ $item = $collection->item('key'); // returns a KeyValue object
 if ($item->get()) {
 
     print_r($item->getValue());
-    // Array
+    // andrefelipe\Orchestrate\Common\ObjectArray Object
     // (
     //     [title] => My Title
     // )
@@ -910,7 +929,11 @@ $item = $client->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->putRelation('kind', 'toCollection', 'toKey');
+$anotherItem = $collection->item('another-key');
+
+if ($item->relation('kind', $anotherItem)->put()) {
+    // success
+}
 ```
 
 
@@ -925,7 +948,11 @@ $item = $client->deleteRelation('collection', 'key', 'kind', 'toCollection', 'to
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->deleteRelation('kind', 'toCollection', 'toKey');
+$anotherItem = $collection->item('another-key');
+
+if ($item->relation('kind', $anotherItem)->delete()) {
+    // success
+}
 ```
 
 
