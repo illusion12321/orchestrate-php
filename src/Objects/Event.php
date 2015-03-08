@@ -102,16 +102,17 @@ class Event extends AbstractObject implements EventInterface
         $this->resetValue();
     }
 
-    public function init(array $values)
+    public function init(array $data)
     {
-        if (empty($values))
+        if (empty($data)) {
             return;
-
-        if (!empty($values['path'])) {
-            $values = array_merge($values, $values['path']);
         }
 
-        foreach ($values as $key => $value) {
+        if (!empty($data['path'])) {
+            $data = array_merge($data, $data['path']);
+        }
+
+        foreach ($data as $key => $value) {
             
             if ($key === 'collection')
                 $this->setCollection($value);

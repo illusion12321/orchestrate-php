@@ -15,7 +15,7 @@ interface ReusableObjectInterface
      * Single entry point to initialize the current instance
      * and its properties.
      * 
-     * @param array $values
+     * @param array $data
      */
-    public function init(array $values);
+    public function init(array $data);
 }

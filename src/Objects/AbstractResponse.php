@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\ClientInterface;
 use \GuzzleHttp\Message\Response;
 
-abstract class AbstractResponse // TODO create some intefaces here, ResponseInterface and ClientAwareInterface
+abstract class AbstractResponse // TODO create some interfaces here, ResponseInterface and ClientAwareInterface, can I add a init here to coherse with ReusableObjectInterface?
 {
     /**
      * @var array

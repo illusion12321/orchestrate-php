@@ -160,12 +160,13 @@ class Relation extends AbstractResponse implements
         $this->_timestamp = null;
     }
 
-    public function init(array $values)
+    public function init(array $data)
     {
-        if (empty($values))
+        if (empty($data)) {
             return;
+        }            
 
-        foreach ($values as $key => $value) {
+        foreach ($data as $key => $value) {
             
             if ($key === 'source')
                 $this->setSource((new KeyValue())->init($value));

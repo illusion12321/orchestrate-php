@@ -4,11 +4,11 @@
 
 - Add a method for twoWayPut / twoWayDelete relation (better name?)
 
-- Review the naming of the property type' — too weak, should be eventType ?
-
 - Consider removing post from KeyValue?
 
 - Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
+
+- Maybe implement __toString and __debugInfo for debug pourposes. But study the best pattern before release, so it doesn't change anymore
 
 - Check out https://github.com/jmespath/jmespath.php
 
