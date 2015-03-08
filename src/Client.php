@@ -7,6 +7,7 @@ use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Relations;
+use andrefelipe\Orchestrate\Objects\Relation;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
@@ -338,15 +339,17 @@ class Client extends AbstractClient
      * @param string $toCollection
      * @param string $toKey
      * 
-     * @return KeyValue
+     * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        $item = $this->newItem($collection, $key);
+        $source = $this->newItem($collection, $key);
+        $destination = $this->newItem($toCollection, $toKey);
 
-        $item->putRelation($kind, $toCollection, $toKey);
-        return $item;
+        $relation = new Relation($source, $kind, $destination);
+        $relation->put();
+        return $relation;
     }
 
     /**
@@ -356,15 +359,17 @@ class Client extends AbstractClient
      * @param string $toCollection
      * @param string $toKey
      * 
-     * @return KeyValue
+     * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        $item = $this->newItem($collection, $key);
+        $source = $this->newItem($collection, $key);
+        $destination = $this->newItem($toCollection, $toKey);
 
-        $item->deleteRelation($kind, $toCollection, $toKey);
-        return $item;
+        $relation = new Relation($source, $kind, $destination);
+        $relation->delete();
+        return $relation;
     }
 
     /**

@@ -48,7 +48,7 @@ class Event extends AbstractObject
     public function toArray()
     {
         $result = [
-            
+            'kind' => 'event',
             'path' => [
                 'collection' => $this->getCollection(),
                 'kind' => 'event',
@@ -72,7 +72,8 @@ class Event extends AbstractObject
     public function reset()
     {
         parent::reset();
-        $this->_key = null;        
+        $this->_collection = null;
+        $this->_key = null;
         $this->_type = null;
         $this->_timestamp = null;
         $this->_ordinal = null;

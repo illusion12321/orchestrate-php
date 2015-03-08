@@ -108,7 +108,7 @@ abstract class AbstractList extends AbstractResponse implements
     {
         $values = [];
         foreach ($this->getResults() as $item) {
-            if (method_exists($item, 'getValue')) {
+            if ($item instanceof ValueInterface) {
                 $values[] = $item->getValue();
             }
         }
@@ -162,6 +162,7 @@ abstract class AbstractList extends AbstractResponse implements
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_totalCount = null;
         $this->_nextUrl = '';
         $this->_prevUrl = '';
@@ -189,12 +190,12 @@ abstract class AbstractList extends AbstractResponse implements
      */
     protected function request($method, $url = null, array $options = [])
     {
-        $this->reset();
+        // $this->reset(); // why reset???
         parent::request($method, $url, $options);
 
         if ($this->isSuccess()) {
             $body = $this->getBody();
-
+            
             if (!empty($body['results'])) {
                 $this->_results = new ObjectArray(array_map(
                     [$this, 'createChildrenClass'],
@@ -222,7 +223,7 @@ abstract class AbstractList extends AbstractResponse implements
     protected function getUrl($url)
     {
         // reset object
-        $this->reset();
+        $this->reset(); //TODO remove this reset thing!!
 
         // load next set of values
         if ($url) {
@@ -277,7 +278,7 @@ abstract class AbstractList extends AbstractResponse implements
     {
         return $this->getChildClass()->newInstance()
             ->setClient($this->getClient(true))
-            ->setCollection($this->getCollection(true))
+            // ->setCollection($this->getCollection(true)) // TODO review if we can remove this
             ->init($values);
     }
 }

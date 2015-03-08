@@ -20,8 +20,9 @@ trait OrdinalTrait
      */
     public function getOrdinal($required = false)
     {
-        if ($required)
+        if ($required) {
             $this->noOrdinalException();
+        }
 
         return $this->_ordinal;
     }

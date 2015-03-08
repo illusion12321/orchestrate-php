@@ -2,18 +2,52 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KindTrait;
 
 class Relations extends AbstractList
 {
     use KeyTrait;
-    use KindTrait;
 
+    /**
+     * @var array
+     */
+    private $_depth = null;
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string|array $kind
+     */
     public function __construct($collection = null, $key = null, $kind = null)
     {
         parent::__construct($collection);
         $this->setKey($key);
-        $this->setKind($kind);
+        $this->setDepth($kind);
+    }
+
+    /**
+     * @param boolean $required
+     * 
+     * @return array
+     */
+    public function getDepth($required = false)
+    {
+        if ($required) {
+            $this->noDepthException();
+        }
+
+        return $this->_depth;
+    }
+
+    /**
+     * @param string|array $kind
+     * 
+     * @return self
+     */
+    public function setDepth($kind)
+    {
+        $this->_depth = (array) $kind;
+
+        return $this;
     }
 
     /**
@@ -27,7 +61,7 @@ class Relations extends AbstractList
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/relations/'.$this->getKind(true);
+            .'/relations/'.implode('/', $this->getDepth(true));
 
         $parameters = ['limit' => $limit];
         
@@ -39,5 +73,15 @@ class Relations extends AbstractList
         $this->request('GET', $path, ['query' => $parameters]);
 
         return $this->isSuccess();
+    }
+
+    /**
+     * @throws \BadMethodCallException if 'relation depth' is not set yet.
+     */
+    protected function noDepthException()
+    {
+        if (empty($this->_depth)) {
+            throw new \BadMethodCallException('There is no relation depth set yet. Please do so through setDepth() method.');
+        }
     }
 }

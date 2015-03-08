@@ -1,24 +1,10 @@
 # TODO and IDEAS
 
-- Integrate Refs and Events directly into a KeyValue for easy access/management:
+- EventInterface e colocar o ReusableObjectInterface em todos os lugares que usa o reset/init
 
-Some API like:
-```php
-$item->relations('kind')->get()
-$item->relation('kind')->put($item)
-$item->relation('kind')->delete()
+- Add a method for twoWayPut / twoWayDelete relation (better name?)
 
-$item->events('type')->get() // get list
-$item->event('type')->get()
-$item->event('type')->put()
-$item->event('type')->post()
-$item->event('type')->delete()
-$item->event('type')->purge()
-
-$item->refs()->get()
-```
-
-- Review the naming of the properties 'kind' and 'type' — too weak and 'kind' conflicts with toArray --- relationKind - eventType ?
+- Review the naming of the property type' — too weak, should be eventType ?
 
 - Consider removing post from KeyValue?
 
@@ -50,7 +36,7 @@ $item->refs()->get()
 
 - maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
 
-- method to move a KeyValue to another Collection or Application?
+- method to move an item to another Collection or even Application?
 
 - add serialize/unserialize? Review the use case. (unserialize could use init, and serialize toArray)
 

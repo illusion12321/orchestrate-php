@@ -20,8 +20,9 @@ trait TimestampTrait
      */
     public function getTimestamp($required = false)
     {
-        if ($required)
+        if ($required) {
             $this->noTimestampException();
+        }
 
         return $this->_timestamp;
     }

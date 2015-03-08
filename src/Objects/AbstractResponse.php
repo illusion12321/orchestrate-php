@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\ClientInterface;
 use \GuzzleHttp\Message\Response;
 
-abstract class AbstractResponse
+abstract class AbstractResponse // TODO create some intefaces here, ResponseInterface and ClientAwareInterface
 {
     /**
      * @var array

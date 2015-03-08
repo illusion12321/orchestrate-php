@@ -18,8 +18,9 @@ trait RefTrait
      */
     public function getRef($required = false)
     {
-        if ($required)
+        if ($required) {
             $this->noRefException();
+        }
         
         return $this->_ref;
     }

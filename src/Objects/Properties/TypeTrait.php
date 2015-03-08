@@ -20,8 +20,9 @@ trait TypeTrait
      */
     public function getType($required = false)
     {
-        if ($required)
+        if ($required) {
             $this->noTypeException();
+        }
 
         return $this->_type;
     }

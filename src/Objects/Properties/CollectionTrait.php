@@ -20,8 +20,9 @@ trait CollectionTrait
      */
     public function getCollection($required = false)
     {
-        if ($required)
+        if ($required) {
             $this->noCollectionException();
+        }
 
         return $this->_collection;
     }

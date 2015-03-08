@@ -20,8 +20,9 @@ trait KeyTrait
      */
     public function getKey($required = false)
     {
-        if ($required)
+        if ($required){
             $this->noKeyException();
+        }
 
         return $this->_key;
     }

@@ -7,7 +7,7 @@ use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
-class KeyValue extends AbstractObject
+class KeyValue extends AbstractObject implements KeyValueInterface
 {
     use CollectionTrait;
     use KeyTrait;
@@ -41,58 +41,16 @@ class KeyValue extends AbstractObject
         $this->setRef($ref);
     }
 
-    public function refs()
-    {
-        return (new Refs($this->getCollection(true), $this->getKey(true)))
-            ->setClient($this->getClient(true))
-            ->setChildClass(new \ReflectionClass($this));
-    }
-
-    public function events($type)
-    {
-        return (new Events($this->getCollection(true), $this->getKey(true), $type))
-            ->setClient($this->getClient(true));
-            // TODO child classes
-    }
-
-    public function event($type, $timestamp = null, $ordinal = null)
-    {
-        return (new Event($this->getCollection(true), $this->getKey(true), $type, $timestamp, $ordinal))
-            ->setClient($this->getClient(true));
-    }
-
-    public function relations($kind)
-    {
-        return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
-            ->setClient($this->getClient(true))
-            ->setChildClass(new \ReflectionClass($this));
-    }
-
-
-    
-
-
-
-
-    /**
-     * @return float
-     */
     public function getScore()
     {
         return $this->_score;
     }
 
-    /**
-     * @return float
-     */
     public function getDistance()
     {
         return $this->_distance;
     }
 
-    /**
-     * @return boolean
-     */
     public function isTombstone()
     {
         return $this->_tombstone;
@@ -101,6 +59,7 @@ class KeyValue extends AbstractObject
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_key = null;
         $this->_ref = null;
         $this->_score = null;
@@ -156,6 +115,7 @@ class KeyValue extends AbstractObject
             'kind' => 'item',
             'path' => [
                 'collection' => $this->getCollection(),
+                'kind' => 'item',
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
@@ -177,12 +137,6 @@ class KeyValue extends AbstractObject
         return $result;
     }
 
-    /**
-     * @param string $ref
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-get
-     */
     public function get($ref = null)
     {
         // define request options
@@ -206,14 +160,7 @@ class KeyValue extends AbstractObject
 
         return $this->isSuccess();
     }    
-    
-    /**
-     * @param array $value
-     * @param string $ref
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-put
-     */
+
     public function put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
@@ -252,12 +199,6 @@ class KeyValue extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @param array $value
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-post
-     */
     public function post(array $value = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
@@ -278,14 +219,6 @@ class KeyValue extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @param PatchBuilder $operations
-     * @param string $ref
-     * @param boolean $reload
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-patch
-     */
     public function patch(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
@@ -318,14 +251,6 @@ class KeyValue extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @param array $value
-     * @param string $ref
-     * @param boolean $reload
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
-     */
     public function patchMerge(array $value, $ref = null, $reload = false)
     {
         // define request options
@@ -358,12 +283,6 @@ class KeyValue extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @param string $ref
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
-     */
     public function delete($ref = null)
     {
         // define request options
@@ -386,10 +305,6 @@ class KeyValue extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
-     */
     public function purge()
     {
         // define request options
@@ -405,6 +320,39 @@ class KeyValue extends AbstractObject
         }
 
         return $this->isSuccess();
+    }
+
+    public function refs()
+    {
+        return (new Refs($this->getCollection(true), $this->getKey(true)))
+            ->setClient($this->getClient(true))
+            ->setChildClass(new \ReflectionClass($this));
+    }
+
+    public function events($type)
+    {
+        return (new Events($this->getCollection(true), $this->getKey(true), $type))
+            ->setClient($this->getClient(true));
+            // TODO child classes
+    }
+
+    public function event($type, $timestamp = null, $ordinal = null)
+    {
+        return (new Event($this->getCollection(true), $this->getKey(true), $type, $timestamp, $ordinal))
+            ->setClient($this->getClient(true));
+    }
+
+    public function relations($kind)
+    {
+        return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
+            ->setClient($this->getClient(true))
+            ->setChildClass(new \ReflectionClass($this));
+    }
+
+    public function relation($kind, KeyValueInterface $destination)
+    {
+        return (new Relation($this, $kind, $destination))
+            ->setClient($this->getClient(true));
     }
     
     /**
