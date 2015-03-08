@@ -6,7 +6,7 @@ use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
-use andrefelipe\Orchestrate\Objects\Graph;
+use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
@@ -374,12 +374,12 @@ class Client extends AbstractClient
      * @param int $limit
      * @param int $offset
      * 
-     * @return Graph
+     * @return Relations
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
     public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
     {
-        $list = (new Graph($collection, $key, $kind))
+        $list = (new Relations($collection, $key, $kind))
             ->setClient($this)
             ->setChildClass($this->getItemClass());
 

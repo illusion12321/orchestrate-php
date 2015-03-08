@@ -4,10 +4,10 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KindTrait;
 
-class Graph extends AbstractList
+class Relations extends AbstractList
 {
     use KeyTrait;
-    use KindTrait; // TODO review other clients, 'kind' feels a bad naming, 'type' also
+    use KindTrait;
 
     public function __construct($collection = null, $key = null, $kind = null)
     {
@@ -27,7 +27,7 @@ class Graph extends AbstractList
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/relations/'.implode('/', $this->getKind(true));
+            .'/relations/'.$this->getKind(true);
 
         $parameters = ['limit' => $limit];
         
