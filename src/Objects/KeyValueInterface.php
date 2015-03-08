@@ -13,7 +13,7 @@ interface KeyValueInterface extends
     ValueInterface,
     ToJsonInterface,
     ReusableObjectInterface
-{    
+{
     /**
      * @param boolean $required 
      * 

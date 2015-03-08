@@ -51,5 +51,4 @@ class Events extends AbstractList
         
         return $this->isSuccess();
     }
-
 }

@@ -5,26 +5,35 @@ use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
-use andrefelipe\Orchestrate\Objects\Properties\OrdinalTrait;
 use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
 
-class Event extends AbstractObject
+class Event extends AbstractObject implements EventInterface
 {
     use CollectionTrait;
     use KeyTrait;
     use TypeTrait;
     use TimestampTrait;
-    use OrdinalTrait;
     use RefTrait;
     use ReftimeTrait;
+
+    /**
+     * @var int
+     */
+    private $_ordinal = null;
 
     /**
     * @var string
     */
     private $_ordinalStr = null;
 
-
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     */
     public function __construct($collection = null, $key = null, $type = null, $timestamp = null, $ordinal = null)
     {
         $this->setCollection($collection);
@@ -34,17 +43,27 @@ class Event extends AbstractObject
         $this->setOrdinal($ordinal);
     }
 
-    /**
-      * @return string
-      */
-     public function getOrdinalStr()
-     {
-         return $this->_ordinalStr;
-     }
+    public function getOrdinal($required = false)
+    {
+        if ($required) {
+            $this->noOrdinalException();
+        }
+
+        return $this->_ordinal;
+    }
+
+    public function setOrdinal($ordinal)
+    {
+        $this->_ordinal = (int) $ordinal;
+
+        return $this;
+    }
     
-    /**
-     * @return array
-     */
+    public function getOrdinalStr()
+    {
+        return $this->_ordinalStr;
+    }
+
     public function toArray()
     {
         $result = [
@@ -125,10 +144,6 @@ class Event extends AbstractObject
         return $this;
     }
 
-    /**
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-get
-     */
     public function get()
     {
         // define request options
@@ -150,14 +165,7 @@ class Event extends AbstractObject
 
         return $this->isSuccess();
     }
-    
-    /**
-     * @param array $value
-     * @param string $ref
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-put
-     */
+
     public function put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
@@ -195,13 +203,6 @@ class Event extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @param array $value
-     * @param int $timestamp
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-post
-     */
     public function post(array $value = null, $timestamp = null)
     {        
         $path = $this->getCollection(true).'/'.$this->getKey(true)
@@ -236,12 +237,6 @@ class Event extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * @param string $ref
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-delete
-     */
     public function delete($ref = null)
     {
         // define request options
@@ -273,11 +268,6 @@ class Event extends AbstractObject
         return $this->isSuccess();
     }
 
-    /**
-     * 
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-delete
-     */
     public function purge()
     {
         // define request options
@@ -297,6 +287,16 @@ class Event extends AbstractObject
         }
 
         return $this->isSuccess();
+    }
+
+    /**
+     * @throws \BadMethodCallException if 'ordinal' is not set yet.
+     */
+    protected function noOrdinalException()
+    {
+        if (!$this->_ordinal) {
+            throw new \BadMethodCallException('There is no ordinal set yet. Please do so through setOrdinal() method.');
+        }
     }
 
     private function setTimestampAndOrdinalFromLocation()
