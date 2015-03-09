@@ -53,7 +53,7 @@ require 'vendor/autoload.php';
 You can use our library in two distinct ways:
 
 ### 1- Client
-#### A straightforward API interface to Orchestrate.
+##### A straightforward API interface to Orchestrate.
 
 ```php
 
@@ -92,7 +92,7 @@ if ($item->isSuccess()) {
 ```
 
 ### 2- Objects
-#### Actual Orchestrate objects (Collection, KeyValue, Event, etc), which provide an object API as well as the response status.
+##### Actual Orchestrate objects (Collection, KeyValue, Event, etc), which provide an object API as well as the response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
