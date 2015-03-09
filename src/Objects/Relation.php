@@ -13,7 +13,7 @@ class Relation extends AbstractResponse implements
     /**
      * @var string
      */
-    private $_kind = null;
+    private $_relation = null;
     
     /**
      * @var KeyValueInterface
@@ -33,7 +33,7 @@ class Relation extends AbstractResponse implements
     public function __construct(KeyValueInterface $source = null, $kind = null, KeyValueInterface $destination = null)
     {
         $this->setSource($source);
-        $this->setKind($kind);
+        $this->setRelation($kind);
         $this->setDestination($destination);
     }
     
@@ -44,13 +44,13 @@ class Relation extends AbstractResponse implements
      * 
      * @return string
      */
-    public function getKind($required = false)
+    public function getRelation($required = false)
     {
         if ($required) {
             $this->noRelationException();
         }
 
-        return $this->_kind;
+        return $this->_relation;
     }
 
     /**
@@ -59,13 +59,13 @@ class Relation extends AbstractResponse implements
      * @return Relation self
      * @throws \InvalidArgumentException if 'kind' is array. Only one relation can be handled per time.
      */
-    public function setKind($kind)
+    public function setRelation($kind)
     {
         if (is_array($kind)) {
             throw new \InvalidArgumentException('The kind parameter can not be Array. Only one relation can be handled per time.');
         }
 
-        $this->_kind = (string) $kind;
+        $this->_relation = (string) $kind;
 
         return $this;
     }
@@ -121,7 +121,7 @@ class Relation extends AbstractResponse implements
     {
         $result = [
             'kind' => 'relationship',
-            'relation' => $this->getKind(),
+            'relation' => $this->getRelation(),
             'timestamp' => $this->getTimestamp(),            
         ];
 
@@ -155,7 +155,7 @@ class Relation extends AbstractResponse implements
     {
         parent::reset();
         $this->_source = null;
-        $this->_kind = null;
+        $this->_relation = null;
         $this->_destination = null;
         $this->_timestamp = null;
     }
@@ -175,7 +175,7 @@ class Relation extends AbstractResponse implements
                 $this->setDestination((new KeyValue())->init($value));
 
             elseif ($key === 'relation')
-                $this->setKind($value);
+                $this->setRelation($value);
 
             elseif ($key === 'timestamp')
                 $this->setTimestamp($value);
@@ -227,7 +227,7 @@ class Relation extends AbstractResponse implements
         $destination = $this->getDestination(true);
 
         return $source->getCollection(true).'/'.$source->getKey(true)
-            .'/relation/'.$this->getKind(true).'/'
+            .'/relation/'.$this->getRelation(true).'/'
             .$destination->getCollection(true).'/'.$destination->getKey(true);
     }
 
@@ -236,8 +236,8 @@ class Relation extends AbstractResponse implements
      */
     protected function noRelationException()
     {
-        if (empty($this->_kind)) {
-            throw new \BadMethodCallException('There is no relation set yet. Please do so through setKind() method.');
+        if (empty($this->_relation)) {
+            throw new \BadMethodCallException('There is no relation set yet. Please do so through setRelation() method.');
         }
     }
 }
