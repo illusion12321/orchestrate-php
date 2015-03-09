@@ -16,6 +16,116 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
  */
 class Client extends AbstractClient
 {
+    /**
+     * @var string
+     */
+    private static $defaultKeyValueClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
+
+    /**
+     * @var string
+     */
+    private static $minimumKeyValueInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
+
+    /**
+     * @var string
+     */
+    private static $defaultEventClass = '\andrefelipe\Orchestrate\Objects\Event';
+
+    /**
+     * @var string
+     */
+    private static $minimumEventInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
+
+    /**
+     * @var \ReflectionClass
+     */
+    private $_keyValueClass;
+
+    /**
+     * @var \ReflectionClass
+     */
+    private $_eventClass;
+    
+    /**
+     * Get the ReflectionClass that is being used to instantiate this client's KeyValue instances.
+     * 
+     * @return \ReflectionClass
+     */
+    public function getKeyValueClass()
+    {
+        if (!isset($this->_keyValueClass)) {
+            $this->_keyValueClass = new \ReflectionClass(self::$defaultKeyValueClass);
+
+            if (!$this->_keyValueClass->implementsInterface(self::$minimumKeyValueInterface)) {
+                throw new \RuntimeException('Child classes must implement '.self::$minimumKeyValueInterface);
+            }
+        }
+        return $this->_keyValueClass;
+    }
+
+    /**
+     * Set which class should be used to instantiate this client's KeyValue instances.
+     * 
+     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     * 
+     * @return Client self
+     */
+    public function setKeyValueClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_keyValueClass = $class;
+        } else {
+            $this->_keyValueClass = new \ReflectionClass($class);
+        }
+        
+        if (!$this->_keyValueClass->implementsInterface(self::$minimumKeyValueInterface)) {
+            throw new \RuntimeException('Child classes must implement '.self::$minimumKeyValueInterface);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the ReflectionClass that is being used to instantiate this list's events instances.
+     * 
+     * @return \ReflectionClass
+     */
+    public function getEventClass()
+    {
+        if (!isset($this->_eventClass)) {
+            $this->_eventClass = new \ReflectionClass(self::$defaultEventClass);
+
+            if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
+                throw new \RuntimeException('Child classes must implement '.self::$minimumEventInterface);
+            }
+        }
+        return $this->_eventClass;
+    }
+
+    /**
+     * Set which class should be used to instantiate this list's events instances.
+     * 
+     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     * 
+     * @return Client self
+     */
+    public function setEventClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_eventClass = $class;
+        } else {
+            $this->_eventClass = new \ReflectionClass($class);
+        }
+       
+        if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
+            throw new \RuntimeException('Child classes must implement '.self::$minimumEventInterface);
+        }
+
+        return $this;
+    }
+
+
+
     // Collection
 
     /**

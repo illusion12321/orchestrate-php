@@ -1,8 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\Properties\KeyValueReflectionTrait;
-use andrefelipe\Orchestrate\Objects\Properties\EventReflectionTrait;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
@@ -14,9 +12,6 @@ use GuzzleHttp\Exception\ConnectException;
  */
 abstract class AbstractClient implements ClientInterface
 {
-    use KeyValueReflectionTrait;
-    use EventReflectionTrait;
-
     /**
      * @var string
      */

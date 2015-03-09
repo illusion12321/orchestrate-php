@@ -144,7 +144,7 @@ interface KeyValueInterface extends
     public function events($type);
 
     /**
-     * @return EventInterface
+     * @return Event
      */
     public function event($type, $timestamp = null, $ordinal = null);
 
