@@ -45,7 +45,7 @@ class Client extends AbstractClient
     {
         $list = (new Collection($collection))
             ->setClient($this)
-            ->setChildClass($this->getItemClass());
+            ->setChildClass($this->getKeyValueClass());
 
         $list->get($limit, $range);
         return $list;
@@ -66,7 +66,7 @@ class Client extends AbstractClient
     {
         $list = (new Collection($collection))
             ->setClient($this)
-            ->setChildClass($this->getItemClass());
+            ->setChildClass($this->getKeyValueClass());
         
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
@@ -80,12 +80,12 @@ class Client extends AbstractClient
      * @param string $key
      * @param string $ref
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
     public function get($collection, $key, $ref = null)
     {
-        $item = $this->newItem($collection, $key);
+        $item = $this->newKeyValue($collection, $key);
 
         $item->get($ref);
         return $item;
@@ -97,12 +97,12 @@ class Client extends AbstractClient
      * @param array $value
      * @param string $ref
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
     public function put($collection, $key, array $value, $ref = null)
     {
-        $item = $this->newItem($collection, $key);
+        $item = $this->newKeyValue($collection, $key);
 
         $item->put($value, $ref);
         return $item;
@@ -115,12 +115,12 @@ class Client extends AbstractClient
      * @param string $ref
      * @param boolean $reload
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
     public function patch($collection, $key, PatchBuilder $operations, $ref = null, $reload = false)
     {
-        $item = $this->newItem($collection, $key);
+        $item = $this->newKeyValue($collection, $key);
 
         $item->patch($operations, $ref, $reload);
         return $item;
@@ -133,12 +133,12 @@ class Client extends AbstractClient
      * @param string $ref
      * @param boolean $reload
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
     public function patchMerge($collection, $key, array $value, $ref = null, $reload = false)
     {
-        $item = $this->newItem($collection, $key);
+        $item = $this->newKeyValue($collection, $key);
 
         $item->patchMerge($value, $ref, $reload);
         return $item;
@@ -148,12 +148,12 @@ class Client extends AbstractClient
      * @param string $collection
      * @param array $value
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
     public function post($collection, array $value)
     {
-        $item = $this->newItem($collection);
+        $item = $this->newKeyValue($collection);
 
         $item->post($value);
         return $item;
@@ -164,12 +164,12 @@ class Client extends AbstractClient
      * @param string $key
      * @param string $ref
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function delete($collection, $key, $ref = null)
     {
-        $item = $this->newItem($collection, $key);
+        $item = $this->newKeyValue($collection, $key);
 
         $item->delete($ref);
         return $item;
@@ -179,12 +179,12 @@ class Client extends AbstractClient
      * @param string $collection
      * @param string $key
      * 
-     * @return KeyValue
+     * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
     public function purge($collection, $key)
     {
-        $item = $this->newItem($collection, $key);
+        $item = $this->newKeyValue($collection, $key);
 
         $item->purge();
         return $item;
@@ -207,7 +207,7 @@ class Client extends AbstractClient
     {
         $list = (new Refs($collection, $key))
             ->setClient($this)
-            ->setChildClass($this->getItemClass());
+            ->setChildClass($this->getKeyValueClass());
 
         $list->get($limit, $offset, $values);
         return $list;
@@ -223,7 +223,7 @@ class Client extends AbstractClient
      * @param int $timestamp
      * @param int $ordinal
      * 
-     * @return Event
+     * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-get
      */
     public function getEvent($collection, $key, $type, $timestamp, $ordinal)
@@ -243,7 +243,7 @@ class Client extends AbstractClient
      * @param array $value
      * @param string $ref
      * 
-     * @return Event
+     * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-put
      */
     public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref = null)
@@ -261,7 +261,7 @@ class Client extends AbstractClient
      * @param array $value
      * @param int $timestamp
      * 
-     * @return Event
+     * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-post
      */
     public function postEvent($collection, $key, $type, array $value, $timestamp = null)
@@ -280,7 +280,7 @@ class Client extends AbstractClient
      * @param int $ordinal
      * @param string $ref
      * 
-     * @return Event
+     * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref = null)
@@ -298,7 +298,7 @@ class Client extends AbstractClient
      * @param int $timestamp
      * @param int $ordinal
      * 
-     * @return Event
+     * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function purgeEvent($collection, $key, $type, $timestamp, $ordinal)
@@ -344,8 +344,8 @@ class Client extends AbstractClient
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        $source = $this->newItem($collection, $key);
-        $destination = $this->newItem($toCollection, $toKey);
+        $source = $this->newKeyValue($collection, $key);
+        $destination = $this->newKeyValue($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
         $relation->put();
@@ -364,8 +364,8 @@ class Client extends AbstractClient
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
     {
-        $source = $this->newItem($collection, $key);
-        $destination = $this->newItem($toCollection, $toKey);
+        $source = $this->newKeyValue($collection, $key);
+        $destination = $this->newKeyValue($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
         $relation->delete();
@@ -386,7 +386,7 @@ class Client extends AbstractClient
     {
         $list = (new Relations($collection, $key, $kind))
             ->setClient($this)
-            ->setChildClass($this->getItemClass());
+            ->setChildClass($this->getKeyValueClass());
 
         $list->get($limit, $offset);
         return $list;
@@ -394,16 +394,20 @@ class Client extends AbstractClient
 
     /**
      * Helper to create KeyValue instances.
+     * 
+     * @return KeyValueInterface
      */
-    private function newItem($collection = null, $key = null, $ref = null)
+    private function newKeyValue($collection = null, $key = null, $ref = null)
     {
-        return $this->getItemClass()
+        return $this->getKeyValueClass()
             ->newInstance($collection, $key, $ref)
             ->setClient($this);
     }
 
     /**
      * Helper to create Event instances.
+     * 
+     * @return EventInterface
      */
     private function newEvent(
         $collection = null,

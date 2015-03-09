@@ -10,9 +10,20 @@ abstract class AbstractList extends AbstractResponse implements
     \IteratorAggregate,
     \Countable,
     ListInterface,
-    ToJsonInterface
+    ToJsonInterface,
+    ReusableObjectInterface
 {
     use CollectionTrait;
+    
+    /**
+     * @var string
+     */
+    protected static $defaultChildClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
+
+    /**
+     * @var string
+     */
+    protected static $minimumChildInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
 
     /**
      * @var ObjectArray
@@ -75,6 +86,47 @@ abstract class AbstractList extends AbstractResponse implements
     public function count()
     {
         return count($this->getResults());
+    }
+
+    public function reset()
+    {
+        parent::reset();
+        $this->_collection = null;
+        $this->_totalCount = null;
+        $this->_nextUrl = '';
+        $this->_prevUrl = '';
+        $this->_results = null;
+    }
+
+    public function init(array $data)
+    {
+        if (empty($data)) {
+            return;
+        }
+
+        foreach ($data as $key => $value) {
+            
+            if ($key === 'total_count')
+                $this->_totalCount = (int) $value;
+
+            elseif ($key === 'prev')
+                $this->_prevUrl = $value;
+
+            elseif ($key === 'next')
+                $this->_nextUrl = $value;
+
+            elseif ($key === 'results') {
+                $this->_results = new ObjectArray(array_map(
+                    [$this, 'createChildrenClass'],
+                    $value
+                ));
+                if (isset($this->_results[0]) && method_exists($this->_results[0], 'getCollection')) {
+                    $this->setCollection($this->_results[0]->getCollection());
+                }
+            }
+        }
+
+        return $this;
     }
 
     public function toArray()
@@ -159,16 +211,6 @@ abstract class AbstractList extends AbstractResponse implements
         return $this->_prevUrl;
     }
 
-    public function reset()
-    {
-        parent::reset();
-        $this->_collection = null;
-        $this->_totalCount = null;
-        $this->_nextUrl = '';
-        $this->_prevUrl = '';
-        $this->_results = null;
-    }
-
     /**
      * @return boolean Success of operation.
      */
@@ -190,12 +232,20 @@ abstract class AbstractList extends AbstractResponse implements
      */
     protected function request($method, $url = null, array $options = [])
     {
-        // $this->reset(); // why reset???
+        // request
         parent::request($method, $url, $options);
 
         if ($this->isSuccess()) {
-            $body = $this->getBody();
             
+            // reset local properties
+            $this->_results = null;
+            $this->_totalCount = null;
+            $this->_nextUrl = '';
+            $this->_prevUrl = '';
+            
+            // set properties
+            $body = $this->getBody();
+
             if (!empty($body['results'])) {
                 $this->_results = new ObjectArray(array_map(
                     [$this, 'createChildrenClass'],
@@ -222,9 +272,6 @@ abstract class AbstractList extends AbstractResponse implements
      */
     protected function getUrl($url)
     {
-        // reset object
-        $this->reset(); //TODO remove this reset thing!!
-
         // load next set of values
         if ($url) {
 
@@ -240,6 +287,23 @@ abstract class AbstractList extends AbstractResponse implements
     }
     
     /**
+     * Get the ReflectionClass that is being used to instantiate this list's children.
+     * 
+     * @return \ReflectionClass
+     */
+    public function getChildClass()
+    {
+        if (!isset($this->_childClass)) {
+            $this->_childClass = new \ReflectionClass(static::$defaultChildClass);
+
+            if (!$this->_childClass->implementsInterface(static::$minimumChildInterface)) {
+                throw new \RuntimeException('Child classes must implement '.static::$minimumChildInterface);
+            }
+        }
+        return $this->_childClass;
+    }
+
+    /**
      * Set which class should be used to instantiate this list's children.
      * 
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
@@ -253,32 +317,18 @@ abstract class AbstractList extends AbstractResponse implements
         } else {
             $this->_childClass = new \ReflectionClass($class);
         }
-        // when interface are defined add a better check here
-        // if (!$this->_childClass->isSubclassOf(KEY_VALUE_CLASS)) {
-        //     throw new \RuntimeException('Child classes can only extend the  class.');
-        // }
+
+        if (!$this->_childClass->implementsInterface(static::$minimumChildInterface)) {
+            throw new \RuntimeException('Child classes must implement '.static::$minimumChildInterface);
+        }
 
         return $this;
-    }
-
-    /**
-     * Get the ReflectionClass that is being used to instantiate this list's children.
-     * 
-     * @return \ReflectionClass
-     */
-    public function getChildClass()
-    {
-        if (!isset($this->_childClass)) {
-            $this->_childClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\KeyValue');
-        }
-        return $this->_childClass;
     }
     
     protected function createChildrenClass(array $values)
     {
         return $this->getChildClass()->newInstance()
             ->setClient($this->getClient(true))
-            // ->setCollection($this->getCollection(true)) // TODO review if we can remove this
             ->init($values);
     }
 }

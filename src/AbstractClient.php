@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
+use andrefelipe\Orchestrate\Objects\Properties\KeyValueReflectionTrait;
+use andrefelipe\Orchestrate\Objects\Properties\EventReflectionTrait;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
@@ -12,6 +14,9 @@ use GuzzleHttp\Exception\ConnectException;
  */
 abstract class AbstractClient implements ClientInterface
 {
+    use KeyValueReflectionTrait;
+    use EventReflectionTrait;
+
     /**
      * @var string
      */
@@ -33,14 +38,9 @@ abstract class AbstractClient implements ClientInterface
     private $_client;
 
     /**
-     * @var \ReflectionClass
+     * @var string
      */
-    private $_itemClass;
-
-    /**
-     * @var \ReflectionClass
-     */
-    private $_eventClass;
+    // private static $_minimumObjectInterface = '\andrefelipe\Orchestrate\Objects\ReusableObjectInterface';
     
     /**
      * @param string $apiKey
@@ -245,75 +245,5 @@ abstract class AbstractClient implements ClientInterface
         }
 
         return $response;
-    }
-
-    /**
-     * Set which class should be used to instantiate this list's KeyValue instances.
-     * 
-     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     * 
-     * @return AbstractClient self
-     */
-    public function setItemClass($class)
-    {
-        if ($class instanceof \ReflectionClass) {
-            $this->_itemClass = $class;
-        } else {
-            $this->_itemClass = new \ReflectionClass($class);
-        }
-        // when interface are defined add a better check here
-        // if (!$this->_itemClass->isSubclassOf(KEY_VALUE_CLASS)) {
-        //     throw new \RuntimeException('Child classes can only extend the  class.');
-        // }
-
-        return $this;
-    }
-
-    /**
-     * Get the ReflectionClass that is being used to instantiate this list's KeyValue instances.
-     * 
-     * @return \ReflectionClass
-     */
-    public function getItemClass()
-    {
-        if (!isset($this->_itemClass)) {
-            $this->_itemClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\KeyValue');
-        }
-        return $this->_itemClass;
-    }
-
-    /**
-     * Set which class should be used to instantiate this list's events instances.
-     * 
-     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     * 
-     * @return AbstractClient self
-     */
-    public function setEventClass($class)
-    {
-        if ($class instanceof \ReflectionClass) {
-            $this->_eventClass = $class;
-        } else {
-            $this->_eventClass = new \ReflectionClass($class);
-        }
-        // when interface are defined add a better check here
-        // if (!$this->_eventClass->isSubclassOf(KEY_VALUE_CLASS)) {
-        //     throw new \RuntimeException('Child classes can only extend the  class.');
-        // }
-
-        return $this;
-    }
-    
-    /**
-     * Get the ReflectionClass that is being used to instantiate this list's events instances.
-     * 
-     * @return \ReflectionClass
-     */
-    public function getEventClass()
-    {
-        if (!isset($this->_eventClass)) {
-            $this->_eventClass = new \ReflectionClass('\andrefelipe\Orchestrate\Objects\Event');
-        }
-        return $this->_eventClass;
     }
 }

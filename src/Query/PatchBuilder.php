@@ -24,13 +24,6 @@ class PatchBuilder implements ToArrayInterface
         return $this->operations;
     }
 
-// TODO could have a init to, that acts as a set.. sometimes we could change the values outside, then add back later
-// add ReusableObjectInterface then 
-    public function reset()
-    {
-        $this->operations = [];
-    }
-
     /**
      * Depending on the specified path, creates a field with that value, replaces an existing field with the specified value, or adds the value to an array.
      * 

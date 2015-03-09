@@ -5,6 +5,7 @@ use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
+use andrefelipe\Orchestrate\Objects\Properties\EventReflectionTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject implements KeyValueInterface
@@ -13,6 +14,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     use KeyTrait;
     use RefTrait;
     use ReftimeTrait;
+    use EventReflectionTrait;
 
     /**
      * @var float
@@ -327,19 +329,28 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         return (new Refs($this->getCollection(true), $this->getKey(true)))
             ->setClient($this->getClient(true))
             ->setChildClass(new \ReflectionClass($this));
+
+            // maybe be cached, just check subclasses scope
+            // or decide to implement KeyValueReflector too...
     }
 
     public function events($type)
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))
-            ->setClient($this->getClient(true));
-            // TODO child classes
+            ->setClient($this->getClient(true))
+            ->setChildClass($this->getEventClass());
     }
 
     public function event($type, $timestamp = null, $ordinal = null)
     {
-        return (new Event($this->getCollection(true), $this->getKey(true), $type, $timestamp, $ordinal))
-            ->setClient($this->getClient(true));
+        return $this->getEventClass()
+            ->newInstance(
+                $this->getCollection(true),
+                $this->getKey(true),
+                $type,
+                $timestamp,
+                $ordinal
+            )->setClient($this->getClient(true));
     }
 
     public function relations($kind)

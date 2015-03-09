@@ -9,12 +9,20 @@ class Events extends AbstractList
     use KeyTrait;
     use TypeTrait;
 
+    protected static $defaultChildClass = '\andrefelipe\Orchestrate\Objects\Event';
+
+    protected static $minimumChildInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     */
     public function __construct($collection = null, $key = null, $type = null)
     {
         parent::__construct($collection);
         $this->setKey($key);
         $this->setType($type);
-        $this->setChildClass('\andrefelipe\Orchestrate\Objects\Event');
     }
 
     /**

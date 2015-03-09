@@ -9,10 +9,14 @@ use andrefelipe\Orchestrate\Objects\Collection;
  */
 class Application extends AbstractClient
 {
+    /**
+     * 
+     * @return Collection
+     */
     public function collection($name)
     {
         return (new Collection($name))
             ->setClient($this)
-            ->setChildClass($this->getItemClass());
+            ->setChildClass($this->getKeyValueClass());
     }
 }

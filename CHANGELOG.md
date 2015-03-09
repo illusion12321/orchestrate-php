@@ -4,7 +4,7 @@
 - Implemented Refs, Events and Graph directly within the KeyValue class, check out our README.
 - next/prev methods are now named as nextPage/prevPage, much clearer on what they do.
 - Implemented KeyValue and Event interfaces.
-- setItemClass...
+- Children classes can now easily be changed with setKeyValueClass / setEventClass
 
 ## 0.8.0 - 2015-03-06
 - Radical change on classes, Application is now rightfully 'Client'.
