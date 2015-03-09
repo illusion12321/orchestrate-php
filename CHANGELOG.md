@@ -1,10 +1,11 @@
 # CHANGELOG
 
-## HEAD
+## 0.9.0 - 2015-03-09
 - Implemented Refs, Events and Graph directly within the KeyValue class, check out our README.
+- putRelation and deleteRelation are removed from KeyValue to favor the new, and more useful, method with the Relation class.
 - next/prev methods are now named as nextPage/prevPage, much clearer on what they do.
 - Implemented KeyValue and Event interfaces.
-- Children classes can now easily be changed with setKeyValueClass / setEventClass
+- Children classes can now easily be changed with setKeyValueClass/setEventClass at Client instance, and setChildrenClass at all list objects (Collection, Events, Refs).
 
 ## 0.8.0 - 2015-03-06
 - Radical change on classes, Application is now rightfully 'Client'.

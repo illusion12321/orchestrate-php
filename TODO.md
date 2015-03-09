@@ -1,8 +1,5 @@
 # TODO and IDEAS
 
-- fazer o init do List, e fazer o setEventClass do KeyValue, e confirmar que está dando bleed de uma classe para outra
-- colocar os exeptions no setChildClass agora que tem interface.. e ver o getValues e outros lugares que pode usar as interfaces tambem
-
 - Add a method for twoWayPut / twoWayDelete relation (better name?)
 
 - Consider removing post from KeyValue?
