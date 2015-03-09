@@ -52,7 +52,8 @@ require 'vendor/autoload.php';
 ## Getting Started
 You can use our library in two distinct ways:
 
-### 1- **Client** — straightforward API interface to Orchestrate.
+### 1- Client
+#### A straightforward API interface to Orchestrate.
 
 ```php
 
@@ -86,11 +87,12 @@ $item = $client->delete('collection', 'key');
 if ($item->isSuccess()) {
     // ok
 
-    // More on responses
+    // (read more on responses below)
 }
 ```
 
-### 2- **Objects** — the actual Orchestrate objects, which provides an object API as well as the response status.
+### 2- Objects
+#### Actual Orchestrate objects (Collection, KeyValue, Event, etc), which provide an object API as well as the response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
@@ -126,7 +128,7 @@ if ($item->get()) { // API call to get the current key
         //             [2] => admin
         //         )
         // )
-        // ObjectArray is our little cherished class, it allows object or array syntax access
+        // ObjectArray is a dynamic class that allows object or array syntax access
         // i.e. $item->name or $item['name'], plus a few other helpful methods.
         // This means you can feel free to send it to your template engine.
 
@@ -177,7 +179,7 @@ if ($item->get()) { // API call to get the current key
 
 Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Client. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
 
-**Note**, the credentials and the HTTP client are only available at the `Application` or `Client` objects, so all objects must reference to them in order to do API class. You can do so via the `setClient` method. But that's only needed if you want to instantiate the objects directly. If you use the methods as described above, that's handled automatically.
+**Note**, the credentials and the HTTP client are only available at the `Application` or `Client` objects, so all objects must reference to them in order to do API class. You can do so via the `setClient` method. But that's only needed if you want to instantiate the objects directly. If you use the methods as described above, that's handled for you.
 
 
 
@@ -355,7 +357,6 @@ Tip: Send the objects directly to your prefered template engine!
 
 
 ### Application Ping:
-> returns Boolean
 
 ```php
 // Approach 1 - Client
@@ -371,7 +372,6 @@ if ($client->ping()) {
 
 
 ### Collection Delete:
-> returns Boolean
 
 ```php
 // Approach 1 - Client
@@ -387,7 +387,6 @@ if ($collection->delete()) {
 
 
 ### Key/Value Get
-> returns KeyValue|Boolean
 
 ```php
 // Approach 1 - Client
@@ -418,7 +417,6 @@ $item->getBody(); // Array of the unfiltered HTTP response body
 
 
 ### Key/Value Put (create/update by key)
-> returns KeyValue object
 
 ```php
 // Approach 1 - Client
@@ -463,7 +461,6 @@ $item->put(['title' => 'New Title'], false);
 
 
 ### Key/Value Patch (partial update - Operations)
-> returns KeyValue object
 
 Please refer to the [API Reference](https://orchestrate.io/docs/apiref#keyvalue-patch) for all details about the operations.
 
@@ -514,7 +511,6 @@ $item->patch($patch, true, true); // with the reload as mentioned above
 
 
 ### Key/Value Patch (partial update - Merge)
-> returns KeyValue object
 
 ```php
 // Approach 1 - Client
@@ -547,7 +543,6 @@ $item->patchMerge(['title' => 'New Title'], true); // uses the current object Re
 
 
 ### Key/Value Post (create & generate key)
-> returns KeyValue object
 
 ```php
 // Approach 1 - Client
@@ -563,7 +558,6 @@ $item->post();
 
 
 ### Key/Value Delete
-> returns KeyValue object
 
 ```php
 // Approach 1 - Client
@@ -610,7 +604,6 @@ $item->purge();
 
 
 ### Key/Value List:
-> returns Collection object, with child results as KeyValue objects
 
 ```php
 // Approach 1 - Client
@@ -642,7 +635,6 @@ $collection->prevPage(); // loads previous set of results
 
 
 ### Refs Get:
-> returns KeyValue object
 
 Returns the specified version of a value.
 
@@ -656,7 +648,6 @@ $item->get('20c14e8965d6cbb0');
 ```
 
 ### Refs List:
-> returns Refs object, with results as KeyValue objects
 
 Get the specified version of a value.
 
@@ -690,7 +681,6 @@ $refs->prevPage(); // loads previous set of results
 
 
 ### Search:
-> returns Search object, with results as KeyValue objects
 
 ```php
 // Approach 1 - Client
@@ -741,7 +731,6 @@ $results = $collection->search(
 
 
 ### Event Get
-> returns Event object
 
 ```php
 // Approach 1 - Client
@@ -754,7 +743,6 @@ $event->get();
 ```
 
 ### Event Put (update)
-> returns Event object
 
 ```php
 // Approach 1 - Client
@@ -787,7 +775,6 @@ $event->put(['title' => 'New Title'], true); // uses the current object Ref, in 
 
 
 ### Event Post (create)
-> returns Event object
 
 ```php
 // Approach 1 - Client
@@ -812,7 +799,6 @@ $event->post(['title' => 'New Title'], true); // use stored timestamp
 
 
 ### Event Delete
-> returns Event object
 
 Warning: Orchestrate do not support full history of each event, so the delete operation have the purge=true parameter.
 
@@ -844,7 +830,6 @@ $event->delete('20c14e8965d6cbb0'); // delete a specific ref
 
 
 ### Event List:
-> returns Events object, with results as Event objects
 
 ```php
 // Approach 1 - Client
@@ -884,7 +869,6 @@ $events->prevPage(); // loads previous set of results
 
 
 ### Graph Get (List):
-> returns Graph object, with results as KeyValue objects
 
 Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
 
@@ -921,7 +905,6 @@ $relations->prevPage(); // loads previous set of results
 
 
 ### Graph Put
-> returns KeyValue object
 
 ```php
 // Approach 1 - Client
@@ -938,7 +921,6 @@ if ($item->relation('kind', $anotherItem)->put()) {
 
 
 ### Graph Delete
-> returns KeyValue object
 
 Deletes a relationship between two objects. Relations don't have a history, so the operation have the purge=true parameter.
 
