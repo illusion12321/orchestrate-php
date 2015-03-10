@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
+use JmesPath\Env as JmesPath;
 
 /**
  * 
@@ -28,6 +29,11 @@ class Collection extends AbstractList
             ->setClient($this->getClient(true));
     }
 
+    public function jmesPath($expression)
+    {
+        return JmesPath::search($expression, $this->getResults());
+    }
+    
     /**
      * @return float
      */
