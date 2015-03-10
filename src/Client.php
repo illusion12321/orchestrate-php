@@ -8,6 +8,7 @@ use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Objects\Relation;
+use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
@@ -129,6 +130,9 @@ class Client extends AbstractClient
     // Collection
 
     /**
+     * Deletes a collection. Warning this will permanently erase all data within
+     * this collection and cannot be reversed!
+     * 
      * @return boolean
      * @link https://orchestrate.io/docs/apiref#collections-delete
      */
@@ -146,12 +150,12 @@ class Client extends AbstractClient
     /**
      * @param string $collection
      * @param int $limit
-     * @param array $range
+     * @param KeyRangeBuilder $range
      * 
      * @return Collection
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function listCollection($collection, $limit = 10, array $range = null)
+    public function listCollection($collection, $limit = 10, KeyRangeBuilder $range = null)
     {
         $list = (new Collection($collection))
             ->setClient($this)

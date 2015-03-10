@@ -386,9 +386,14 @@ if ($client->deleteCollection('collection')) {
 }
 
 // Approach 2 - Object
-if ($collection->delete()) {
+// To prevent accidental deletions, provide the current collection name as
+// the parameter. The collection will only be deleted if both names match.
+if ($collection->delete('collection')) {
     // success
 }
+
+// Warning this will permanently erase all data
+// within the collection and cannot be reversed!
 ```
 
 
@@ -612,11 +617,31 @@ $item->purge();
 ### Key/Value List:
 
 ```php
+// use the Key Range operation builder
+use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
+
+$range = (new KeyRangeBuilder())
+    ->from('blue')
+    ->to('zinc');
+
+$range = (new KeyRangeBuilder())
+    ->from('blue', false) // key 'blue' is excluded, if exists
+    ->to('zinc', false); // key 'zinc' is excluded, if exists
+
+// you can also use the between method
+$range->between('blue', 'zinc');
+
+// in either method, keys can also be a KeyValue object
+$range->from($item)->to($anotherItem);
+
+
 // Approach 1 - Client
-$collection = $client->listCollection('collection', 100, ['startKey' => 'example']);
+$collection = $client->listCollection('collection', 100, $range);
 
 // Approach 2 - Object
-$collection->get(100, ['startKey' => 'example']);
+$collection->get(100, $range);
+
+// Please note, the max limit currently imposed by Orchestrate is 100
 
 
 // now get array of the results
@@ -632,8 +657,8 @@ foreach ($collection as $item) {
 // pagination
 $collection->getNextUrl(); // string
 $collection->getPrevUrl(); // string
-$collection->getCount(); // count of the current set of results
-$collection->getTotalCount(); // count of the total results available
+count($collection); // count of the current set of results
+$collection->getTotalCount(); // count of the total results, if available
 $collection->nextPage(); // loads next set of results
 $collection->prevPage(); // loads previous set of results
 ```
@@ -678,7 +703,7 @@ foreach ($refs as $item) {
 // pagination
 $refs->getNextUrl(); // string
 $refs->getPrevUrl(); // string
-$refs->getCount(); // count of the current set of results
+count($refs); // count of the current set of results
 $refs->getTotalCount(); // count of the total results available
 $refs->nextPage(); // loads next set of results
 $refs->prevPage(); // loads previous set of results
@@ -714,7 +739,7 @@ $collection->getAggregates(); // array of the Aggregate results, if any
 // pagination
 $collection->getNextUrl(); // string
 $collection->getPrevUrl(); // string
-$collection->getCount(); // count of the current set of results
+count($collection); // count of the current set of results
 $collection->getTotalCount(); // count of the total results available
 $collection->nextPage(); // loads next set of results
 $collection->prevPage(); // loads previous set of results
@@ -860,7 +885,7 @@ foreach ($events as $event) {
 // pagination
 $events->getNextUrl(); // string
 $events->getPrevUrl(); // string
-$events->getCount(); // count of the current set of results
+count($events); // count of the current set of results
 $events->getTotalCount(); // count of the total results available
 $events->nextPage(); // loads next set of results
 $events->prevPage(); // loads previous set of results
@@ -902,7 +927,7 @@ foreach ($relations as $item) {
 // pagination
 $relations->getNextUrl(); // string
 $relations->getPrevUrl(); // string
-$relations->getCount(); // count of the current set of results
+count($relations); // count of the current set of results
 $relations->getTotalCount(); // count of the total results available
 $relations->nextPage(); // loads next set of results
 $relations->prevPage(); // loads previous set of results

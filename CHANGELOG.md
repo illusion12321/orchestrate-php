@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## HEAD
+- Implemented two-way relation put/delete.
+- Implemented KeyRangeBuilder, replacing array range parameter.
+
 ## 0.9.0 - 2015-03-09
 - Implemented Refs, Events and Graph directly within the KeyValue class, check out our README.
 - putRelation and deleteRelation are removed from KeyValue to favor the new, and more useful, method with the Relation class.

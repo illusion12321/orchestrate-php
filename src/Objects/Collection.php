@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
@@ -56,30 +57,22 @@ class Collection extends AbstractList
     }
 
     /**
-     * @param int $limit
-     * @param array $range
+     * Gets a lexicographically ordered list of items contained in a collection.
+     * Can be controlled using the limit and range parameters.
+     * If there are more results available, the pagination URL can be checked with
+     * getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
+     * 
+     * @param int $limit The limit of items to return. Defaults to 10 and max to 100.
+     * @param KeyRangeBuilder $range
      * 
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function get($limit = 10, array $range = null)
+    public function get($limit = 10, KeyRangeBuilder $range = null)
     {
         // define request options
-        $parameters = ['limit' => $limit];
-
-        if ($range) {
-            if (isset($range['start']))
-                $parameters['startKey'] = $range['start'];
-
-            if (isset($range['after']))
-                $parameters['afterKey'] = $range['after'];
-
-            if (isset($range['before']))
-                $parameters['beforeKey'] = $range['before'];
-
-            if (isset($range['end']))
-                $parameters['endKey'] = $range['end'];
-        }
+        $parameters = $range ? $range->toArray() : [];
+        $parameters['limit'] = $limit > 100 ? 100 : $limit;
 
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
@@ -87,35 +80,30 @@ class Collection extends AbstractList
         return $this->isSuccess();
     }
 
-    // if ($this->_totalCount === null) {
-
-    //     // get from Orchestrate
-    //     $response = $this->getClient(true)
-    //         ->request('GET', $this->getCollection(true), ['query' => ['limit' => 1]]);
-
-    //     if ($response) {
-    //         $body = $response->json();
-    //         print_r($body);
-            
-    //         if (!empty($body['total_count'])) {
-    //             $this->_totalCount = (int) $body['total_count'];
-    //         }
-    //     }                
-    // }
-
     /**
+     * Deletes a collection. Warning this will permanently erase all data within
+     * this collection and cannot be reversed!
+     * 
+     * To prevent accidental deletions, provide the current collection name as
+     * the parameter. The collection will only be deleted if both names match.
+     * 
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#collections-delete
      */
-    public function delete()
+    public function delete($collectionName)
     {
-        $response = $this->request(
-            'DELETE',
-            $this->getCollection(true),
-            ['query' => ['force' => 'true']]
-        );
+        if ($collectionName === $this->getCollection(true)) {
 
-        return $response->getStatusCode() === 204;
+            $response = $this->request(
+                'DELETE',
+                $this->getCollection(),
+                ['query' => ['force' => 'true']]
+            );
+
+            return $response->getStatusCode() === 204;
+        }
+
+        return false;        
     }
 
     /**

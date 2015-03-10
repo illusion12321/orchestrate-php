@@ -11,6 +11,8 @@
 - Implement some common interfaces, and general organization of the base classes
 
 - Work on Query builders (query builder (search) / sort / aggregate builder / range builder
+(search builder can handle all parameters, sort, query, aggregate, geo,.. then be used on collection->query($queryBuilder))
+---Do not use the object itself to build the query chain, it's confusing---
 
 - Add totalCount method to Collection or KeyValues?
 
