@@ -2,8 +2,6 @@
 
 - update init/toArray of List objects with more data.. relation for instance
 
-- Add a method for twoWayPut / twoWayDelete relation (better name?)
-
 - Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
 
 - Maybe implement __toString and __debugInfo for debug pourposes. But study the best pattern before release, so it doesn't change later

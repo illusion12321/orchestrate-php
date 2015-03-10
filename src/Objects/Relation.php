@@ -186,32 +186,40 @@ class Relation extends AbstractResponse implements
 
     /**
      * Set the relation between the two objects.
-     *  
+     * Use the $bothWays parameter to set the relation both ways (2 API calls are made).
+     * 
+     * @param boolean $bothWays 
+     * 
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function put()
-    {        
-        // request
+    public function put($bothWays = false)
+    {
         $this->request('PUT', $this->formRelationPath());
         
+        if ($bothWays && $this->isSuccess()) {
+            $this->request('PUT', $this->formRelationPath(true));
+        }
+
         return $this->isSuccess();
     }
 
-    /**
-     * @param string $toCollection
-     * @param string $toKey
+    /** 
+     * Remove the relation between the two objects.
+     * Use the $bothWays parameter to remove the relation both ways (2 API calls are made).
      * 
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
-    public function delete($toCollection, $toKey = null)
+    public function delete($bothWays = false)
     {
-        // define request options
         $options = ['query' => ['purge' => 'true']];
 
-        // request
         $this->request('DELETE', $this->formRelationPath(), $options);
+        
+        if ($bothWays && $this->isSuccess()) {
+            $this->request('DELETE', $this->formRelationPath(true), $options);
+        }
         
         return $this->isSuccess();
     }
@@ -221,10 +229,16 @@ class Relation extends AbstractResponse implements
      * 
      * @return string
      */
-    private function formRelationPath()
+    private function formRelationPath($reverse = false)
     {
         $source = $this->getSource(true);
         $destination = $this->getDestination(true);
+
+        if ($reverse) {
+            $item = $source;
+            $source = $destination;
+            $destination = $item;
+        }
 
         return $source->getCollection(true).'/'.$source->getKey(true)
             .'/relation/'.$this->getRelation(true).'/'
