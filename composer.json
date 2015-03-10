@@ -2,7 +2,7 @@
 	"name": "andrefelipe/orchestrate-php",
 	"homepage": "https://github.com/andrefelipe/orchestrate-php",
 	"description": "PHP client for Orchestrate.io",
-	"keywords": ["orchestrate", "client", "guzzle"],
+	"keywords": ["orchestrate", "client", "guzzle", "jmespath"],
 	"type": "library",
 	"license": "MIT",
 	"authors": [
@@ -13,7 +13,8 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"guzzlehttp/guzzle": "~5.0"
+		"guzzlehttp/guzzle": "~5.2",
+		"mtdowling/jmespath.php": "~2.1"
 	},
 	"autoload": {
 		"psr-4": {
