@@ -6,13 +6,16 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 - Choose which approach you prefer, client-like or object-like.
 - PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
 - Template engine friendly.
-- To create an object model, just extend a KeyValue and define the public properties.
+- Create Models by extending our classes.
 - Easily change which class the list objects should use to create their children.
-- toArray, and therefore toJson, methods produces the same output format as Orchestrate's export.
-- Uses [Guzzle 5](http://guzzlephp.org/) as HTTP client.
+- toArray/toJson methods produces the same output format as Orchestrate's export.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
-- PHP must be 5.4 or higher.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
+
+Requirements:
+- PHP must be 5.4 or higher.
+- [Guzzle 5](http://guzzlephp.org/) as HTTP client.
+
 
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
@@ -56,7 +59,6 @@ You can use our library in two distinct ways:
 ##### A straightforward API interface to Orchestrate.
 
 ```php
-
 use andrefelipe\Orchestrate\Client;
 
 // provide the parameters, in order: apiKey, host, version
@@ -72,7 +74,7 @@ $client = new Client();
 // use the default host 'https://api.orchestrate.io'
 // and the default API version 'v0'
 
-// check the connection success with Ping, returns boolean
+// check the connection success with Ping (returns boolean)
 if ($client->ping()) {
     // OK
 }
@@ -82,13 +84,14 @@ $item = $client->get('collection', 'key'); // returns a KeyValue object
 $item = $client->put('collection', 'key', ['title' => 'My Title']);
 $item = $client->delete('collection', 'key');
 
-// The result of all operations are Objects, whose are explained below.
-// So to check the success of an operation use:
+// To check the success of an operation use:
 if ($item->isSuccess()) {
-    // ok
+    // OK, API call sucessful
 
-    // (read more on responses below)
+    // (more on using the results and responses below)
 }
+
+// IMPORTANT: The result of all operations by the Client are Objects (see next).
 ```
 
 ### 2- Objects
@@ -131,12 +134,14 @@ if ($item->get()) { // API call to get the current key
         // ObjectArray is a dynamic class that allows object or array syntax access
         // i.e. $item->name or $item['name'], plus a few other helpful methods.
         // This means you can feel free to send it to your template engine.
+        // More on that next.
 
         echo $item->toJson(JSON_PRETTY_PRINT);
         // {
         //     "kind": "item",
         //     "path": {
         //         "collection": "collection",
+        //         "kind": "item",
         //         "key": "key",
         //         "ref": "20c14e8965d6cbb0"
         //     },
@@ -149,6 +154,7 @@ if ($item->get()) { // API call to get the current key
         //         ]
         //     }
         // }
+        // Same output format as Orchestrate's export
 
         // take the opportunity to create a relation to another item
         $anotherItem = $collection->item('another-key');
@@ -917,6 +923,22 @@ $anotherItem = $collection->item('another-key');
 if ($item->relation('kind', $anotherItem)->put()) {
     // success
 }
+
+// TIP: Relations are one way operations. We relate an item to another,
+// but that other item doesn't automatically gets related back to the calling item.
+
+// To make life easier we implemented that two-way operation, so both source
+// and destination items relates to each other.
+// Just pass 'true' as parameter.
+
+if ($item->relation('kind', $anotherItem)->put(true)) {
+    // success, now both items are related to each other
+
+    // Note that 2 API calls are made in this operation,
+    // and the operation success is given only if both are
+    // successful.
+}
+
 ```
 
 
@@ -935,8 +957,13 @@ $anotherItem = $collection->item('another-key');
 if ($item->relation('kind', $anotherItem)->delete()) {
     // success
 }
-```
 
+// Same two-way operation can be made here too:
+if ($item->relation('kind', $anotherItem)->delete(true)) {
+    // success, now both items are not related to each other anymore
+}
+
+```
 
 
 
