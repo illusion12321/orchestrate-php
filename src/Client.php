@@ -448,17 +448,18 @@ class Client extends AbstractClient
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
+     * @param boolean $bothWays
      * 
      * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function putRelation($collection, $key, $kind, $toCollection, $toKey)
+    public function putRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
         $source = $this->newKeyValue($collection, $key);
         $destination = $this->newKeyValue($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
-        $relation->put();
+        $relation->put($bothWays);
         return $relation;
     }
 
@@ -468,17 +469,18 @@ class Client extends AbstractClient
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
+     * @param boolean $bothWays
      * 
      * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
-    public function deleteRelation($collection, $key, $kind, $toCollection, $toKey)
+    public function deleteRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
         $source = $this->newKeyValue($collection, $key);
         $destination = $this->newKeyValue($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
-        $relation->delete();
+        $relation->delete($bothWays);
         return $relation;
     }
 
