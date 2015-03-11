@@ -33,7 +33,7 @@ class Collection extends AbstractList
     {
         return JmesPath::search($expression, $this->getResults());
     }
-    
+
     /**
      * @return float
      */
@@ -63,8 +63,9 @@ class Collection extends AbstractList
     }
 
     /**
-     * Gets a lexicographically ordered list of items contained in a collection.
-     * Can be controlled using the limit and range parameters.
+     * Gets a lexicographically ordered list of items contained in a collection,
+     * specified by the limit and key range parameters.
+     * 
      * If there are more results available, the pagination URL can be checked with
      * getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
      * 

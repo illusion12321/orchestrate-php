@@ -9,6 +9,7 @@ use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Objects\Relation;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
+use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
@@ -428,12 +429,12 @@ class Client extends AbstractClient
      * @param string $key
      * @param string $type
      * @param int $limit
-     * @param array $range
+     * @param TimeRangeBuilder $range
      * 
      * @return Events
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function listEvents($collection, $key, $type, $limit = 10, array $range = null)
+    public function listEvents($collection, $key, $type, $limit = 10, TimeRangeBuilder $range = null)
     {
         $list = (new Events($collection, $key, $type))
             ->setClient($this)

@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
+use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
 class Events extends AbstractList
 {
@@ -26,33 +27,26 @@ class Events extends AbstractList
     }
 
     /**
-     * @param int $limit
-     * @param array $range
+     * Gets a list of events in reverse chronological order, 
+     * specified by the limit and time range parameters.
+     * 
+     * If there are more results available, the pagination URL can be checked with
+     * getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
+     * 
+     * @param int $limit The limit of items to return. Defaults to 10 and max to 100.
+     * @param TimeRangeBuilder $range
      * 
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function get($limit = 10, array $range = null)
+    public function get($limit = 10, TimeRangeBuilder $range = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true)
             .'/events/'.$this->getType(true).'/';
         
-        $parameters = ['limit' => $limit];
-
-        if ($range) {
-            if (isset($range['start']))
-                $parameters['startEvent'] = $range['start'];
-
-            if (isset($range['after']))
-                $parameters['afterEvent'] = $range['after'];
-
-            if (isset($range['before']))
-                $parameters['beforeEvent'] = $range['before'];
-
-            if (isset($range['end']))
-                $parameters['endEvent'] = $range['end'];
-        }
+        $parameters = $range ? $range->toArray() : [];
+        $parameters['limit'] = $limit > 100 ? 100 : $limit;
 
         // request
         $this->request('GET', $path, ['query' => $parameters]);

@@ -17,9 +17,6 @@ class KeyRangeBuilder implements ToArrayInterface
 
     public function __construct() {}
     
-    /**
-     * @return array
-     */
     public function toArray()
     {        
         return $this->range;

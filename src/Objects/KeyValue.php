@@ -27,7 +27,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     /**
      * @var boolean
      */
-    private $_tombstone = false;    
+    private $_tombstone = false;
 
     /**
      * @param string $collection

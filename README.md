@@ -15,6 +15,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 Requirements:
 - PHP must be 5.4 or higher.
 - [Guzzle 5](http://guzzlephp.org/) as HTTP client.
+- [JMESPath](https://github.com/jmespath/jmespath.php).
 
 
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
@@ -617,6 +618,7 @@ $item->purge();
 ### Key/Value List:
 
 ```php
+// range parameter is optional, but when needed
 // use the Key Range operation builder
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 
@@ -863,13 +865,43 @@ $event->delete('20c14e8965d6cbb0'); // delete a specific ref
 ### Event List:
 
 ```php
+// range parameter is optional, but when needed
+// use the Time Range operation builder
+use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
+
+$range = (new TimeRangeBuilder())
+    ->from('1994-11-06T01:49:37-07:00')
+    ->to('2015-11-06T01:49:37-07:00');
+// use any supported timestamp format as described here:
+// https://orchestrate.io/docs/apiref#events-timestamps
+
+$range = (new TimeRangeBuilder())
+    ->from(784111777000, false) // excludes events that match the start time, if exists
+    ->to(784111777221, false); // excludes events that match the end time, if exists
+
+// if you don't need millisecond precision, confortably use the 'Date' methods
+$range = (new TimeRangeBuilder())
+    ->fromDate('yesterday')
+    ->toDate('now'));
+// any of the following formats are accepted:
+// (1) A valid format that strtotime understands;
+// (2) A integer, that will be considered as seconds since epoch;
+// (3) A DateTime object; 
+
+// you can also use the between method
+$range->betweenDate('2015-03-09', '2015-03-11');
+
+// keys can also be an Event object
+$range->from($event)->to($anotherEvent);
+
+
 // Approach 1 - Client
-$events = $client->listEvents('collection', 'key', 'type');
+$events = $client->listEvents('collection', 'key', 'type', 10, $range);
 
 // Approach 2 - Object
 $item = $collection->item('key');
 $events = $item->events('type'); // note the plural 'events'
-$events->get(100);
+$events->get(10, $range);
 
 
 // now get array of the results
