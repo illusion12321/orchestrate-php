@@ -4,6 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use JmesPath\Env as JmesPath;
 
 abstract class AbstractList extends AbstractResponse implements
     \ArrayAccess,
@@ -151,6 +152,11 @@ abstract class AbstractList extends AbstractResponse implements
     public function toJson($options = 0, $depth = 512)
     {
         return json_encode($this->toArray(), $options, $depth);
+    }
+
+    public function jmesPath($expression)
+    {
+        return JmesPath::search($expression, $this->getResults());
     }
 
     /**

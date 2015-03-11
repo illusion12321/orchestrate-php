@@ -1,10 +1,10 @@
 # CHANGELOG
 
-## HEAD
+## 0.10.0 - 2015-03-11
 - Implemented two-way relation put/delete.
 - Implemented KeyRangeBuilder (collection list) and TimeRangeBuilder (event list), replacing array range parameters.
 - Removed setApiVersion, still to early to know if we can just change it when a new version comes up.
-- Working on JMESPath integration
+- Added on JMESPath to objects (still looking for a clean way to add custom functions, like, our properties: getKey, getRef, etc..)
 
 ## 0.9.0 - 2015-03-09
 - Implemented Refs, Events and Graph directly within the KeyValue class, check out our README.
