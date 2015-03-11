@@ -33,7 +33,7 @@ interface ClientInterface
     /**
      * @param string $version 
      */
-    public function setApiVersion($version);
+    // public function setApiVersion($version);
 
     /**
      * @return \GuzzleHttp\ClientInterface

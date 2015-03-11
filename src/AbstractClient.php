@@ -15,12 +15,12 @@ abstract class AbstractClient implements ClientInterface
     /**
      * @var string
      */
-    private $_host;
+    private $_host = 'https://api.orchestrate.io';
     
     /**
      * @var string
      */
-    private $_apiVersion;
+    private $_apiVersion = 'v0';
 
     /**
      * @var string
@@ -40,13 +40,12 @@ abstract class AbstractClient implements ClientInterface
     /**
      * @param string $apiKey
      * @param string $host
-     * @param string $apiVersion
      */
-    public function __construct($apiKey = null, $host = null, $apiVersion = null)
+    public function __construct($apiKey = null, $host = null)
     {
         $this->setApiKey($apiKey)
-            ->setHost($host)
-            ->setApiVersion($apiVersion);
+            ->setHost($host);
+            // ->setApiVersion($apiVersion);
     }
 
     /**
@@ -89,9 +88,8 @@ abstract class AbstractClient implements ClientInterface
     public function setHost($host)
     {
         if ($host) {
-            $this->_host = trim($host, '/');
-        } else {
-            $this->_host = 'https://api.orchestrate.io';
+            $this->_host = rtrim($host, '/');
+            $this->_host = rtrim($host, '/v0');
         }
 
         return $this;
@@ -110,12 +108,12 @@ abstract class AbstractClient implements ClientInterface
      * 
      * @return AbstractClient self
      */
-    public function setApiVersion($version)
-    {
-        $this->_apiVersion = $version ? $version : 'v0';
+    // public function setApiVersion($version)
+    // {
+    //     $this->_apiVersion = $version ? $version : 'v0';
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return \GuzzleHttp\ClientInterface
