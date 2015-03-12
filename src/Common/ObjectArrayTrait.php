@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Common;
 
+use JmesPath\Env as JmesPath;
+
 /**
  * Implements \ArrayAccess, \Countable, ToJsonInterface and all of the
  * ObjectArray methods, except merge, which is left to each implementation.
@@ -115,5 +117,11 @@ trait ObjectArrayTrait
     public function toJson($options = 0, $depth = 512)
     {
         return json_encode($this->toArray(), $options, $depth);
+    }
+
+    public function jmesPath($expression)
+    {
+        $result = JmesPath::search($expression, $this);
+        return is_array($result) ? new ObjectArray($result) : $result;
     }
 }
