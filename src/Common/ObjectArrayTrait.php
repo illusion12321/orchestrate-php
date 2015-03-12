@@ -35,6 +35,10 @@ trait ObjectArrayTrait
 
     public function offsetSet($offset, $value)
     {
+        if ($offset === null) {
+            $offset = count($this);
+        }
+       
         $this->{(string) $offset} = $value;
     }
 
