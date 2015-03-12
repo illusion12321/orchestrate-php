@@ -201,31 +201,6 @@ $item = $collection->item('key'); // returns a KeyValue object
 
 if ($item->get()) {
 
-    print_r($item->getValue());
-    // andrefelipe\Orchestrate\Common\ObjectArray Object
-    // (
-    //     [title] => My Title
-    // )
-    // - the Value
-
-    print_r($item->toArray());
-    // Array
-    // (
-    //     [kind] => item
-    //     [path] => Array
-    //         (
-    //             [collection] => collection
-    //             [key] => key
-    //             [ref] => 3eb18d8d034a3530
-    //         )
-    //     [value] => Array
-    //         (
-    //             [title] => My Title
-    //         )
-    // )
-    // - array representation of the object
-
-
     echo $item->getRequestId();
     // ec96acd0-ac7b-11e4-8cf6-22000a0d84a1
     // - Orchestrate request id, X-ORCHESTRATE-REQ-ID
@@ -298,7 +273,7 @@ if ($item->get()) {
 
     // Array syntax
     echo $item['title'];
-    echo $item['another_prop']; // returns null if not set, but never error  
+    echo $item['another_prop']; // returns null if not set, but never error!
 
     // as intended you can change the Value, then put back to Orchestrate
     $item->file_url = 'http://myfile.jpg';
@@ -310,7 +285,11 @@ if ($item->get()) {
     }
 
     // at any time, get the Value out if needed
-    $value = $item->getValue();
+    print_r($item->getValue());
+    // andrefelipe\Orchestrate\Common\ObjectArray Object
+    // (
+    //     [title] => My Title
+    // )
 
     // toArray() returns an Array representation of the object
     print_r($item->toArray());
@@ -320,6 +299,7 @@ if ($item->get()) {
     //     [path] => Array
     //         (
     //             [collection] => collection
+    //             [kind] => item
     //             [key] => key
     //             [ref] => cbb48f9464612f20
     //         )
@@ -330,10 +310,26 @@ if ($item->get()) {
     // )
 
     // to Json too
-    $item->toJson(JSON_PRETTY_PRINT); 
+    $item->toJson(JSON_PRETTY_PRINT);
+    // {
+    //     "kind": "item",
+    //     "path": {
+    //         "collection": "collection",
+    //         "kind": "item",
+    //         "key": "key",
+    //         "ref": "cbb48f9464612f20"
+    //     },
+    //     "value": {
+    //         "title": "My Title"
+    //     }
+    // }
 
     // any property that is an array inherits the same functionality
-    $item->myprop->likes->toJson();
+    $item->myprop = ['likes' => []];
+    $item->myprop->likes[] = 'computers';
+    $item->myprop->likes[] = 'code';
+    $item->myprop->likes->toJson(); // ["computers","code"]
+    $item->myprop->toJson(); // {"likes":["computers","code"]}
 }
 
 
@@ -343,12 +339,10 @@ if ($item->get()) {
 if ($collection->search('collection', 'title:"The Title*"')) {
 
     // where you can iterate over the results directly!
-    foreach ($results as $item) {
+    foreach ($collection as $item) {
         
         // get its values
-        $item->getValue(); // the Value
-        $item->getScore(); // search score
-        $item->getDistance(); // populated if it was a Geo query
+        echo $item->title;
     }
 }
 
