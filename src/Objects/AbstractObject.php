@@ -47,7 +47,8 @@ abstract class AbstractObject extends AbstractResponse implements
 
     public function jmesPath($expression)
     {
-        return JmesPath::search($expression, $this);
+        $result = JmesPath::search($expression, $this);
+        return is_array($result) ? new ObjectArray($result) : $result;
     }
 
     public function getValue()

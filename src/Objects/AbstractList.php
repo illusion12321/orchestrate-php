@@ -156,7 +156,8 @@ abstract class AbstractList extends AbstractResponse implements
 
     public function jmesPath($expression)
     {
-        return JmesPath::search($expression, $this->getResults());
+        $result = JmesPath::search($expression, $this->getResults());
+        return is_array($result) ? new ObjectArray($result) : $result;
     }
 
     /**
