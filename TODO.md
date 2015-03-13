@@ -31,13 +31,9 @@
 
 - Add sort operations to List objects? basically just a map to PHP sort?
 
-- maybe implement a __toString() in the objects, return something like 'key/ref' or the effectiveUrl in the others?
-
 - method to move an item to another Collection or even Application?
 
 - add serialize/unserialize? Review the use case. (unserialize could use init, and serialize toArray)
-
-- Later, can a 'toView' method bring something new, to help template engines or views? (getValue suffices for most cases)
 
 - Event system?
 
