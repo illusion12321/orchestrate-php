@@ -433,7 +433,7 @@ $result = $item->extractValue('{name: name, thumb: thumbs[0]}');
 
 There is one major decision of our library, KeyValue and Event's values are stored in the object itself. So when you get a property with $item->myProp you are accessing it directly. 
 
-That won't help much memory wise because we storing data as dynamic vars (just like any Array). But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
+That won't differ much from an Array memory-wise, because we are storing data as dynamic vars. But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
 
 ```php
 // Member.php
