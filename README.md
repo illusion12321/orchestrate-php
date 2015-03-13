@@ -5,9 +5,8 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 
 - Choose which approach you prefer, client-like or object-like.
 - PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
-- Template engine friendly.
-- Create Models by extending our classes.
-- Easily change which class the list objects should use to create their children.
+- [Template engine friendly](#objectarray), with [JMESPath](#jmespath) support.
+- Create Models by extending our classes, and easily change child class.
 - toArray/toJson methods produces the same output format as Orchestrate's export.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
@@ -16,7 +15,6 @@ Requirements:
 - PHP must be 5.4 or higher.
 - [Guzzle 5](http://guzzlephp.org/) as HTTP client.
 - [JMESPath](https://github.com/jmespath/jmespath.php).
-
 
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
@@ -334,21 +332,183 @@ if ($item->get()) {
 
 
 
-// Of course, it gets interesting on a collection of items, like Search
+// it also gets interesting on a collection of items
 
 if ($collection->search('collection', 'title:"The Title*"')) {
 
     // where you can iterate over the results directly!
     foreach ($collection as $item) {
-        
-        // get its values
         echo $item->title;
     }
 }
 
 ```
 
-Tip: Send the objects directly to your prefered template engine!
+
+
+
+
+## ObjectArray
+
+ObjectArray turns a simple Array into an object, which can be accessed via object or array syntax plus a few other handy methods like toArray, toJson, merge and extract.
+
+Why is that important? Because it makes your data more accessible to you, and to your template engine.
+
+
+
+
+## Template Engine
+
+Easily send your data to your favorite template engine. Also find handy methods to quickly format the data.
+
+For example:
+```php
+
+// Phalcon / Volt 
+
+// gets 50 members, sorted by created_date
+$members->search('*', 'created_date:desc', null, 50);
+
+// in a controller you can send the entire object to the view:
+$this->view->members = $members;
+
+// then in volt:
+<ul class="members-list">
+    {%- for member in members %}
+        <li><a href="/members/{{ member.getKey() }}/">{{ member.name }}</a></li>
+    {%- endfor %}
+</ul>
+
+// you may be interested anyway in sending ONLY the data to the view,
+// without exposing the KeyValue objects and their API methods (get/put..)
+
+// so send each member's Value only
+$this->view->members = $members->getValues();
+
+// or extract and format the data, using a JMESPath expression
+$this->view->members = $members->extract('results[].{name: value.fullname, country: value.country, slug: path.key}');
+
+// if you don't need the 'path' use extractValues for a less verbose expression
+$this->view->members = $members->extractValues('[].{name: fullname, country: country}');
+
+
+// Same for single items
+$item = $members->item('key');
+$item->get();
+
+$this->view->member = $item;
+$this->view->member = $item->getValue();
+$this->view->member = $item->extractValue('{name: fullname, country: country}');
+
+// then in volt:
+<p>Member {{ member.name }}, {{ member.country }}</p>
+
+
+
+// Same approach works for any template engine
+```
+
+
+
+## JMESPath
+
+```php
+// 'extract' method uses the toArray() as data source
+$result = $collection->extract('[].{name: value.name, thumb: value.thumbs[0], slug: path.key)}');
+$result = $item->extract('{name: value.name, thumb: value.thumbs[0]}');
+
+// 'extractValue' uses getValue() as data source, so you can use less verbose expressions
+// with the drawback that you can't access the 'path' data (key/ref/etc...)
+$result = $collection->extractValues('[].{name: name, thumb: thumbs[0])}');
+$result = $item->extractValue('{name: name, thumb: thumbs[0]}');
+```
+
+**NOTE** When a JMESPath result is an array, it will be automatically wrapped into an ObjectArray object.
+
+
+
+
+
+## Models
+
+There is one major decision of our library, KeyValue and Event's values are stored in the object itself. So when you get a property with $item->myProp you are accessing it directly. 
+
+That won't help much memory wise because we storing data as dynamic vars (just like any Array). But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
+
+```php
+// Member.php
+namespace MyProject\Models;
+
+use \andrefelipe\Orchestrate\Objects\KeyValue;
+
+class Member extends KeyValue
+{
+    /**
+     * @var string
+     */
+    public $name;
+    
+    /**
+     * @var string
+     */
+    public $country_code;
+    
+    /**
+     * @var array
+     */
+    public $role;
+    
+    /**
+     * @var string
+     */
+    public $birth_date;
+    
+    /**
+     * @var array
+     */
+    public $thumbs;
+
+    // I am working in a clean way to support getters/setters like "setName/getName" 
+    // so you could use in you favor to add validation, etc
+}
+```
+
+```php
+// Members.php
+namespace MyProject\Models;
+
+use \andrefelipe\Orchestrate\Application;
+use \andrefelipe\Orchestrate\Objects\Collection;
+
+class Members extends Collection
+{
+    public function __construct(Application $client)
+    {
+        // set client
+        $this->setClient($client);
+
+        // set collection
+        $this->setCollection('members');
+        $this->setChildClass('\MyProject\Models\Member');
+    }
+}
+```
+
+If you are using the Client approach, you can change which classes to use with: 
+```php
+
+$client->setKeyValueClass($class);
+$client->setEventClass($class);
+
+// where $class is a fully qualified name of a class that implements, at minimum:
+// \andrefelipe\Orchestrate\Objects\KeyValueInterface for KeyValue
+// \andrefelipe\Orchestrate\Objects\EventInterface for Event
+```
+
+
+
+
+
 
 
 
