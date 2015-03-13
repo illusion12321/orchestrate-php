@@ -154,9 +154,16 @@ abstract class AbstractList extends AbstractResponse implements
         return json_encode($this->toArray(), $options, $depth);
     }
 
-    public function jmesPath($expression)
+    public function extract($expression)
     {
-        $result = JmesPath::search($expression, $this->getResults());
+        $result = JmesPath::search($expression, $this->toArray());
+        return is_array($result) ? new ObjectArray($result) : $result;
+    }
+
+    public function extractValues($expression)
+    {
+        // print_r($this->getValues()->toArray());exit;
+        $result = JmesPath::search($expression, $this->getValues()->toArray());
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 

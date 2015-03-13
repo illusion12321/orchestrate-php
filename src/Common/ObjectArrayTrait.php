@@ -119,9 +119,9 @@ trait ObjectArrayTrait
         return json_encode($this->toArray(), $options, $depth);
     }
 
-    public function jmesPath($expression)
+    public function extract($expression)
     {
-        $result = JmesPath::search($expression, $this);
+        $result = JmesPath::search($expression, $this->toArray());
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 }

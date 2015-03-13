@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.10.1 - 2015-03-13
+- Considered our usage of JMESPath erroneous, by sending our objects directly, it would render array functions useless. So now we only send arrays to JMESPath.
+- Changed 'jmesPath' method name to 'extract', it now uses the toArray() method of each object, and returns ObjectArrays when possible.
+- Introduces 'extractValue' (for KV) and 'extractValues' (for lists) methods, which uses getValue/getValues method, providing a less verbose JMESPath expression.
+- Every object has a extract method.
+- Fixed a bug when setting values with item[] = 'a' notation on ObjectArray.
+
 ## 0.10.0 - 2015-03-11
 - Implemented two-way relation put/delete.
 - Implemented KeyRangeBuilder (collection list) and TimeRangeBuilder (event list), replacing array range parameters.

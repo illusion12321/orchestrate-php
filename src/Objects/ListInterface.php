@@ -21,6 +21,13 @@ interface ListInterface
     public function mergeResults(ListInterface $list);
 
     /**
+     * Use a JMESPath expression to model the data you need.
+     * 
+     * @return mixed|ObjectArray
+     */
+    public function extractValue($expression);
+
+    /**
      * @return int
      */
     public function getTotalCount();

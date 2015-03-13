@@ -9,7 +9,7 @@ interface ValueInterface
     /**
      * Get item Value.
      * 
-     * @return array
+     * @return ObjectArray
      */
     public function getValue();
 
@@ -29,8 +29,11 @@ interface ValueInterface
 
     /**
      * Sets all public properties to null.
-     * 
-     * @param array $value
      */
     public function resetValue();
+
+    /**
+     * Use a JMESPath expression to model the data you need.
+     */
+    public function extractValue($expression);
 }

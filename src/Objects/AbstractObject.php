@@ -4,6 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ObjectArrayTrait;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use JmesPath\Env as JmesPath;
 
 abstract class AbstractObject extends AbstractResponse implements
     \ArrayAccess,
@@ -47,6 +48,12 @@ abstract class AbstractObject extends AbstractResponse implements
     public function getValue()
     {
         return (new ObjectArray())->merge($this);
+    }
+
+    public function extractValue($expression)
+    {
+        $result = JmesPath::search($expression, $this->getValue()->toArray());
+        return is_array($result) ? new ObjectArray($result) : $result;
     }
 
     public function setValue(array $values)

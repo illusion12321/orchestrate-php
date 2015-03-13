@@ -3,7 +3,7 @@ namespace andrefelipe\Orchestrate\Common;
 
 /**
  * 
- * Part of this code was appropriated from:
+ * This class was inspired by:
  * https://github.com/phalcon/cphalcon/blob/2.0.0/phalcon/config.zep
  * Which credit goes to Andres Gutierrez and Eduar Carvajal of the
  * wonderful Phalcon project.

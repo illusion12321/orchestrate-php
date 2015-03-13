@@ -1,12 +1,14 @@
 # TODO and IDEAS
 
+- maybe unify the merge method and create an "ObjectInterface"
+
+- Implement more common interfaces, and general organization of the classes / folders
+
 - update init/toArray of List objects with more data.. relation for instance
 
 - Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
 
 - Maybe implement __toString and __debugInfo for debug pourposes. But study the best pattern before release, so it doesn't change later
-
-- Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
 ---Do not use the object itself to build the query chain, it's confusing---
