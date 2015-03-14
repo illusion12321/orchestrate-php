@@ -25,7 +25,7 @@ interface ListInterface
      * 
      * @return mixed|ObjectArray
      */
-    public function extractValue($expression);
+    public function extractValues($expression);
 
     /**
      * @return int
