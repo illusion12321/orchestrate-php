@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.10.2 - 2015-03-13
+- Ooops, missed a letter 's' on a method.
+
 ## 0.10.1 - 2015-03-13
 - Considered our usage of JMESPath erroneous, by sending our objects directly, it would render array functions useless. So now we only send arrays to JMESPath.
 - Changed 'jmesPath' method name to 'extract', it now uses the toArray() method of each object, and returns ObjectArrays when possible.
