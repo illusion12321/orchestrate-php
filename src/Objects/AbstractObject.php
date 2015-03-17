@@ -39,7 +39,7 @@ ToJsonInterface
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || is_int($offset)) {
-            throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of ' . get_class($this) . ' objects.');
+            $this->noIndexedArrayException();
         }
 
         $this->{(string) $offset} = $value;
@@ -60,6 +60,10 @@ ToJsonInterface
     {
         if ($values) {
             foreach ($values as $key => $value) {
+
+                if (is_int($key)) {
+                    $this->noIndexedArrayException();
+                }
                 $this->{(string) $key} = $value;
             }
         }
@@ -77,7 +81,7 @@ ToJsonInterface
             foreach ($object as $key => $value) {
 
                 if (is_int($key)) {
-                    $this[(int) $key] = null; // will force throw the exception above
+                    $this->noIndexedArrayException();
                 }
 
                 $key = (string) $key;
@@ -105,5 +109,10 @@ ToJsonInterface
             $this->{$property->name} = null;
         }
         return $this;
+    }
+
+    private function noIndexedArrayException()
+    {
+        throw new \RuntimeException('Indexed arrays not allowed at the root of ' . get_class($this) . ' objects.');
     }
 }

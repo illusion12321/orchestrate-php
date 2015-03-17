@@ -2,6 +2,7 @@
 
 ## HEAD
 - Corrected how operations handles values internally on success. KeyValue GET no longer reset values before setting the new ones. Put, delete and purge, follows accordingly. Same for Event.
+- Improved protection on KeyValue setValue so indexed arrays at root level are avoided.
 
 ## 0.10.2 - 2015-03-13
 - Ooops, missed a letter 's' on a method.
