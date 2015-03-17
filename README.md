@@ -20,9 +20,9 @@ This client follows very closely [Orchestrate's](https://orchestrate.io) naming 
 
 *This library is still at 0.x version, there is a [lot of ideas](https://github.com/andrefelipe/orchestrate-php/blob/master/TODO.md) to look at*.
 
-[![Latest Stable Version](https://poser.pugx.org/andrefelipe/orchestrate-php/v/stable.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
-[![License](https://poser.pugx.org/andrefelipe/orchestrate-php/license.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
-
+[![Latest Stable Version](https://img.shields.io/packagist/v/andrefelipe/orchestrate-php.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
+[![Total Downloads](https://img.shields.io/packagist/dt/andrefelipe/orchestrate-php.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/andrefelipe/orchestrate-php/master/LICENSE.md)
 
 ## Instalation
 
