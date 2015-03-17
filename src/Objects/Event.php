@@ -149,11 +149,6 @@ class Event extends AbstractObject implements EventInterface
         $this->request('GET', $path);
 
         // set values
-        $this->resetValue();
-        $this->_ref = null;
-        $this->_reftime = null;
-        $this->_ordinalStr = null;
-
         if ($this->isSuccess()) {
             $this->init($this->getBody());
         }
@@ -187,10 +182,12 @@ class Event extends AbstractObject implements EventInterface
         // set values
         if ($this->isSuccess()) {
             $this->_reftime = null;
+            $this->_ordinalStr = null;
             $this->setRefFromETag();
             $this->setTimestampAndOrdinalFromLocation();
 
             if ($value !== null) {
+                $this->resetValue();
                 $this->setValue($newValue);
             }
         }
@@ -217,14 +214,13 @@ class Event extends AbstractObject implements EventInterface
 
         // set values
         if ($this->isSuccess()) {
-            $this->_timestamp = null;
-            $this->_ordinal = null;
-            $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;
             $this->setRefFromETag();
             $this->setTimestampAndOrdinalFromLocation();
+
             if ($value !== null) {
+                $this->resetValue();
                 $this->setValue($newValue);
             }
         }
@@ -253,11 +249,12 @@ class Event extends AbstractObject implements EventInterface
         // request
         $this->request('DELETE', $path, $options);
 
-        // null ref if success, as it will never exist again
+        // update values
         if ($this->isSuccess()) {
             $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;
+            $this->resetValue();
         }
 
         return $this->isSuccess();
@@ -276,9 +273,12 @@ class Event extends AbstractObject implements EventInterface
 
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
+            $this->_timestamp = null;
+            $this->_ordinal = null;
             $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;
+            $this->resetValue();
         }
 
         return $this->isSuccess();
@@ -307,10 +307,14 @@ class Event extends AbstractObject implements EventInterface
 
         if (isset($location[5])) {
             $this->setTimestamp($location[5]);
+        } else {
+            $this->_timestamp = null;
         }
 
         if (isset($location[6])) {
             $this->setOrdinal($location[6]);
+        } else {
+            $this->_ordinal = null;
         }
     }
 }

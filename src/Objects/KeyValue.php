@@ -147,9 +147,6 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         $this->request('GET', $path);
 
         // set values
-        $this->resetValue();
-        $this->_ref = null;
-
         if ($this->isSuccess()) {
             $this->setValue($this->getBody());
             $this->setRefFromETag();
@@ -189,6 +186,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
             $this->setRefFromETag();
 
             if ($value !== null) {
+                $this->resetValue();
                 $this->setValue($newValue);
             }
         }
@@ -205,10 +203,10 @@ class KeyValue extends AbstractObject implements KeyValueInterface
 
         // set values
         if ($this->isSuccess()) {
-            $this->_key = null;
-            $this->_ref = null;
             $this->setKeyRefFromLocation();
+
             if ($value !== null) {
+                $this->resetValue();
                 $this->setValue($newValue);
             }
         }
@@ -299,6 +297,14 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         // request
         $this->request('DELETE', $path, $options);
 
+        if ($this->isSuccess()) {
+            $this->_score = null;
+            $this->_distance = null;
+            $this->_reftime = null;
+            $this->_tombstone = true;
+            $this->resetValue();
+        }
+
         return $this->isSuccess();
     }
 
@@ -311,9 +317,14 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         // request
         $this->request('DELETE', $path, $options);
 
-        // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
+            $this->_key = null;
             $this->_ref = null;
+            $this->_score = null;
+            $this->_distance = null;
+            $this->_reftime = null;
+            $this->_tombstone = false;
+            $this->resetValue();
         }
 
         return $this->isSuccess();
@@ -361,6 +372,8 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     /**
      * Helper to set the Key and Ref from a Orchestrate Location HTTP header.
      * For example: Location: /v0/collection/key/refs/ad39c0f8f807bf40
+     *
+     * Should be used when the request was succesful.
      */
     private function setKeyRefFromLocation()
     {
@@ -371,8 +384,11 @@ class KeyValue extends AbstractObject implements KeyValueInterface
 
         $location = explode('/', trim($location, '/'));
         if (count($location) > 4) {
-            $this->setKey($location[2]);
-            $this->setRef($location[4]);
+            $this->_key = $location[2];
+            $this->_ref = $location[4];
+        } else {
+            $this->_key = null;
+            $this->_ref = null;
         }
     }
 }

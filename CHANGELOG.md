@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## HEAD
+- Corrected how operations handles values internally on success. KeyValue GET no longer reset values before setting the new ones. Put, delete and purge, follows accordingly. Same for Event.
+
 ## 0.10.2 - 2015-03-13
 - Ooops, missed a letter 's' on a method.
 
