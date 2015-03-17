@@ -1,12 +1,12 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
 
 class Relation extends AbstractResponse implements
-    ToJsonInterface,
-    ReusableObjectInterface
+ToJsonInterface,
+ReusableObjectInterface
 {
     use TimestampTrait;
 
@@ -14,7 +14,7 @@ class Relation extends AbstractResponse implements
      * @var string
      */
     private $_relation = null;
-    
+
     /**
      * @var KeyValueInterface
      */
@@ -36,12 +36,12 @@ class Relation extends AbstractResponse implements
         $this->setRelation($kind);
         $this->setDestination($destination);
     }
-    
+
     /**
      * Get the relation kind between the objects.
-     * 
+     *
      * @param boolean $required
-     * 
+     *
      * @return string
      */
     public function getRelation($required = false)
@@ -55,7 +55,7 @@ class Relation extends AbstractResponse implements
 
     /**
      * @param string $kind
-     * 
+     *
      * @return Relation self
      * @throws \InvalidArgumentException if 'kind' is array. Only one relation can be handled per time.
      */
@@ -72,7 +72,7 @@ class Relation extends AbstractResponse implements
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return KeyValueInterface
      */
     public function getSource($required = false)
@@ -82,7 +82,7 @@ class Relation extends AbstractResponse implements
 
     /**
      * @param KeyValueInterface $item
-     * 
+     *
      * @return Relation self
      */
     public function setSource(KeyValueInterface $item)
@@ -94,7 +94,7 @@ class Relation extends AbstractResponse implements
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return KeyValueInterface
      */
     public function getDestination($required = false)
@@ -104,7 +104,7 @@ class Relation extends AbstractResponse implements
 
     /**
      * @param KeyValueInterface $item
-     * 
+     *
      * @return Relation self
      */
     public function setDestination(KeyValueInterface $item)
@@ -113,7 +113,7 @@ class Relation extends AbstractResponse implements
 
         return $this;
     }
-    
+
     /**
      * @return array
      */
@@ -122,7 +122,7 @@ class Relation extends AbstractResponse implements
         $result = [
             'kind' => 'relationship',
             'relation' => $this->getRelation(),
-            'timestamp' => $this->getTimestamp(),            
+            'timestamp' => $this->getTimestamp(),
         ];
 
         $source = $this->getSource();
@@ -164,21 +164,20 @@ class Relation extends AbstractResponse implements
     {
         if (empty($data)) {
             return;
-        }            
+        }
 
         foreach ($data as $key => $value) {
-            
-            if ($key === 'source')
+
+            if ($key === 'source') {
                 $this->setSource((new KeyValue())->init($value));
-
-            elseif ($key === 'destination')
+            } elseif ($key === 'destination') {
                 $this->setDestination((new KeyValue())->init($value));
-
-            elseif ($key === 'relation')
+            } elseif ($key === 'relation') {
                 $this->setRelation($value);
-
-            elseif ($key === 'timestamp')
+            } elseif ($key === 'timestamp') {
                 $this->setTimestamp($value);
+            }
+
         }
 
         return $this;
@@ -187,16 +186,16 @@ class Relation extends AbstractResponse implements
     /**
      * Set the relation between the two objects.
      * Use the $bothWays parameter to set the relation both ways (2 API calls are made).
-     * 
-     * @param boolean $bothWays 
-     * 
+     *
+     * @param boolean $bothWays
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
     public function put($bothWays = false)
     {
         $this->request('PUT', $this->formRelationPath());
-        
+
         if ($bothWays && $this->isSuccess()) {
             $this->request('PUT', $this->formRelationPath(true));
         }
@@ -204,10 +203,10 @@ class Relation extends AbstractResponse implements
         return $this->isSuccess();
     }
 
-    /** 
+    /**
      * Remove the relation between the two objects.
      * Use the $bothWays parameter to remove the relation both ways (2 API calls are made).
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
@@ -216,17 +215,17 @@ class Relation extends AbstractResponse implements
         $options = ['query' => ['purge' => 'true']];
 
         $this->request('DELETE', $this->formRelationPath(), $options);
-        
+
         if ($bothWays && $this->isSuccess()) {
             $this->request('DELETE', $this->formRelationPath(true), $options);
         }
-        
+
         return $this->isSuccess();
     }
 
     /**
      * Helper to form the relation URL path
-     * 
+     *
      * @return string
      */
     private function formRelationPath($reverse = false)
@@ -240,9 +239,9 @@ class Relation extends AbstractResponse implements
             $destination = $item;
         }
 
-        return $source->getCollection(true).'/'.$source->getKey(true)
-            .'/relation/'.$this->getRelation(true).'/'
-            .$destination->getCollection(true).'/'.$destination->getKey(true);
+        return $source->getCollection(true) . '/' . $source->getKey(true)
+        . '/relation/' . $this->getRelation(true) . '/'
+        . $destination->getCollection(true) . '/' . $destination->getKey(true);
     }
 
     /**

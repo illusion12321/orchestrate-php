@@ -2,7 +2,7 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 /**
- * 
+ *
  */
 interface ListInterface
 {
@@ -15,14 +15,14 @@ interface ListInterface
 
     /**
      * Recursively merge one list results into another.
-     * 
+     *
      * @param ListInterface $list
      */
     public function mergeResults(ListInterface $list);
 
     /**
      * Use a JMESPath expression to model the data you need.
-     * 
+     *
      * @return mixed|ObjectArray
      */
     public function extractValues($expression);

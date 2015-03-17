@@ -3,7 +3,7 @@ namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait that implements the Key methods.
- * 
+ *
  * @internal
  */
 trait KeyTrait
@@ -12,15 +12,15 @@ trait KeyTrait
      * @var string
      */
     private $_key = null;
-    
+
     /**
-     * @param boolean $required 
-     * 
+     * @param boolean $required
+     *
      * @return string
      */
     public function getKey($required = false)
     {
-        if ($required){
+        if ($required) {
             $this->noKeyException();
         }
 
@@ -29,7 +29,7 @@ trait KeyTrait
 
     /**
      * @param string $key
-     * 
+     *
      * @return self
      */
     public function setKey($key)
@@ -47,5 +47,5 @@ trait KeyTrait
         if (!$this->_key) {
             throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
         }
-    }    
+    }
 }

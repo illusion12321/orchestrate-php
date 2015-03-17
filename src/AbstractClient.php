@@ -1,13 +1,13 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use GuzzleHttp\Message\Response;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Message\Response;
 
 /**
- * Class that implements the ClientInterface methods and the children classes. 
- * 
+ * Class that implements the ClientInterface methods and the children classes.
+ *
  * @link https://orchestrate.io/docs/apiref
  */
 abstract class AbstractClient implements ClientInterface
@@ -16,7 +16,7 @@ abstract class AbstractClient implements ClientInterface
      * @var string
      */
     private $_host = 'https://api.orchestrate.io';
-    
+
     /**
      * @var string
      */
@@ -36,7 +36,7 @@ abstract class AbstractClient implements ClientInterface
      * @var string
      */
     // private static $_minimumObjectInterface = '\andrefelipe\Orchestrate\Objects\ReusableObjectInterface';
-    
+
     /**
      * @param string $apiKey
      * @param string $host
@@ -44,8 +44,8 @@ abstract class AbstractClient implements ClientInterface
     public function __construct($apiKey = null, $host = null)
     {
         $this->setApiKey($apiKey)
-            ->setHost($host);
-            // ->setApiVersion($apiVersion);
+             ->setHost($host);
+        // ->setApiVersion($apiVersion);
     }
 
     /**
@@ -58,7 +58,7 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * @param string
-     * 
+     *
      * @return AbstractClient self
      */
     public function setApiKey($key)
@@ -81,8 +81,8 @@ abstract class AbstractClient implements ClientInterface
     }
 
     /**
-     * @param string $host 
-     * 
+     * @param string $host
+     *
      * @return AbstractClient self
      */
     public function setHost($host)
@@ -104,8 +104,8 @@ abstract class AbstractClient implements ClientInterface
     }
 
     /**
-     * @param string $version 
-     * 
+     * @param string $version
+     *
      * @return AbstractClient self
      */
     // public function setApiVersion($version)
@@ -120,18 +120,16 @@ abstract class AbstractClient implements ClientInterface
      */
     public function getHttpClient()
     {
-        if (!$this->_client)
-        {
+        if (!$this->_client) {
             // create the default http client
-            $this->_client = new \GuzzleHttp\Client(
-            [
-                'base_url' => $this->getHost().'/'.$this->getApiVersion().'/',
+            $this->_client = new \GuzzleHttp\Client([
+                'base_url' => $this->getHost() . '/' . $this->getApiVersion() . '/',
                 'defaults' => [
                     'headers' => [
                         'Content-Type' => 'application/json',
                     ],
-                    'auth' => [ $this->getApiKey(), null ],
-                ]
+                    'auth' => [$this->getApiKey(), null],
+                ],
             ]);
         }
 
@@ -140,7 +138,7 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * @param \GuzzleHttp\ClientInterface $client
-     * 
+     *
      * @return AbstractClient self
      */
     public function setHttpClient(\GuzzleHttp\ClientInterface $client)
@@ -205,11 +203,11 @@ abstract class AbstractClient implements ClientInterface
 
         try {
             $response = $this->getHttpClient()->send($request);
-        
+
         } catch (ClientException $e) {
             // get Orchestrate error message
             $response = $e->getResponse();
-        
+
         } catch (ConnectException $e) {
 
             // assemble the best possible error response
@@ -218,10 +216,10 @@ abstract class AbstractClient implements ClientInterface
             } else {
                 $response = new Response(
                     0,
-                    ['Date' => gmdate('D, d M Y H:i:s').' GMT'],
+                    ['Date' => gmdate('D, d M Y H:i:s') . ' GMT'],
                     null,
-                    ['reason_phrase' => $e->getMessage()
-                ]);
+                    ['reason_phrase' => $e->getMessage()]
+                );
             }
 
             if ($request = $e->getRequest()) {
@@ -231,10 +229,10 @@ abstract class AbstractClient implements ClientInterface
         } catch (\Exception $e) {
             $response = new Response(
                 500,
-                ['Date' => gmdate('D, d M Y H:i:s').' GMT'],
+                ['Date' => gmdate('D, d M Y H:i:s') . ' GMT'],
                 null,
-                ['reason_phrase' => 'Probably a Request Timeout'
-            ]);
+                ['reason_phrase' => 'Probably a Request Timeout']
+            );
         }
 
         return $response;

@@ -2,10 +2,9 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
-use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
- * 
+ *
  * @link https://orchestrate.io/docs/apiref
  */
 class Collection extends AbstractList
@@ -18,14 +17,14 @@ class Collection extends AbstractList
     /**
      * @param string $key
      * @param string $ref
-     * 
+     *
      * @return KeyValueInterface Construct a collection item instance. A KeyValue or a custom class you set with setChildClass().
      */
     public function item($key = null, $ref = null)
     {
         return $this->getChildClass()
-            ->newInstance($this->getCollection(true), $key, $ref)
-            ->setClient($this->getClient(true));
+                    ->newInstance($this->getCollection(true), $key, $ref)
+                    ->setClient($this->getClient(true));
     }
 
     /**
@@ -46,7 +45,7 @@ class Collection extends AbstractList
         if (!empty($this->_aggregates)) {
             $result['aggregates'] = $this->_aggregates;
         }
-        
+
         return $result;
     }
 
@@ -59,13 +58,13 @@ class Collection extends AbstractList
     /**
      * Gets a lexicographically ordered list of items contained in a collection,
      * specified by the limit and key range parameters.
-     * 
+     *
      * If there are more results available, the pagination URL can be checked with
      * getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
-     * 
+     *
      * @param int $limit The limit of items to return. Defaults to 10 and max to 100.
      * @param KeyRangeBuilder $range
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
@@ -77,17 +76,17 @@ class Collection extends AbstractList
 
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
-        
+
         return $this->isSuccess();
     }
 
     /**
      * Deletes a collection. Warning this will permanently erase all data within
      * this collection and cannot be reversed!
-     * 
+     *
      * To prevent accidental deletions, provide the current collection name as
      * the parameter. The collection will only be deleted if both names match.
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#collections-delete
      */
@@ -104,7 +103,7 @@ class Collection extends AbstractList
             return $response->getStatusCode() === 204;
         }
 
-        return false;        
+        return false;
     }
 
     /**
@@ -113,7 +112,7 @@ class Collection extends AbstractList
      * @param string|array $aggregate
      * @param int $limit
      * @param int $offset
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#search-collection
      */
@@ -122,7 +121,7 @@ class Collection extends AbstractList
         // define request options
         $parameters = [
             'query' => $query,
-            'limit'=> $limit,
+            'limit' => $limit,
         ];
 
         if (!empty($sort)) {
@@ -136,7 +135,7 @@ class Collection extends AbstractList
         if ($offset) {
             $parameters['offset'] = $offset;
         }
-        
+
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
 

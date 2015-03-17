@@ -1,21 +1,21 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use JmesPath\Env as JmesPath;
 
 abstract class AbstractList extends AbstractResponse implements
-    \ArrayAccess,
-    \IteratorAggregate,
-    \Countable,
-    ListInterface,
-    ToJsonInterface,
-    ReusableObjectInterface
+\ArrayAccess,
+\IteratorAggregate,
+\Countable,
+ListInterface,
+ToJsonInterface,
+ReusableObjectInterface
 {
     use CollectionTrait;
-    
+
     /**
      * @var string
      */
@@ -106,17 +106,14 @@ abstract class AbstractList extends AbstractResponse implements
         }
 
         foreach ($data as $key => $value) {
-            
-            if ($key === 'total_count')
+
+            if ($key === 'total_count') {
                 $this->_totalCount = (int) $value;
-
-            elseif ($key === 'prev')
+            } elseif ($key === 'prev') {
                 $this->_prevUrl = $value;
-
-            elseif ($key === 'next')
+            } elseif ($key === 'next') {
                 $this->_nextUrl = $value;
-
-            elseif ($key === 'results') {
+            } elseif ($key === 'results') {
                 $this->_results = new ObjectArray(array_map(
                     [$this, 'createChildrenClass'],
                     $value
@@ -250,13 +247,13 @@ abstract class AbstractList extends AbstractResponse implements
         parent::request($method, $url, $options);
 
         if ($this->isSuccess()) {
-            
+
             // reset local properties
             $this->_results = null;
             $this->_totalCount = null;
             $this->_nextUrl = '';
             $this->_prevUrl = '';
-            
+
             // set properties
             $body = $this->getBody();
 
@@ -290,7 +287,7 @@ abstract class AbstractList extends AbstractResponse implements
         if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($url, '/'.$this->getClient(true)->getApiVersion().'/');
+            $url = ltrim($url, '/' . $this->getClient(true)->getApiVersion() . '/');
 
             // request
             $this->request('GET', $url);
@@ -299,10 +296,10 @@ abstract class AbstractList extends AbstractResponse implements
 
         return false;
     }
-    
+
     /**
      * Get the ReflectionClass that is being used to instantiate this list's children.
-     * 
+     *
      * @return \ReflectionClass
      */
     public function getChildClass()
@@ -311,7 +308,7 @@ abstract class AbstractList extends AbstractResponse implements
             $this->_childClass = new \ReflectionClass(static::$defaultChildClass);
 
             if (!$this->_childClass->implementsInterface(static::$minimumChildInterface)) {
-                throw new \RuntimeException('Child classes must implement '.static::$minimumChildInterface);
+                throw new \RuntimeException('Child classes must implement ' . static::$minimumChildInterface);
             }
         }
         return $this->_childClass;
@@ -319,9 +316,9 @@ abstract class AbstractList extends AbstractResponse implements
 
     /**
      * Set which class should be used to instantiate this list's children.
-     * 
+     *
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     * 
+     *
      * @return AbstractList self
      */
     public function setChildClass($class)
@@ -333,16 +330,16 @@ abstract class AbstractList extends AbstractResponse implements
         }
 
         if (!$this->_childClass->implementsInterface(static::$minimumChildInterface)) {
-            throw new \RuntimeException('Child classes must implement '.static::$minimumChildInterface);
+            throw new \RuntimeException('Child classes must implement ' . static::$minimumChildInterface);
         }
 
         return $this;
     }
-    
+
     protected function createChildrenClass(array $values)
     {
         return $this->getChildClass()->newInstance()
-            ->setClient($this->getClient(true))
-            ->init($values);
+                    ->setClient($this->getClient(true))
+                    ->init($values);
     }
 }

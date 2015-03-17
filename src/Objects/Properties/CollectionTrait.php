@@ -3,7 +3,7 @@ namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait that implements the Collection methods.
- * 
+ *
  * @internal
  */
 trait CollectionTrait
@@ -14,8 +14,8 @@ trait CollectionTrait
     private $_collection = null;
 
     /**
-     * @param boolean $required 
-     * 
+     * @param boolean $required
+     *
      * @return string
      */
     public function getCollection($required = false)
@@ -29,7 +29,7 @@ trait CollectionTrait
 
     /**
      * @param string $collection
-     * 
+     *
      * @return self
      */
     public function setCollection($collection)

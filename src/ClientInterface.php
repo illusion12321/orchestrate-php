@@ -2,8 +2,6 @@
 namespace andrefelipe\Orchestrate;
 
 use GuzzleHttp\Message\Response;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
 
 /**
  * Interface implement the basis HTTP client methods
@@ -11,7 +9,7 @@ use GuzzleHttp\Exception\ConnectException;
 interface ClientInterface
 {
     /**
-     * @param string $key 
+     * @param string $key
      */
     public function setApiKey($key);
 
@@ -21,7 +19,7 @@ interface ClientInterface
     public function getHost();
 
     /**
-     * @param string $host 
+     * @param string $host
      */
     public function setHost($host);
 
@@ -31,7 +29,7 @@ interface ClientInterface
     public function getApiVersion();
 
     /**
-     * @param string $version 
+     * @param string $version
      */
     // public function setApiVersion($version);
 

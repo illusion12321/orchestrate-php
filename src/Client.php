@@ -2,18 +2,18 @@
 namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Objects\Collection;
-use andrefelipe\Orchestrate\Objects\KeyValue;
-use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
-use andrefelipe\Orchestrate\Objects\Relations;
+use andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Relation;
+use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
-use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
+use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
 /**
- * 
+ *
  * @link https://orchestrate.io/docs/apiref
  */
 class Client extends AbstractClient
@@ -47,10 +47,10 @@ class Client extends AbstractClient
      * @var \ReflectionClass
      */
     private $_eventClass;
-    
+
     /**
      * Get the ReflectionClass that is being used to instantiate this client's KeyValue instances.
-     * 
+     *
      * @return \ReflectionClass
      */
     public function getKeyValueClass()
@@ -59,7 +59,7 @@ class Client extends AbstractClient
             $this->_keyValueClass = new \ReflectionClass(self::$defaultKeyValueClass);
 
             if (!$this->_keyValueClass->implementsInterface(self::$minimumKeyValueInterface)) {
-                throw new \RuntimeException('Child classes must implement '.self::$minimumKeyValueInterface);
+                throw new \RuntimeException('Child classes must implement ' . self::$minimumKeyValueInterface);
             }
         }
         return $this->_keyValueClass;
@@ -67,9 +67,9 @@ class Client extends AbstractClient
 
     /**
      * Set which class should be used to instantiate this client's KeyValue instances.
-     * 
+     *
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     * 
+     *
      * @return Client self
      */
     public function setKeyValueClass($class)
@@ -79,9 +79,9 @@ class Client extends AbstractClient
         } else {
             $this->_keyValueClass = new \ReflectionClass($class);
         }
-        
+
         if (!$this->_keyValueClass->implementsInterface(self::$minimumKeyValueInterface)) {
-            throw new \RuntimeException('Child classes must implement '.self::$minimumKeyValueInterface);
+            throw new \RuntimeException('Child classes must implement ' . self::$minimumKeyValueInterface);
         }
 
         return $this;
@@ -89,7 +89,7 @@ class Client extends AbstractClient
 
     /**
      * Get the ReflectionClass that is being used to instantiate this list's events instances.
-     * 
+     *
      * @return \ReflectionClass
      */
     public function getEventClass()
@@ -98,7 +98,7 @@ class Client extends AbstractClient
             $this->_eventClass = new \ReflectionClass(self::$defaultEventClass);
 
             if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
-                throw new \RuntimeException('Child classes must implement '.self::$minimumEventInterface);
+                throw new \RuntimeException('Child classes must implement ' . self::$minimumEventInterface);
             }
         }
         return $this->_eventClass;
@@ -106,9 +106,9 @@ class Client extends AbstractClient
 
     /**
      * Set which class should be used to instantiate this list's events instances.
-     * 
+     *
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     * 
+     *
      * @return Client self
      */
     public function setEventClass($class)
@@ -118,22 +118,20 @@ class Client extends AbstractClient
         } else {
             $this->_eventClass = new \ReflectionClass($class);
         }
-       
+
         if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
-            throw new \RuntimeException('Child classes must implement '.self::$minimumEventInterface);
+            throw new \RuntimeException('Child classes must implement ' . self::$minimumEventInterface);
         }
 
         return $this;
     }
-
-
 
     // Collection
 
     /**
      * Deletes a collection. Warning this will permanently erase all data within
      * this collection and cannot be reversed!
-     * 
+     *
      * @return boolean
      * @link https://orchestrate.io/docs/apiref#collections-delete
      */
@@ -152,7 +150,7 @@ class Client extends AbstractClient
      * @param string $collection
      * @param int $limit
      * @param KeyRangeBuilder $range
-     * 
+     *
      * @return Collection
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
@@ -173,7 +171,7 @@ class Client extends AbstractClient
      * @param string|array $aggregate
      * @param int $limit
      * @param int $offset
-     * 
+     *
      * @return Collection
      * @link https://orchestrate.io/docs/apiref#search-collection
      */
@@ -182,11 +180,10 @@ class Client extends AbstractClient
         $list = (new Collection($collection))
             ->setClient($this)
             ->setChildClass($this->getKeyValueClass());
-        
+
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
     }
-
 
     // Key/Value
 
@@ -194,7 +191,7 @@ class Client extends AbstractClient
      * @param string $collection
      * @param string $key
      * @param string $ref
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
@@ -204,14 +201,14 @@ class Client extends AbstractClient
 
         $item->get($ref);
         return $item;
-    }    
+    }
 
     /**
      * @param string $collection
      * @param string $key
      * @param array $value
      * @param string $ref
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
@@ -229,7 +226,7 @@ class Client extends AbstractClient
      * @param PatchBuilder $operations
      * @param string $ref
      * @param boolean $reload
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
@@ -247,7 +244,7 @@ class Client extends AbstractClient
      * @param array $value
      * @param string $ref
      * @param boolean $reload
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
@@ -262,7 +259,7 @@ class Client extends AbstractClient
     /**
      * @param string $collection
      * @param array $value
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
@@ -278,7 +275,7 @@ class Client extends AbstractClient
      * @param string $collection
      * @param string $key
      * @param string $ref
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
@@ -293,7 +290,7 @@ class Client extends AbstractClient
     /**
      * @param string $collection
      * @param string $key
-     * 
+     *
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
@@ -304,7 +301,6 @@ class Client extends AbstractClient
         $item->purge();
         return $item;
     }
-    
 
     // Refs
 
@@ -314,7 +310,7 @@ class Client extends AbstractClient
      * @param int $limit
      * @param int $offset
      * @param boolean $values
-     * 
+     *
      * @return Refs
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
@@ -328,7 +324,6 @@ class Client extends AbstractClient
         return $list;
     }
 
-
     // Events
 
     /**
@@ -337,7 +332,7 @@ class Client extends AbstractClient
      * @param string $type
      * @param int $timestamp
      * @param int $ordinal
-     * 
+     *
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-get
      */
@@ -357,7 +352,7 @@ class Client extends AbstractClient
      * @param int $ordinal
      * @param array $value
      * @param string $ref
-     * 
+     *
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-put
      */
@@ -375,7 +370,7 @@ class Client extends AbstractClient
      * @param string $type
      * @param array $value
      * @param int $timestamp
-     * 
+     *
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-post
      */
@@ -394,7 +389,7 @@ class Client extends AbstractClient
      * @param int $timestamp
      * @param int $ordinal
      * @param string $ref
-     * 
+     *
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
@@ -406,13 +401,13 @@ class Client extends AbstractClient
         return $item;
     }
 
-   /**
+    /**
      * @param string $collection
      * @param string $key
      * @param string $type
      * @param int $timestamp
      * @param int $ordinal
-     * 
+     *
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
@@ -430,7 +425,7 @@ class Client extends AbstractClient
      * @param string $type
      * @param int $limit
      * @param TimeRangeBuilder $range
-     * 
+     *
      * @return Events
      * @link https://orchestrate.io/docs/apiref#events-list
      */
@@ -444,7 +439,6 @@ class Client extends AbstractClient
         return $list;
     }
 
-
     // Graph
 
     /**
@@ -454,7 +448,7 @@ class Client extends AbstractClient
      * @param string $toCollection
      * @param string $toKey
      * @param boolean $bothWays
-     * 
+     *
      * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
@@ -475,7 +469,7 @@ class Client extends AbstractClient
      * @param string $toCollection
      * @param string $toKey
      * @param boolean $bothWays
-     * 
+     *
      * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
@@ -495,7 +489,7 @@ class Client extends AbstractClient
      * @param string|array $kind
      * @param int $limit
      * @param int $offset
-     * 
+     *
      * @return Relations
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
@@ -511,19 +505,19 @@ class Client extends AbstractClient
 
     /**
      * Helper to create KeyValue instances.
-     * 
+     *
      * @return KeyValueInterface
      */
     private function newKeyValue($collection = null, $key = null, $ref = null)
     {
         return $this->getKeyValueClass()
-            ->newInstance($collection, $key, $ref)
-            ->setClient($this);
+                    ->newInstance($collection, $key, $ref)
+                    ->setClient($this);
     }
 
     /**
      * Helper to create Event instances.
-     * 
+     *
      * @return EventInterface
      */
     private function newEvent(
@@ -532,15 +526,14 @@ class Client extends AbstractClient
         $type = null,
         $timestamp = null,
         $ordinal = null
-    )
-    {
+    ) {
         return $this->getEventClass()
-            ->newInstance(
-                $collection,
-                $key,
-                $type,
-                $timestamp,
-                $ordinal
-            )->setClient($this);
+                    ->newInstance(
+                        $collection,
+                        $key,
+                        $type,
+                        $timestamp,
+                        $ordinal
+                    )->setClient($this);
     }
 }

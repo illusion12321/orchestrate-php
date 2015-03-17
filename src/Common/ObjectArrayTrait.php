@@ -6,7 +6,7 @@ use JmesPath\Env as JmesPath;
 /**
  * Implements \ArrayAccess, \Countable, ToJsonInterface and all of the
  * ObjectArray methods, except merge, which is left to each implementation.
- * 
+ *
  * @internal
  */
 trait ObjectArrayTrait
@@ -40,7 +40,7 @@ trait ObjectArrayTrait
         if ($offset === null) {
             $offset = count($this);
         }
-       
+
         $this->{(string) $offset} = $value;
     }
 
@@ -80,7 +80,7 @@ trait ObjectArrayTrait
                 $key = $index++;
             }
             $key = (string) $key;
-    
+
             if (isset($instance->{$key}) && is_object($value) && is_object($instance->{$key})) {
                 $this->_mergeObject($value, $instance->{$key});
             } else {
@@ -95,7 +95,7 @@ trait ObjectArrayTrait
         $result = [];
 
         foreach (get_object_vars($this) as $key => $value) {
-            
+
             if ($value === null) {
                 continue;
             }

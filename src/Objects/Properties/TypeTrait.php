@@ -3,7 +3,7 @@ namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait that implements the Type methods.
- * 
+ *
  * @internal
  */
 trait TypeTrait
@@ -15,7 +15,7 @@ trait TypeTrait
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return string
      */
     public function getType($required = false)
@@ -29,7 +29,7 @@ trait TypeTrait
 
     /**
      * @param string $type
-     * 
+     *
      * @return self
      */
     public function setType($type)
@@ -47,5 +47,5 @@ trait TypeTrait
         if (!$this->_type) {
             throw new \BadMethodCallException('There is no type set yet. Please do so through setType() method.');
         }
-    }    
+    }
 }

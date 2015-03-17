@@ -8,36 +8,36 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
  * Define the KeyValue minimum required interface.
  */
 interface KeyValueInterface extends
-    \ArrayAccess,
-    \Countable,
-    ValueInterface,
-    ToJsonInterface,
-    ReusableObjectInterface
+\ArrayAccess,
+\Countable,
+ValueInterface,
+ToJsonInterface,
+ReusableObjectInterface
 {
     /**
-     * @param boolean $required 
-     * 
+     * @param boolean $required
+     *
      * @return string
      */
     public function getCollection($required = false);
 
     /**
      * @param string $collection
-     * 
+     *
      * @return self
      */
     public function setCollection($collection);
 
     /**
-     * @param boolean $required 
-     * 
+     * @param boolean $required
+     *
      * @return string
      */
     public function getKey($required = false);
 
     /**
      * @param string $key
-     * 
+     *
      * @return self
      */
     public function setKey($key);
@@ -49,7 +49,7 @@ interface KeyValueInterface extends
 
     /**
      * @param string $ref
-     * 
+     *
      * @return self
      */
     public function setRef($ref);
@@ -76,16 +76,16 @@ interface KeyValueInterface extends
 
     /**
      * @param string $ref
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-get
      */
     public function get($ref = null);
-    
+
     /**
      * @param array $value
      * @param string $ref
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
@@ -93,7 +93,7 @@ interface KeyValueInterface extends
 
     /**
      * @param array $value
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-post
      */
@@ -103,7 +103,7 @@ interface KeyValueInterface extends
      * @param PatchBuilder $operations
      * @param string $ref
      * @param boolean $reload
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
@@ -113,7 +113,7 @@ interface KeyValueInterface extends
      * @param array $value
      * @param string $ref
      * @param boolean $reload
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
@@ -121,7 +121,7 @@ interface KeyValueInterface extends
 
     /**
      * @param string $ref
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */

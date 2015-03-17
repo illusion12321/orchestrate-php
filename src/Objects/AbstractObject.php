@@ -7,10 +7,10 @@ use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use JmesPath\Env as JmesPath;
 
 abstract class AbstractObject extends AbstractResponse implements
-    \ArrayAccess,
-    \Countable,
-    ValueInterface,
-    ToJsonInterface
+\ArrayAccess,
+\Countable,
+ValueInterface,
+ToJsonInterface
 {
     use ObjectArrayTrait;
 
@@ -27,7 +27,7 @@ abstract class AbstractObject extends AbstractResponse implements
         // $possibleSetter = 'set'.ucfirst($key);
         // if (method_exists($this, $possibleSetter)) {
         //     $this->{$possibleSetter}($value);
-        // } else 
+        // } else
 
         if (is_array($value)) {
             $this->{$key} = new ObjectArray($value);
@@ -39,7 +39,7 @@ abstract class AbstractObject extends AbstractResponse implements
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || is_int($offset)) {
-           throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of '.get_class($this).' objects.');
+            throw new \RuntimeException('Sorry, indexed arrays not allowed at the root of ' . get_class($this) . ' objects.');
         }
 
         $this->{(string) $offset} = $value;
@@ -69,7 +69,7 @@ abstract class AbstractObject extends AbstractResponse implements
     public function mergeValue($object)
     {
         if (is_object($object)) {
-            
+
             $this->_mergeObject($object);
 
         } else if (is_array($object)) {
@@ -79,7 +79,7 @@ abstract class AbstractObject extends AbstractResponse implements
                 if (is_int($key)) {
                     $this[(int) $key] = null; // will force throw the exception above
                 }
-                
+
                 $key = (string) $key;
                 if (is_array($value)) {
                     $value = new ObjectArray($value);
@@ -96,14 +96,14 @@ abstract class AbstractObject extends AbstractResponse implements
     }
 
     public function resetValue()
-    {        
+    {
         $properties = (new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC);
         // strictly gets the public properties, otherwise we would be getting
         // all properties accessible on this scope (i.e. protected and privates)
 
         foreach ($properties as $property) {
             $this->{$property->name} = null;
-        }        
+        }
         return $this;
     }
 }

@@ -1,11 +1,11 @@
 <?php
 namespace andrefelipe\Orchestrate\Query;
 
-use andrefelipe\Orchestrate\Objects\EventInterface;
 use andrefelipe\Orchestrate\Common\ToArrayInterface;
+use andrefelipe\Orchestrate\Objects\EventInterface;
 
 /**
- * 
+ *
  * @link https://orchestrate.io/docs/apiref#events-list
  */
 class TimeRangeBuilder implements ToArrayInterface
@@ -15,10 +15,13 @@ class TimeRangeBuilder implements ToArrayInterface
      */
     protected $range = [];
 
-    public function __construct() {}
-    
+    public function __construct()
+    {
+
+    }
+
     public function toArray()
-    {        
+    {
         return $this->range;
     }
 
@@ -26,15 +29,15 @@ class TimeRangeBuilder implements ToArrayInterface
      * The start of the time range to paginate from.
      * Include or exclude events of the specified start time, if it exists,
      * using the 'inclusive' parameter.
-     * 
+     *
      * Note that events are queried in reverse chronological order
      * (from newest to oldest)
-     * 
+     *
      * @param string|EventInterface $event The start 'event' to paginate from. Value must be either:
      *                                  (1) A correctly formatted timestamp per Orchestrate specification;
      *                                  (2) An Event object;
      * @param boolean $inclusive Include event of the specified time, it it exists. Defaults to true.
-     * 
+     *
      * @return TimeRangeBuilder self
      * @link https://orchestrate.io/docs/apiref#events-timestamps
      */
@@ -46,10 +49,10 @@ class TimeRangeBuilder implements ToArrayInterface
 
         // set
         if ($event instanceof EventInterface) {
-            $event = $event->getTimestamp(true).($event->getOrdinal() ? '/'.$event->getOrdinal() : '');
+            $event = $event->getTimestamp(true) . ($event->getOrdinal() ? '/' . $event->getOrdinal() : '');
         }
 
-        $this->range[($inclusive ? 'start' : 'after').'Event'] = $event;
+        $this->range[($inclusive ? 'start' : 'after') . 'Event'] = $event;
 
         return $this;
     }
@@ -58,16 +61,16 @@ class TimeRangeBuilder implements ToArrayInterface
      * The start of the time range to paginate from.
      * Include or exclude events of the specified start time, if it exists,
      * using the 'inclusive' parameter.
-     * 
+     *
      * Note that events are queried in reverse chronological order
      * (from newest to oldest)
-     * 
+     *
      * @param string|int|DateTime $date The start date to paginate from. Value must be either:
      *                                  (1) A valid format that strtotime understands;
      *                                  (2) A integer, that will be considered as seconds since epoch;
-     *                                  (3) A DateTime object; 
+     *                                  (3) A DateTime object;
      * @param boolean $inclusive Include event of specified time, it it exists. Defaults to true.
-     * 
+     *
      * @return TimeRangeBuilder self
      * @link http://php.net/manual/en/datetime.formats.php
      */
@@ -77,8 +80,8 @@ class TimeRangeBuilder implements ToArrayInterface
         unset($this->range['startEvent']);
         unset($this->range['afterEvent']);
 
-        // set        
-        $this->range[($inclusive ? 'start' : 'after').'Event'] = $this->toEventTime($date);
+        // set
+        $this->range[($inclusive ? 'start' : 'after') . 'Event'] = $this->toEventTime($date);
 
         return $this;
     }
@@ -87,15 +90,15 @@ class TimeRangeBuilder implements ToArrayInterface
      * The end of the time range to paginate to.
      * Include or exclude events of the specified end time, if it exists,
      * using the 'inclusive' parameter.
-     * 
+     *
      * Note that events are queried in reverse chronological order
      * (from newest to oldest)
-     * 
+     *
      * @param string|EventInterface $event The end 'event' to paginate to. Value must be either:
      *                                  (1) A correctly formatted timestamp per Orchestrate specification;
      *                                  (2) An Event object;
      * @param boolean $inclusive Include event of specified time, it it exists. Defaults to true.
-     * 
+     *
      * @return TimeRangeBuilder self
      * @link https://orchestrate.io/docs/apiref#events-timestamps
      */
@@ -107,9 +110,9 @@ class TimeRangeBuilder implements ToArrayInterface
 
         // set
         if ($event instanceof EventInterface) {
-            $event = $event->getTimestamp(true).($event->getOrdinal() ? '/'.$event->getOrdinal() : '');
+            $event = $event->getTimestamp(true) . ($event->getOrdinal() ? '/' . $event->getOrdinal() : '');
         }
-        $this->range[($inclusive ? 'end' : 'before').'Event'] = $event;
+        $this->range[($inclusive ? 'end' : 'before') . 'Event'] = $event;
 
         return $this;
     }
@@ -118,16 +121,16 @@ class TimeRangeBuilder implements ToArrayInterface
      * The end of the time range to paginate to.
      * Include or exclude events of the specified end time, if it exists,
      * using the 'inclusive' parameter.
-     * 
+     *
      * Note that events are queried in reverse chronological order
      * (from newest to oldest)
-     * 
+     *
      * @param string|int|DateTime $date The end date to paginate to. Value must be either:
      *                                  (1) A valid format that strtotime understands;
      *                                  (2) A integer, that will be considered as seconds since epoch;
-     *                                  (3) A DateTime object; 
+     *                                  (3) A DateTime object;
      * @param boolean $inclusive Include event of specified time, it it exists. Defaults to true.
-     * 
+     *
      * @return TimeRangeBuilder self
      * @link http://php.net/manual/en/datetime.formats.php
      */
@@ -137,8 +140,8 @@ class TimeRangeBuilder implements ToArrayInterface
         unset($this->range['endEvent']);
         unset($this->range['beforeEvent']);
 
-        // set        
-        $this->range[($inclusive ? 'end' : 'before').'Event'] = $this->toEventTime($date);
+        // set
+        $this->range[($inclusive ? 'end' : 'before') . 'Event'] = $this->toEventTime($date);
 
         return $this;
     }
@@ -147,11 +150,11 @@ class TimeRangeBuilder implements ToArrayInterface
      * Wraps both 'from' and 'to' methods in a single call.
      * Include or exclude events at the edges of the time range specified,
      * if they exist, using the 'inclusive' parameter.
-     * 
+     *
      * @param string|EventInterface $fromEvent The start event to paginate from.
      * @param string|EventInterface $toEvent The end event to paginate to.
      * @param boolean $inclusive Include the specified keys, it they exist. Defaults to true.
-     * 
+     *
      * @return TimeRangeBuilder self
      * @link https://orchestrate.io/docs/apiref#events-timestamps
      */
@@ -167,11 +170,11 @@ class TimeRangeBuilder implements ToArrayInterface
      * Wraps both 'from' and 'to' methods in a single call.
      * Include or exclude events at the edges of the time range specified,
      * if they exist, using the 'inclusive' parameter.
-     * 
+     *
      * @param string|EventInterface $fromEvent The start date to paginate from.
      * @param string|EventInterface $toEvent The end date to paginate to.
      * @param boolean $inclusive Include the specified keys, it they exist. Defaults to true.
-     * 
+     *
      * @return TimeRangeBuilder self
      * @link https://orchestrate.io/docs/apiref#events-timestamps
      */
@@ -199,6 +202,6 @@ class TimeRangeBuilder implements ToArrayInterface
             $seconds = strtotime((string) $value);
         }
 
-        return $seconds*1000;
+        return $seconds * 1000;
     }
 }

@@ -3,19 +3,19 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
+use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
+use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
+use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 
 class Event extends AbstractObject implements EventInterface
 {
     use CollectionTrait;
     use KeyTrait;
-    use TypeTrait;
-    use TimestampTrait;
-    use RefTrait;
     use ReftimeTrait;
+    use RefTrait;
+    use TimestampTrait;
+    use TypeTrait;
 
     /**
      * @var int
@@ -23,8 +23,8 @@ class Event extends AbstractObject implements EventInterface
     private $_ordinal = null;
 
     /**
-    * @var string
-    */
+     * @var string
+     */
     private $_ordinalStr = null;
 
     /**
@@ -58,7 +58,7 @@ class Event extends AbstractObject implements EventInterface
 
         return $this;
     }
-    
+
     public function getOrdinalStr()
     {
         return $this->_ordinalStr;
@@ -113,33 +113,27 @@ class Event extends AbstractObject implements EventInterface
         }
 
         foreach ($data as $key => $value) {
-            
-            if ($key === 'collection')
+
+            if ($key === 'collection') {
                 $this->setCollection($value);
-
-            elseif ($key === 'key')
-                $this->setKey($value);            
-
-            elseif ($key === 'type')
+            } elseif ($key === 'key') {
+                $this->setKey($value);
+            } elseif ($key === 'type') {
                 $this->setType($value);
-
-            elseif ($key === 'timestamp')
+            } elseif ($key === 'timestamp') {
                 $this->setTimestamp($value);
-
-            elseif ($key === 'ordinal')
+            } elseif ($key === 'ordinal') {
                 $this->setOrdinal($value);
-
-            elseif ($key === 'ref')
+            } elseif ($key === 'ref') {
                 $this->setRef($value);
-
-            elseif ($key === 'reftime')
+            } elseif ($key === 'reftime') {
                 $this->_reftime = (int) $value;
-
-            elseif ($key === 'ordinal_str')
+            } elseif ($key === 'ordinal_str') {
                 $this->_ordinalStr = $value;
-
-            elseif ($key === 'value')
+            } elseif ($key === 'value') {
                 $this->setValue((array) $value);
+            }
+
         }
 
         return $this;
@@ -148,9 +142,9 @@ class Event extends AbstractObject implements EventInterface
     public function get()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
-     
+        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
+        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
+
         // request
         $this->request('GET', $path);
 
@@ -172,9 +166,9 @@ class Event extends AbstractObject implements EventInterface
         $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
-        
+        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
+        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
+
         $options = ['json' => $newValue];
 
         if ($ref) {
@@ -184,12 +178,12 @@ class Event extends AbstractObject implements EventInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
         }
 
         // request
         $this->request('PUT', $path, $options);
-        
+
         // set values
         if ($this->isSuccess()) {
             $this->_reftime = null;
@@ -205,22 +199,22 @@ class Event extends AbstractObject implements EventInterface
     }
 
     public function post(array $value = null, $timestamp = null)
-    {        
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/events/'.$this->getType(true);
+    {
+        $path = $this->getCollection(true) . '/' . $this->getKey(true)
+        . '/events/' . $this->getType(true);
 
         if ($timestamp === true) {
             $timestamp = $this->getTimestamp();
-        }        
+        }
         if ($timestamp) {
-            $path .= '/'.$timestamp;
+            $path .= '/' . $timestamp;
         }
 
         $newValue = $value === null ? parent::toArray() : $value;
 
         // request
         $this->request('POST', $path, ['json' => $newValue]);
-        
+
         // set values
         if ($this->isSuccess()) {
             $this->_timestamp = null;
@@ -241,8 +235,8 @@ class Event extends AbstractObject implements EventInterface
     public function delete($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
+        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
 
         $options = ['query' => ['purge' => 'true']]; // currently required by Orchestrate
 
@@ -253,7 +247,7 @@ class Event extends AbstractObject implements EventInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
         }
 
         // request
@@ -272,8 +266,8 @@ class Event extends AbstractObject implements EventInterface
     public function purge()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-            .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
+        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
 
         $options = ['query' => ['purge' => 'true']];
 
@@ -305,11 +299,12 @@ class Event extends AbstractObject implements EventInterface
         // Location: /v0/collection/key/events/type/1398286518286/6
 
         $location = $this->getResponse()->getHeader('Location');
-        if (!$location)
+        if (!$location) {
             $location = $this->getResponse()->getHeader('Content-Location');
+        }
 
         $location = explode('/', trim($location, '/'));
-        
+
         if (isset($location[5])) {
             $this->setTimestamp($location[5]);
         }

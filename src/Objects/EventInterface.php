@@ -7,79 +7,79 @@ use andrefelipe\Orchestrate\Common\ToJsonInterface;
  * Define the Event minimum required interface.
  */
 interface EventInterface extends
-    \ArrayAccess,
-    \Countable,
-    ValueInterface,
-    ToJsonInterface,
-    ReusableObjectInterface
+\ArrayAccess,
+\Countable,
+ValueInterface,
+ToJsonInterface,
+ReusableObjectInterface
 {
 
     /**
-     * @param boolean $required 
-     * 
+     * @param boolean $required
+     *
      * @return string
      */
     public function getCollection($required = false);
 
     /**
      * @param string $collection
-     * 
+     *
      * @return self
      */
     public function setCollection($collection);
 
     /**
-     * @param boolean $required 
-     * 
+     * @param boolean $required
+     *
      * @return string
      */
     public function getKey($required = false);
 
     /**
      * @param string $key
-     * 
+     *
      * @return self
      */
     public function setKey($key);
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return string
      */
     public function getType($required = false);
 
     /**
      * @param string $type
-     * 
+     *
      * @return self
      */
     public function setType($type);
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return int
      */
     public function getTimestamp($required = false);
 
     /**
      * @param int $timestamp
-     * 
+     *
      * @return self
      */
     public function setTimestamp($timestamp);
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return int
      */
     public function getOrdinal($required = false);
 
     /**
      * @param int $ordinal
-     * 
+     *
      * @return self
      */
     public function setOrdinal($ordinal);
@@ -91,7 +91,7 @@ interface EventInterface extends
 
     /**
      * @param string $ref
-     * 
+     *
      * @return self
      */
     public function setRef($ref);
@@ -102,8 +102,8 @@ interface EventInterface extends
     public function getReftime();
 
     /**
-      * @return string
-      */
+     * @return string
+     */
     public function getOrdinalStr();
 
     /**
@@ -111,11 +111,11 @@ interface EventInterface extends
      * @link https://orchestrate.io/docs/apiref#events-get
      */
     public function get();
-    
+
     /**
      * @param array $value
      * @param string $ref
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-put
      */
@@ -124,7 +124,7 @@ interface EventInterface extends
     /**
      * @param array $value
      * @param int $timestamp
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-post
      */
@@ -132,14 +132,14 @@ interface EventInterface extends
 
     /**
      * @param string $ref
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function delete($ref = null);
 
     /**
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-delete
      */

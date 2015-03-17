@@ -3,7 +3,7 @@ namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait that implements the Ref methods.
- * 
+ *
  * @internal
  */
 trait RefTrait
@@ -21,13 +21,13 @@ trait RefTrait
         if ($required) {
             $this->noRefException();
         }
-        
+
         return $this->_ref;
     }
 
     /**
      * @param string $ref
-     * 
+     *
      * @return self
      */
     public function setRef($ref)

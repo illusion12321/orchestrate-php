@@ -17,26 +17,28 @@ class Refs extends AbstractList
      * @param int $limit
      * @param int $offset
      * @param boolean $values
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
     public function get($limit = 10, $offset = 0, $values = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/refs/';
-        
+        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/refs/';
+
         $parameters = ['limit' => $limit];
-        
-        if ($offset)
+
+        if ($offset) {
             $parameters['offset'] = $offset;
-       
-        if ($values)
+        }
+
+        if ($values) {
             $parameters['values'] = 'true';
+        }
 
         // request
         $this->request('GET', $path, ['query' => $parameters]);
-        
+
         return $this->isSuccess();
     }
 }

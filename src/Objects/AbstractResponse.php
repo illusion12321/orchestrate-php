@@ -4,13 +4,14 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\ClientInterface;
 use \GuzzleHttp\Message\Response;
 
-abstract class AbstractResponse // TODO create some interfaces here, ResponseInterface and ClientAwareInterface?, can I add a init here to coherse with ReusableObjectInterface!? maybe we remove getClient/setClient from ReusableObjectInterface? (it's fine there anyway) --- a init method can be used when setting data without the Guzzle Response
+abstract class AbstractResponse// TODO create some interfaces here, ResponseInterface and ClientAwareInterface?, can I add a init here to coherse with ReusableObjectInterface!? maybe we remove getClient/setClient from ReusableObjectInterface? (it's fine there anyway) --- a init method can be used when setting data without the Guzzle Response
+
 {
     /**
      * @var array
      */
     private $_body = [];
-    
+
     /**
      * @var Response
      */
@@ -32,34 +33,35 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
     private $_statusMessage = 'Not loaded yet.';
 
     /**
-     * @var ClientInterface 
+     * @var ClientInterface
      */
     private $_client;
 
     /**
      * Get current client instance, either of Application or Client class.
-     * 
+     *
      * @param boolean $required
-     * 
+     *
      * @return ClientInterface
      */
     public function getClient($required = false)
     {
-        if ($required)
+        if ($required) {
             $this->noClientException();
+        }
 
         return $this->_client;
     }
 
     /**
      * Set the client which the object will use to make API requests.
-     * 
+     *
      * @param ClientInterface $client
      */
     public function setClient(ClientInterface $client)
     {
         $this->_client = $client;
-        
+
         return $this;
     }
 
@@ -67,9 +69,9 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
      * Gets the body of the response, independently if it was an error or not.
      * Useful for debugging but for a more specific usage please rely on each
      * implementation getters.
-     * 
+     *
      * Important: The body is always an associative array.
-     * 
+     *
      * @return array
      */
     public function getBody()
@@ -79,7 +81,7 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
 
     /**
      * Get the Guzzle Response object of the last request.
-     * 
+     *
      * @return Response
      */
     public function getResponse()
@@ -91,7 +93,7 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
      * Gets the status of the last response.
      * If the request was successful the value is the HTTP Reason-Phrase.
      * If the request was not successful the value is the Orchestrate Error Code.
-     * 
+     *
      * @return string
      * @link https://orchestrate.io/docs/apiref#errors
      */
@@ -102,7 +104,7 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
 
     /**
      * Gets the status code.
-     * 
+     *
      * @return int
      */
     public function getStatusCode()
@@ -114,7 +116,7 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
      * Gets the status message.
      * If the request was successful the value is the HTTP Reason-Phrase.
      * If the request was not successful the value is the Orchestrate Error Description.
-     * 
+     *
      * @return string
      * @link https://orchestrate.io/docs/apiref#errors
      */
@@ -125,49 +127,49 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
 
     /**
      * Gets the X-ORCHESTRATE-REQ-ID header.
-     * 
+     *
      * @return string
      */
     public function getRequestId()
     {
         return $this->_response
-            ? $this->_response->getHeader('X-ORCHESTRATE-REQ-ID')
-            : '';
+        ? $this->_response->getHeader('X-ORCHESTRATE-REQ-ID')
+        : '';
     }
 
     /**
      * Gets the Date header.
-     * 
+     *
      * @return string
      */
     public function getRequestDate()
     {
         return $this->_response
-            ? $this->_response->getHeader('Date')
-            : '';
+        ? $this->_response->getHeader('Date')
+        : '';
     }
 
     /**
      * Gets the effective URL that was generated for the request.
      * Useful for debugging or logging, etc.
-     * 
+     *
      * Sample for a KeyValue GET:
      * https://api.orchestrate.io/v0/my-collection/my-key
-     * 
+     *
      * @return string
      */
     public function getRequestUrl()
     {
         return $this->_response
-            ? $this->_response->getEffectiveUrl()
-            : '';
+        ? $this->_response->getEffectiveUrl()
+        : '';
     }
-    
+
     /**
      * Check if last request was successful.
-     * 
+     *
      * A request is considered successful if status code is not 4xx or 5xx.
-     * 
+     *
      * @return boolean
      */
     public function isSuccess()
@@ -177,20 +179,20 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
 
     /**
      * Check if last request was unsuccessful.
-     * 
+     *
      * A request is considered error if status code is 4xx or 5xx.
-     * 
+     *
      * @return boolean
      */
     public function isError()
     {
         return !$this->_statusCode
-            || ($this->_statusCode >= 400 && $this->_statusCode <= 599);
+        || ($this->_statusCode >= 400 && $this->_statusCode <= 599);
     }
 
     /**
      * Store Guzzle Response and define body JSON and status.
-     * 
+     *
      * @param Response $response
      */
     protected function setResponse(Response $response)
@@ -236,7 +238,7 @@ abstract class AbstractResponse // TODO create some interfaces here, ResponseInt
         $this->_statusCode = 0;
         $this->_statusMessage = '';
     }
-    
+
     protected function request($method, $url = null, array $options = [])
     {
         // request at the Client HTTP client

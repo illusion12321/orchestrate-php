@@ -2,7 +2,7 @@
 namespace andrefelipe\Orchestrate\Common;
 
 /**
- * 
+ *
  * This class was inspired by:
  * https://github.com/phalcon/cphalcon/blob/2.0.0/phalcon/config.zep
  * Which credit goes to Andres Gutierrez and Eduar Carvajal of the
@@ -28,12 +28,12 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
      * Merges an array's or object's values into the object.
      *
      * @param array|object $object
-     * @return ObjectArray this 
+     * @return ObjectArray this
      */
     public function merge($object)
     {
         if (is_object($object)) {
-            
+
             $this->_mergeObject($object);
 
         } else if (is_array($object)) {
@@ -55,5 +55,5 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
             }
         }
         return $this;
-    }   
+    }
 }

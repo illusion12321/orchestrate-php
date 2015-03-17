@@ -26,7 +26,7 @@ class Relations extends AbstractList
 
     /**
      * @param boolean $required
-     * 
+     *
      * @return array
      */
     public function getDepth($required = false)
@@ -40,7 +40,7 @@ class Relations extends AbstractList
 
     /**
      * @param string|array $kind
-     * 
+     *
      * @return self
      */
     public function setDepth($kind)
@@ -53,22 +53,22 @@ class Relations extends AbstractList
     /**
      * @param int $limit
      * @param int $offset
-     * 
+     *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
     public function get($limit = 10, $offset = 0)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-            .'/relations/'.implode('/', $this->getDepth(true));
+        $path = $this->getCollection(true) . '/' . $this->getKey(true)
+        . '/relations/' . implode('/', $this->getDepth(true));
 
         $parameters = ['limit' => $limit];
-        
+
         if ($offset) {
             $parameters['offset'] = $offset;
-        }            
-       
+        }
+
         // request
         $this->request('GET', $path, ['query' => $parameters]);
 

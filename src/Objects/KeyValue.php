@@ -3,16 +3,16 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
+use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractObject implements KeyValueInterface
 {
     use CollectionTrait;
     use KeyTrait;
-    use RefTrait;
     use ReftimeTrait;
+    use RefTrait;
 
     /**
      * @var float
@@ -70,7 +70,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     }
 
     public function init(array $data)
-    {        
+    {
         if (empty($data)) {
             return;
         }
@@ -80,30 +80,23 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         }
 
         foreach ($data as $key => $value) {
-            
-            if ($key === 'collection')
+            if ($key === 'collection') {
                 $this->setCollection($value);
-
-            elseif ($key === 'key')
+            } elseif ($key === 'key') {
                 $this->setKey($value);
-
-            elseif ($key === 'ref')
+            } elseif ($key === 'ref') {
                 $this->setRef($value);
-
-            elseif ($key === 'value')
+            } elseif ($key === 'value') {
                 $this->setValue((array) $value);
-
-            elseif ($key === 'score')
+            } elseif ($key === 'score') {
                 $this->_score = (float) $value;
-
-            elseif ($key === 'distance')
+            } elseif ($key === 'distance') {
                 $this->_distance = (float) $value;
-
-            elseif ($key === 'reftime')
+            } elseif ($key === 'reftime') {
                 $this->_reftime = (int) $value;
-
-            elseif ($key === 'tombstone')
+            } elseif ($key === 'tombstone') {
                 $this->_tombstone = (boolean) $value;
+            }
         }
 
         return $this;
@@ -122,28 +115,32 @@ class KeyValue extends AbstractObject implements KeyValueInterface
             'value' => parent::toArray(),
         ];
 
-        if ($this->_score !== null)
+        if ($this->_score !== null) {
             $result['score'] = $this->_score;
+        }
 
-        if ($this->_distance !== null)
+        if ($this->_distance !== null) {
             $result['distance'] = $this->_distance;
+        }
 
-        if ($this->_reftime !== null)
+        if ($this->_reftime !== null) {
             $result['path']['reftime'] = $this->_reftime;
+        }
 
-        if ($this->_tombstone)
+        if ($this->_tombstone) {
             $result['path']['tombstone'] = $this->_tombstone;
-        
+        }
+
         return $result;
     }
 
     public function get($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true);
 
         if ($ref) {
-            $path .= '/refs/'.trim($ref, '"');
+            $path .= '/refs/' . trim($ref, '"');
         }
 
         // request
@@ -159,14 +156,14 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         }
 
         return $this->isSuccess();
-    }    
+    }
 
     public function put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true);
         $options = ['json' => $newValue];
 
         if ($ref) {
@@ -176,7 +173,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
 
         } elseif ($ref === false) {
 
@@ -186,7 +183,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
 
         // request
         $this->request('PUT', $path, $options);
-        
+
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
@@ -205,7 +202,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
 
         // request
         $this->request('POST', $this->getCollection(true), ['json' => $newValue]);
-        
+
         // set values
         if ($this->isSuccess()) {
             $this->_key = null;
@@ -222,7 +219,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     public function patch(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true);
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
@@ -232,12 +229,12 @@ class KeyValue extends AbstractObject implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
         }
 
         // request
         $this->request('PATCH', $path, $options);
-        
+
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
@@ -247,14 +244,14 @@ class KeyValue extends AbstractObject implements KeyValueInterface
                 $this->get($this->getRef());
             }
         }
-        
+
         return $this->isSuccess();
     }
 
     public function patchMerge(array $value, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true);
         $options = ['json' => $value];
 
         if ($ref) {
@@ -264,12 +261,12 @@ class KeyValue extends AbstractObject implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
         }
 
         // request
         $this->request('PATCH', $path, $options);
-        
+
         // set values
         if ($this->isSuccess()) {
             $this->setRefFromETag();
@@ -286,7 +283,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     public function delete($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true);
         $options = [];
 
         if ($ref) {
@@ -296,7 +293,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
         }
 
         // request
@@ -308,12 +305,12 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     public function purge()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = $this->getCollection(true) . '/' . $this->getKey(true);
         $options = ['query' => ['purge' => 'true']];
 
         // request
         $this->request('DELETE', $path, $options);
-        
+
         // null ref if success, as it will never exist again
         if ($this->isSuccess()) {
             $this->_ref = null;
@@ -328,7 +325,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
             ->setClient($this->getClient(true))
             ->setChildClass(new \ReflectionClass($this));
 
-            // this new instance may be cached, just check subclasses scope
+        // this new instance may be cached, just check subclasses scope
     }
 
     public function events($type)
@@ -340,12 +337,12 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     public function event($type, $timestamp = null, $ordinal = null)
     {
         return (new Event(
-                $this->getCollection(true),
-                $this->getKey(true),
-                $type,
-                $timestamp,
-                $ordinal
-            ))->setClient($this->getClient(true));
+            $this->getCollection(true),
+            $this->getKey(true),
+            $type,
+            $timestamp,
+            $ordinal
+        ))->setClient($this->getClient(true));
     }
 
     public function relations($kind)
@@ -360,7 +357,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         return (new Relation($this, $kind, $destination))
             ->setClient($this->getClient(true));
     }
-    
+
     /**
      * Helper to set the Key and Ref from a Orchestrate Location HTTP header.
      * For example: Location: /v0/collection/key/refs/ad39c0f8f807bf40
@@ -373,8 +370,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
         }
 
         $location = explode('/', trim($location, '/'));
-        if (count($location) > 4)
-        {
+        if (count($location) > 4) {
             $this->setKey($location[2]);
             $this->setRef($location[4]);
         }
