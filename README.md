@@ -1204,8 +1204,6 @@ if ($item->relation('kind', $anotherItem)->delete(true)) {
 
 Please refer to the source code for now, while a proper documentation is made.
 
-Here is a sample of the KeyValue Class methods: 
-
 
 ## Useful Notes
 
