@@ -287,6 +287,7 @@ if ($item->get()) {
     // andrefelipe\Orchestrate\Common\ObjectArray Object
     // (
     //     [title] => My Title
+    //     [file_url] => http://myfile.jpg
     // )
 
     // toArray() returns an Array representation of the object
@@ -304,6 +305,7 @@ if ($item->get()) {
     //     [value] => Array
     //         (
     //             [title] => My Title
+    //             [file_url] => http://myfile.jpg
     //         )
     // )
 
@@ -318,7 +320,8 @@ if ($item->get()) {
     //         "ref": "cbb48f9464612f20"
     //     },
     //     "value": {
-    //         "title": "My Title"
+    //         "title": "My Title",
+    //         "file_url": "http://myfile.jpg"
     //     }
     // }
 
@@ -359,12 +362,11 @@ Why is that important? Because it makes your data more accessible to you, and to
 
 ## Template Engine
 
-Easily send your data to your favorite template engine. Also find handy methods to quickly format the data.
+Easily send your data to your favorite template engine. Also find handy methods to quickly format the data output.
 
 For example:
 ```php
-
-// Phalcon / Volt 
+// Phalcon / Volt - http://phalconphp.com
 
 // gets 50 members, sorted by created_date
 $members->search('*', 'created_date:desc', null, 50);
@@ -385,10 +387,10 @@ $this->view->members = $members;
 // so send each member's Value only
 $this->view->members = $members->getValues();
 
-// or extract and format the data, using a JMESPath expression
+// or format the data using a JMESPath expression
 $this->view->members = $members->extract('results[].{name: value.fullname, country: value.country, slug: path.key}');
 
-// if you don't need the 'path' use extractValues for a less verbose expression
+// if you don't need the 'path' use extractValues method for a less verbose expression
 $this->view->members = $members->extractValues('[].{name: fullname, country: country}');
 
 
@@ -423,7 +425,7 @@ $result = $collection->extractValues('[].{name: name, thumb: thumbs[0])}');
 $result = $item->extractValue('{name: name, thumb: thumbs[0]}');
 ```
 
-**NOTE** When a JMESPath result is an array, it will be automatically wrapped into an ObjectArray object.
+**NOTE** When a JMESPath result is an array, it will be automatically wrapped into an ObjectArray.
 
 
 
@@ -431,7 +433,7 @@ $result = $item->extractValue('{name: name, thumb: thumbs[0]}');
 
 ## Models
 
-There is one major decision of our library, KeyValue and Event's values are stored in the object itself. So when you get a property with $item->myProp you are accessing it directly. 
+There's one major decision on our library: **KeyValue and Event's values are stored in the object itself**. So when you get a property with $item->myProp you are accessing it directly. 
 
 That won't differ much from an Array memory-wise, because we are storing data as dynamic vars. But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
 
@@ -454,24 +456,36 @@ class Member extends KeyValue
     public $country_code;
     
     /**
-     * @var array
+     * @var string
      */
-    public $role;
+    public $role = 'guest';
+    // feel free to set the defaults!
     
     /**
      * @var string
      */
     public $birth_date;
-    
+    // unset or null vars do not get Put into Orchestrate.
+    // Rest assure that setting the public vars here will not be stored
+    // in your account, if they are null.
+    // To check what is going to be stored there, use the toArray() method
+
     /**
      * @var array
      */
     public $thumbs;
 
+
+    // NOTE:
     // I am working in a clean way to support getters/setters like "setName/getName" 
-    // so you could use in you favor to add validation, etc
+    // that way you could use in you favor to add validation, etc
 }
 ```
+
+The example above is a class that will represent each item in a Collection.
+
+In that case you will also want to create a class to act as your Collection.
+
 
 ```php
 // Members.php
@@ -492,6 +506,13 @@ class Members extends Collection
         $this->setChildClass('\MyProject\Models\Member');
     }
 }
+
+// at this approach, whenever we create items from this collection,
+// it will be Member objects
+$members = new \MyProject\Models\Members($app);
+
+$item = $members->item('john'); // instance of '\MyProject\Models\Member'
+
 ```
 
 If you are using the Client approach, you can change which classes to use with: 
@@ -1193,4 +1214,12 @@ Here are some useful notes to consider when using the Orchestrate service:
 - When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date);
 - Avoid using dashes in properties names, not required, but makes easier to be accessed direcly in JS or PHP, without need to wrap in [] or {};
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
+
+
+
+## Postscript
+
+This client is actively maintained. I am using to develop the next version of [typo/graphic posters](https://www.typographicposters.com) and should be using in more projects at work.
+
+That project is on [Phalcon](http://phalconphp.com/en/) so any heads up into creating a proper ODM for Orchestrate are appreciated.  
 
