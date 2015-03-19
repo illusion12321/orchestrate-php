@@ -22,8 +22,10 @@ class Collection extends AbstractList
      */
     public function item($key = null, $ref = null)
     {
-        return $this->getChildClass()
-                    ->newInstance($this->getCollection(true), $key, $ref)
+        return $this->getChildClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setRef($ref)
                     ->setClient($this->getClient(true));
     }
 
