@@ -23,9 +23,9 @@ interface ValueInterface
     /**
      * Recursively merge one item Value into another.
      *
-     * @param ValueInterface|Array $object
+     * @param ValueInterface $object
      */
-    public function mergeValue($object);
+    public function mergeValue(ValueInterface $object);
 
     /**
      * Sets all public properties to null.

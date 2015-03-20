@@ -9,7 +9,6 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
  */
 interface KeyValueInterface extends
 \ArrayAccess,
-\Countable,
 ValueInterface,
 ToJsonInterface,
 ReusableObjectInterface

@@ -113,8 +113,7 @@ if ($item->get()) { // API call to get the current key
 
     // let's add some values
     $item->name = 'Lorem Ipsum';
-    $item->role = ['member', 'user'];
-    $item->mergeValue(['role' => ['admin']]); // merge values
+    $item->role = ['member', 'user', 'admin'];
 
     // put back
     if ($item->put()) {
@@ -1210,7 +1209,7 @@ Please refer to the source code for now, while a proper documentation is made.
 Here are some useful notes to consider when using the Orchestrate service:
 - Avoid using slashes (/) in the key name, some problems will arise when querying them;
 - When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date);
-- Avoid using dashes in properties names, not required, but makes easier to be accessed direcly in JS or PHP, without need to wrap in [] or {};
+- Avoid using dashes in properties names, not required, but makes easier to be accessed directly in JS or PHP, without need to wrap in [] or {};
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
 
 
