@@ -96,50 +96,37 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
      */
     public function merge($object)
     {
-        if (is_object($object)) {
-
-            self::mergeValues($object, $this);
-
-        } else if (is_array($object)) {
-
-            $index = count($this);
-
-            foreach ($object as $key => $value) {
-
-                if (is_numeric($key)) {
-                    $key = $index++;
-                }
-                $key = (string) $key;
-
-                if (isset($this->{$key}) && is_object($value) && is_object($this->{$key})) {
-                    self::mergeValues($value, $this->{$key});
-                } else {
-                    $this->{$key} = $value;
-                }
-            }
-        }
+        self::mergeObject($object, $this);
         return $this;
     }
 
     /**
      * Helper method to merge instance's public properties.
      *
-     * @param object $source
+     * @param array|object $source
      * @param object $target
      */
-    public static function mergeValues($source, $target)
+    public static function mergeObject($source, $target)
     {
+        if (is_object($source)) {
+            $source = get_object_vars($source);
+        } else if (!is_array($source)) {
+            return;
+        }
         $index = count($target);
 
-        foreach (get_object_vars($source) as $key => $value) {
+        foreach ($source as $key => $value) {
 
             if (is_numeric($key)) {
                 $key = $index++;
             }
             $key = (string) $key;
 
-            if (isset($target->{$key}) && is_object($value) && is_object($target->{$key})) {
-                self::mergeValues($value, $target->{$key});
+            if (isset($target->{$key})
+                && is_object($target->{$key})
+                && (is_object($value) || is_array($value))
+            ) {
+                self::mergeObject($value, $target->{$key});
             } else {
                 $target->{$key} = $value;
             }

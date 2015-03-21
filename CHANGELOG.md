@@ -2,9 +2,10 @@
 
 ## HEAD
 - Added support for custom setter/getters on KeyValue/Event to get properties mapped into the Value.
-- Corrected how operations handles values internally on success. KeyValue GET no longer reset values before setting the new ones. Put, delete and purge, follows accordingly. Same for Event.
+- Corrected how operations handles values internally on success. KeyValue GET no longer reset values before setting the new ones. Put, delete and purge, consciously reset/overwrite values according to the results. Same for Event.
 - Improved protection on KeyValue setValue so indexed arrays at root level are avoided.
 - Removed Countable from KeyValue/Event as we can't rely on that.
+
 
 ## 0.10.2 - 2015-03-13
 - Ooops, missed a letter 's' on a method.

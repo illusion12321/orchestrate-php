@@ -2,7 +2,10 @@
 
 - do the best to handle gracefully user defined getters/setters
 
-- maybe unify the merge method and create an "ObjectInterface"
+--- if I map property that is get only, what should happen if we set it with $this->myGetOnlyProp ? vai ter que dar exception!? testar mais, parece que do jeito que está está correto
+
+--- se um KeyValue faz parte de um merge (tanto no ObjectArray quanto em outro caso) ele get_object_vars não funcionaria corretamente... ele não pega as custom... a não ser que eu de um check instanceof ValueInferface e recurse por lá
+
 
 - Implement more common interfaces, and general organization of the classes / folders
 
