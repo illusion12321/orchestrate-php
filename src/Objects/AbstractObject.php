@@ -19,15 +19,15 @@ ToJsonInterface
      * @param string $name The property name to map methods to.
      * @param boolean|string $getterName The getter method name. Method must exist in current object.
      *                                   Defaults to true, which will automatically try to find a
-     *                                   method named after your property, for example 'getName'.
+     *                                   method named after your property with camelCase, for example 'getName'.
      * @param boolean|string $setterName The setter method name. Method must exist in current object.
      *                                   Defaults to true, which will automatically try to find a
-     *                                   method named after your property, for example 'setName'.
+     *                                   method named after your property with camelCase, for example 'setName'.
      */
     public function addProperty($name, $getterName = true, $setterName = true)
     {
         if ($getterName === true || $setterName === true) {
-            $capitalized = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+            $capitalized = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $name)));
 
             if ($getterName === true) {
                 $getterName = 'get' . $capitalized;
