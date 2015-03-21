@@ -6,7 +6,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 - Choose which approach you prefer, client-like or object-like.
 - PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
 - [Template engine friendly](#objectarray), with [JMESPath](#jmespath) support.
-- Create Models by extending our classes, and easily change child class.
+- Create [Models](#models) by extending our classes, and easily change child class.
 - toArray/toJson methods produces the same output format as Orchestrate's export.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
@@ -444,40 +444,72 @@ use \andrefelipe\Orchestrate\Objects\KeyValue;
 
 class Member extends KeyValue
 {
-    /**
-     * @var string
-     */
     public $name;
     
-    /**
-     * @var string
-     */
-    public $country_code;
-    
-    /**
-     * @var string
-     */
     public $role = 'guest';
     // feel free to set the defaults!
     
-    /**
-     * @var string
-     */
     public $birth_date;
     // unset or null vars do not get Put into Orchestrate.
     // Rest assure that setting the public vars here will not be stored
     // in your account, if they are null.
     // To check what is going to be stored there, use the toArray() method
 
-    /**
-     * @var array
-     */
-    public $thumbs;
+
+    // getter/setters are fine too!
+    // you could use it you favor to add validation, error protection, custom defaults, etc
+
+    protected $country_code;
+
+    protected $created_date;
 
 
-    // NOTE:
-    // I am working in a clean way to support getters/setters like "setName/getName" 
-    // that way you could use in you favor to add validation, etc
+    public function __construct()
+    {
+        $this->addProperty('created_date');
+        $this->addProperty('country_code');
+
+        // strictly name the get/setters to map to:
+        // $this->addProperty('birth_date', 'getBirth', 'setBirth');
+    }
+
+    public function getCreatedDate()
+    {
+        // custom default example:
+        if (!isset($this->created_date)) {
+            $this->created_date = date(DATE_W3C);
+        }
+        return $this->created_date;
+    }
+
+    public function setCreatedDate($value)
+    {
+        $this->created_date = $value;
+    }
+    
+    public function getCountryCode()
+    {
+        // custom default example:
+        if (!isset($this->country_code)) {
+            $this->country_code = 'us';
+        }
+        return $this->country_code;
+    }
+
+    public function setCountryCode($value)
+    {
+        $this->country_code = $value;
+        // here you could add a check if the country code is valid
+        // could match to a country full name and store too, etc
+    }
+
+    // the 'addProperty' method is important to strictly notify which
+    // properties this instance should handle, so it knows what to
+    // include in the Value that will be sent to Orchestrate
+
+    // remember, to check what is actually sent to Orchestrate
+    // use the toArray method
+
 }
 ```
 
