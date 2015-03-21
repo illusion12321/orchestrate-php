@@ -106,7 +106,7 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
 
             foreach ($object as $key => $value) {
 
-                if (is_int($key)) {
+                if (is_numeric($key)) {
                     $key = $index++;
                 }
                 $key = (string) $key;
@@ -127,13 +127,13 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
      * @param object $source
      * @param object $target
      */
-    private static function mergeValues($source, $target)
+    public static function mergeValues($source, $target)
     {
         $index = count($target);
 
         foreach (get_object_vars($source) as $key => $value) {
 
-            if (is_int($key)) {
+            if (is_numeric($key)) {
                 $key = $index++;
             }
             $key = (string) $key;

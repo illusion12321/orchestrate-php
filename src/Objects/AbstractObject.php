@@ -73,7 +73,7 @@ ToJsonInterface
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset) || is_int($offset)) {
+        if (is_null($offset) || is_numeric($offset)) {
             $this->noIndexedArrayException();
         }
 
@@ -123,7 +123,7 @@ ToJsonInterface
         if ($values) {
             foreach ($values as $key => $value) {
 
-                if (is_int($key)) {
+                if (is_numeric($key)) {
                     $this->noIndexedArrayException();
                 }
                 $this->{(string) $key} = $value;
