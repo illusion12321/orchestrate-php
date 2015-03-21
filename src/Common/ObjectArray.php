@@ -32,7 +32,7 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
     public function __set($key, $value)
     {
         if (is_array($value)) {
-            $this->{$key} = new ObjectArray($value);
+            $this->{$key} = new self($value);
         } else {
             $this->{$key} = $value;
         }
@@ -85,7 +85,7 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
     public function extract($expression)
     {
         $result = JmesPath::search($expression, $this->toArray());
-        return is_array($result) ? new ObjectArray($result) : $result;
+        return is_array($result) ? new self($result) : $result;
     }
 
     /**

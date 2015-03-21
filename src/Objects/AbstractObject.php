@@ -134,13 +134,7 @@ ToJsonInterface
 
     public function mergeValue(ValueInterface $item)
     {
-        foreach ($item->getValue() as $key => $value) {
-            if (isset($this->{$key}) && is_object($value) && is_object($this->{$key})) {
-                ObjectArray::mergeObject($value, $this->{$key});
-            } else {
-                $this->{$key} = $value;
-            }
-        }
+        ObjectArray::mergeObject($item->getValue(), $this);
         return $this;
     }
 
