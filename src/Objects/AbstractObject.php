@@ -45,10 +45,6 @@ ToJsonInterface
             throw new \BadMethodCallException('A matching setter method could not be found, tried: ' . $setterName);
         }
 
-        if ((new \ReflectionMethod($this, $setterName))->getNumberOfParameters() < 1) {
-            throw new \BadMethodCallException('Setterereree: ' . $setterName);
-        }
-
         $this->_propertyMap[$name] = [[$this, $getterName], [$this, $setterName]];
     }
 
