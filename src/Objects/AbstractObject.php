@@ -24,7 +24,7 @@ ToJsonInterface
      *                                   Defaults to true, which will automatically try to find a
      *                                   method named after your property with camelCase, for example 'setName'.
      */
-    public function addProperty($name, $getterName = true, $setterName = true)
+    protected function mapProperty($name, $getterName = true, $setterName = true)
     {
         if ($getterName === true || $setterName === true) {
             $capitalized = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $name)));
@@ -36,10 +36,20 @@ ToJsonInterface
                 $setterName = 'set' . $capitalized;
             }
         }
-        $getter = method_exists($this, $getterName) ? [$this, $getterName] : null;
-        $setter = method_exists($this, $setterName) ? [$this, $setterName] : null;
 
-        $this->_propertyMap[$name] = [$getter, $setter];
+        if (!method_exists($this, $getterName)) {
+            throw new \BadMethodCallException('A matching getter method could not be found, tried: ' . $getterName);
+        }
+
+        if (!method_exists($this, $setterName)) {
+            throw new \BadMethodCallException('A matching setter method could not be found, tried: ' . $setterName);
+        }
+
+        if ((new \ReflectionMethod($this, $setterName))->getNumberOfParameters() < 1) {
+            throw new \BadMethodCallException('Setterereree: ' . $setterName);
+        }
+
+        $this->_propertyMap[$name] = [[$this, $getterName], [$this, $setterName]];
     }
 
     public function __get($key)

@@ -445,7 +445,7 @@ use \andrefelipe\Orchestrate\Objects\KeyValue;
 class Member extends KeyValue
 {
     public $name;
-    
+
     public $role = 'guest';
     // feel free to set the defaults!
     
@@ -462,15 +462,24 @@ class Member extends KeyValue
     protected $country_code;
 
     protected $created_date;
-
+    // protected and private vars get out of the public scope
+    // and therefore do not compose the Value data
 
     public function __construct()
     {
-        $this->addProperty('created_date');
-        $this->addProperty('country_code');
+        $this->mapProperty('created_date');
+        $this->mapProperty('country_code');
 
-        // strictly name the get/setters to map to:
-        // $this->addProperty('birth_date', 'getBirth', 'setBirth');
+        // mapProperty will automatically try to match the methods named
+        // after your property with camelCase, for example 'getName'.
+
+        // you can also strictly name the get/setters to map to:
+        // $this->mapProperty('birth_date', 'getBirth', 'setBirth');
+
+        // both methods are not required, but it is recommended to define
+        // both so you have complete control of your object usage
+        // $this->mapProperty('birth_date', false, 'setBirth');
+        // $this->mapProperty('birth_date', 'getBirth', false);        
     }
 
     public function getCreatedDate()
@@ -502,16 +511,16 @@ class Member extends KeyValue
         // here you could add a check if the country code is valid
         // could match to a country full name and store too, etc
     }
-
-    // the 'addProperty' method is important to strictly notify which
-    // properties this instance should handle, so it knows what to
-    // include in the Value that will be sent to Orchestrate
-
-    // remember, to check what is actually sent to Orchestrate
-    // use the toArray method
-
 }
 ```
+
+Two distinct things happen when using custom getter/setters:
+
+1- Access of the defined property gets mapped to the respective method. For example $item->country_code actually calls getCountryCode and $item->country_code = 'us' actually calls setCountryCode.
+
+2- You strictly notify which additional properties the object should handle, so it knows what to include in the Value that will be sent to Orchestrate.
+
+>> Remember, the Value data is composed of all your public properties plus the custom one defined with mapProperty. To check what will be sent to Orchestrate use the toArray method.
 
 The example above is a class that will represent each item in a Collection.
 

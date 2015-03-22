@@ -1,11 +1,5 @@
 # TODO and IDEAS
 
-- do the best to handle gracefully user defined getters/setters
-
---- if I map property that is get only, what should happen if we set it with $this->myGetOnlyProp ? vai ter que dar exception!? testar mais, parece que do jeito que está está correto
-
-
-
 - Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
