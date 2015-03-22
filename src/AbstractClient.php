@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Message\Response;
@@ -28,14 +30,9 @@ abstract class AbstractClient implements ClientInterface
     private $_apiKey;
 
     /**
-     * @var \GuzzleHttp\ClientInterface
+     * @var HttpClientInterface
      */
     private $_client;
-
-    /**
-     * @var string
-     */
-    // private static $_minimumObjectInterface = '\andrefelipe\Orchestrate\Objects\ReusableObjectInterface';
 
     /**
      * @param string $apiKey
@@ -116,13 +113,13 @@ abstract class AbstractClient implements ClientInterface
     // }
 
     /**
-     * @return \GuzzleHttp\ClientInterface
+     * @return HttpClientInterface
      */
     public function getHttpClient()
     {
         if (!$this->_client) {
             // create the default http client
-            $this->_client = new \GuzzleHttp\Client([
+            $this->_client = new HttpClient([
                 'base_url' => $this->getHost() . '/' . $this->getApiVersion() . '/',
                 'defaults' => [
                     'headers' => [
@@ -137,11 +134,11 @@ abstract class AbstractClient implements ClientInterface
     }
 
     /**
-     * @param \GuzzleHttp\ClientInterface $client
+     * @param HttpClientInterface $client
      *
      * @return AbstractClient self
      */
-    public function setHttpClient(\GuzzleHttp\ClientInterface $client)
+    public function setHttpClient(HttpClientInterface $client)
     {
         $this->_client = $client;
 
@@ -194,7 +191,7 @@ abstract class AbstractClient implements ClientInterface
      * @param string|Url $url     HTTP URL to connect to
      * @param array      $options Array of options to apply to the request
      *
-     * @return \GuzzleHttp\Message\Response
+     * @return Response
      * @link http://docs.guzzlephp.org/clients.html#request-options
      */
     public function request($method, $url = null, array $options = [])
