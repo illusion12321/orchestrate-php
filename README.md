@@ -475,11 +475,6 @@ class Member extends KeyValue
 
         // you can also strictly name the get/setters to map to:
         // $this->mapProperty('birth_date', 'getBirth', 'setBirth');
-
-        // both methods are not required, but it is recommended to define
-        // both so you have complete control of your object usage
-        // $this->mapProperty('birth_date', false, 'setBirth');
-        // $this->mapProperty('birth_date', 'getBirth', false);        
     }
 
     public function getCreatedDate()
