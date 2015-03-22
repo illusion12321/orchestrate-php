@@ -3,11 +3,11 @@ Orchestrate.io PHP Client
 
 A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
 
-- Choose which approach you prefer, client-like or object-like.
+- Choose which approach you prefer, [client-like or object-like](#getting-started).
 - PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
 - [Template engine friendly](#objectarray), with [JMESPath](#jmespath) support.
 - Create [Models](#models) by extending our classes, and easily change child class.
-- toArray/toJson methods produces the same output format as Orchestrate's export.
+- [toArray/toJson](#data-access) methods produces the same output format as Orchestrate's export.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
 
@@ -504,7 +504,7 @@ class Member extends KeyValue
     {
         $this->country_code = $value;
         // here you could add a check if the country code is valid
-        // could match to a country full name and store too, etc
+        // could match to a country name and store it too, etc
     }
 }
 ```
@@ -1245,7 +1245,7 @@ Please refer to the source code for now, while a proper documentation is made.
 Here are some useful notes to consider when using the Orchestrate service:
 - Avoid using slashes (/) in the key name, some problems will arise when querying them;
 - When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date);
-- Avoid using dashes in properties names, not required, but makes easier to be accessed directly in JS or PHP, without need to wrap in [] or {};
+- Avoid using dashes in properties names, not required, but makes easier to be accessed directly in JS or PHP, without need to wrap in item['my-prop'] or item->{'my-prop'};
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
 
 
