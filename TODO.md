@@ -1,5 +1,8 @@
 # TODO and IDEAS
 
+- could have find/search/findFirst method on KeyValue to search the collection and load the first match.
+- Collection could follow too? findFirst?
+
 - Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
