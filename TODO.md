@@ -1,5 +1,7 @@
 # TODO and IDEAS
 
+- maybe do one more major change: values set directly to the object DO NOT get converted to ObjectArray, ONLY at extraction methods (getValue, extract)
+
 - could have find/search/findFirst method on KeyValue to search the collection and load the first match.
 - Collection could follow too? findFirst?
 
