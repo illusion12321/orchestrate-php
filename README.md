@@ -771,7 +771,7 @@ $item->patchMerge(['title' => 'New Title'], true); // uses the current object Re
 $item = $client->post('collection', ['title' => 'New Title']);
 
 // Approach 2 - Object
-$item = $collection->item('key');
+$item = $collection->item();
 $item->post(['title' => 'New Title']); // posts a new value
 // or manage the object values then post later
 $item->title = 'New Title';
