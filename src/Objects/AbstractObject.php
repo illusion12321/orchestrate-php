@@ -58,10 +58,11 @@ ToJsonInterface
 
     public function __set($key, $value)
     {
+        if (is_array($value)) {
+            $value = new ObjectArray($value);
+        }
         if (isset($this->_propertyMap[$key][1])) {
             $this->_propertyMap[$key][1]($value);
-        } elseif (is_array($value)) {
-            $this->{$key} = new ObjectArray($value);
         } else {
             $this->{$key} = $value;
         }
