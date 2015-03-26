@@ -10,7 +10,7 @@ abstract class AbstractResponse// TODO create some interfaces here, ResponseInte
     /**
      * @var array
      */
-    private $_body = [];
+    private $_body;
 
     /**
      * @var Response
@@ -30,12 +30,12 @@ abstract class AbstractResponse// TODO create some interfaces here, ResponseInte
     /**
      * @var string
      */
-    private $_statusMessage = 'Not loaded yet.';
+    private $_statusMessage = '';
 
     /**
      * @var ClientInterface
      */
-    private $_client;
+    private $_client = null;
 
     /**
      * Get current client instance, either of Application or Client class.
@@ -70,12 +70,13 @@ abstract class AbstractResponse// TODO create some interfaces here, ResponseInte
      * Useful for debugging but for a more specific usage please rely on each
      * implementation getters.
      *
-     * Important: The body is always an associative array.
-     *
      * @return array
      */
     public function getBody()
     {
+        if (!is_array($this->_body)) {
+            $this->_body = [];
+        }
         return $this->_body;
     }
 
@@ -211,16 +212,15 @@ abstract class AbstractResponse// TODO create some interfaces here, ResponseInte
 
                 // try to get the Orchestrate error messages
 
-                if (isset($this->_body['code'])) {
+                if (!empty($this->_body['code'])) {
                     $this->_status = $this->_body['code'];
                 }
-
-                if (isset($this->_body['message'])) {
+                if (!empty($this->_body['message'])) {
                     $this->_statusMessage = $this->_body['message'];
                 }
             }
         } else {
-            $this->_body = [];
+            $this->_body = null;
             $this->_status = 'Internal Server Error';
             $this->_statusCode = 500;
             $this->_statusMessage = 'Invalid Response';
@@ -233,7 +233,7 @@ abstract class AbstractResponse// TODO create some interfaces here, ResponseInte
     public function reset()
     {
         $this->_response = null;
-        $this->_body = [];
+        $this->_body = null;
         $this->_status = '';
         $this->_statusCode = 0;
         $this->_statusMessage = '';
