@@ -270,7 +270,7 @@ if ($item->get()) {
 
     // Array syntax
     echo $item['title'];
-    echo $item['another_prop']; // returns null if not set, but never error!
+    echo $item['another_prop']; // returns null if not set, but never error
 
     // as intended you can change the Value, then put back to Orchestrate
     $item->file_url = 'http://myfile.jpg';
@@ -323,13 +323,6 @@ if ($item->get()) {
     //         "file_url": "http://myfile.jpg"
     //     }
     // }
-
-    // any property that is an array inherits the same functionality
-    $item->myprop = ['likes' => []];
-    $item->myprop->likes[] = 'computers';
-    $item->myprop->likes[] = 'code';
-    $item->myprop->likes->toJson(); // ["computers","code"]
-    $item->myprop->toJson(); // {"likes":["computers","code"]}
 }
 
 
@@ -342,6 +335,10 @@ if ($collection->search('collection', 'title:"The Title*"')) {
     foreach ($collection as $item) {
         echo $item->title;
     }
+
+    // also use the Array syntax
+    $item = $collection[0];
+    // returns null if not set, but never error
 }
 
 ```
@@ -515,7 +512,7 @@ Two distinct things happen when using custom getter/setters:
 
 2- You strictly notify which additional properties the object should handle, so it knows what to include in the Value that will be sent to Orchestrate.
 
->> Remember, the Value data is composed of all your public properties plus the custom one defined with mapProperty. To check what will be sent to Orchestrate use the toArray method.
+> Remember, the Value data is composed of all your public properties plus the custom one defined with mapProperty. To check what will be sent to Orchestrate use the toArray method.
 
 The example above is a class that will represent each item in a Collection.
 
@@ -544,9 +541,11 @@ class Members extends Collection
 
 // at this approach, whenever we create items from this collection,
 // it will be Member objects
-$members = new \MyProject\Models\Members($app);
+use \MyProject\Models\Members;
 
-$item = $members->item('john'); // instance of '\MyProject\Models\Member'
+$members = new Members($app);
+
+$item = $members->item('john'); // instance of Member
 
 ```
 

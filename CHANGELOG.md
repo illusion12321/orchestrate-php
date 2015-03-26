@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## HEAD
+- Simple but major change, arrays values set to a KeyValue/Event do not get converted to ObjectArray anymore. This provides consistency with our model subclass feature, as any subclass public property would not get the ObjectArray convertion, therefore creating an inconsistent behaviour.
+- ObjectArrays are only created when extract values with getValue or extract methods.
+
 ## 0.11.0 - 2015-03-22
 - Added support for custom setter/getters on KeyValue/Event to get properties mapped into the Value.
 - Corrected how operations handles values internally on success. KeyValue GET no longer reset values before setting the new ones. Put, delete and purge, consciously reset/overwrite values according to the results. Same for Event.
