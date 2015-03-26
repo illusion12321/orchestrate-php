@@ -1,10 +1,5 @@
 # TODO and IDEAS
 
-- check List objects, if should "use less" the ObjectArray
-
-- remove ArrayAccess from KeyValue / Events to favor single syntax!?
-- Lists already only implements ArrayAccess, KeyValues could implement only magic getters
-
 - could have find/search/findFirst method on KeyValue to search the collection and load the first match.
 - Collection could follow too? findFirst?
 
