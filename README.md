@@ -7,6 +7,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 - PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
 - [Template engine friendly](#objectarray), with [JMESPath](#jmespath) support.
 - Create [Models](#models) by extending our classes, and easily change child class.
+- [Serialization](#serialization) is supported.
 - [toArray/toJson](#data-access) methods produces the same output format as Orchestrate's export.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
@@ -563,6 +564,35 @@ $client->setEventClass($class);
 
 
 
+
+
+## Serialization
+
+Objects can be serialized and stored in your prefered cache for later re-use. 
+
+It is valuable to cache in JSON format, because any part of your application, in any language, could take advantage of that cache. But if your use case is strictly PHP you can have the best performance. In my ultra simple test, JSON decoding and instantiation is 3 times slower than unserialize.
+
+```php
+// serialize single item
+$item = $collection->item('john');
+
+if ($item->get()) {
+    file_put_contents('your-cache-path', serialize($item));
+}
+
+// serialize entire collections
+if ($collection->search('*', 'value.created_date:desc', null, 100)) {
+    file_put_contents('your-cache-path-collection', serialize($collection));
+}
+
+// instantiation
+$data = file_get_contents('your-cache-path');
+$item = unserialize($data);
+
+$data = file_get_contents('your-cache-path-collection');
+$collection = unserialize($data);
+
+```
 
 
 

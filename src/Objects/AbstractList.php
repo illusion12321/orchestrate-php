@@ -121,36 +121,33 @@ ReusableObjectInterface
 
     public function init(array $data)
     {
-        if (empty($data)) {
-            return;
-        }
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
 
-        foreach ($data as $key => $value) {
+                if ($key === 'total_count') {
+                    $this->_totalCount = (int) $value;
 
-            if ($key === 'total_count') {
-                $this->_totalCount = (int) $value;
+                } elseif ($key === 'prev') {
+                    $this->_prevUrl = $value;
 
-            } elseif ($key === 'prev') {
-                $this->_prevUrl = $value;
+                } elseif ($key === 'next') {
+                    $this->_nextUrl = $value;
 
-            } elseif ($key === 'next') {
-                $this->_nextUrl = $value;
+                } elseif ($key === 'results') {
+                    $this->_results = new ObjectArray(array_map(
+                        [$this, 'createChildrenClass'],
+                        $value
+                    ));
 
-            } elseif ($key === 'results') {
-                $this->_results = new ObjectArray(array_map(
-                    [$this, 'createChildrenClass'],
-                    $value
-                ));
-
-                // set Collection name if not already
-                if (!$this->_collection && isset($this->_results[0])
-                    && method_exists($this->_results[0], 'getCollection')
-                ) {
-                    $this->setCollection($this->_results[0]->getCollection());
+                    // set Collection name if not already
+                    if (!$this->_collection && isset($this->_results[0])
+                        && method_exists($this->_results[0], 'getCollection')
+                    ) {
+                        $this->setCollection($this->_results[0]->getCollection());
+                    }
                 }
             }
         }
-
         return $this;
     }
 

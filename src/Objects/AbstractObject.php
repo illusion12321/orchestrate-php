@@ -102,7 +102,7 @@ ToJsonInterface
 
     public function toArray()
     {
-        return array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
+        return array_merge($this->getMappedValues(true), ObjectArray::objectToArray($this));
     }
 
     public function toJson($options = 0, $depth = 512)
@@ -190,12 +190,17 @@ ToJsonInterface
      *
      * @return array
      */
-    private function getMappedValues()
+    private function getMappedValues($skipNull = false)
     {
         $result = [];
         foreach ($this->_propertyMap as $key => $methods) {
             if (isset($methods[0])) {
-                $result[$key] = $methods[0](); // TODO on toArray should not include null values
+
+                $value = $methods[0]();
+
+                if (!$skipNull || $value !== null) {
+                    $result[$key] = $value;
+                }
             }
         }
         return $result;

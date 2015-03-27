@@ -125,23 +125,20 @@ ReusableObjectInterface
 
     public function init(array $data)
     {
-        if (empty($data)) {
-            return;
-        }
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
 
-        foreach ($data as $key => $value) {
-
-            if ($key === 'source') {
-                $this->setSource((new KeyValue())->init($value));
-            } elseif ($key === 'destination') {
-                $this->setDestination((new KeyValue())->init($value));
-            } elseif ($key === 'relation') {
-                $this->setRelation($value);
-            } elseif ($key === 'timestamp') {
-                $this->setTimestamp($value);
+                if ($key === 'source') {
+                    $this->setSource((new KeyValue())->init($value));
+                } elseif ($key === 'destination') {
+                    $this->setDestination((new KeyValue())->init($value));
+                } elseif ($key === 'relation') {
+                    $this->setRelation($value);
+                } elseif ($key === 'timestamp') {
+                    $this->setTimestamp($value);
+                }
             }
         }
-
         return $this;
     }
 

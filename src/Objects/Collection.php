@@ -12,7 +12,7 @@ class Collection extends AbstractList
     /**
      * @var array
      */
-    private $_aggregates = [];
+    private $_aggregates;
 
     /**
      * @param string $key
@@ -30,31 +30,44 @@ class Collection extends AbstractList
     }
 
     /**
-     * @return float
+     * @return array
      */
     public function getAggregates()
     {
+        if (!is_array($this->_aggregates)) {
+            $this->_aggregates = [];
+        }
         return $this->_aggregates;
     }
 
-    /**
-     * @return array
-     */
+    public function reset()
+    {
+        parent::reset();
+        $this->_aggregates = null;
+    }
+
+    public function init(array $data)
+    {
+        if (!empty($data)) {
+            parent::init($data);
+
+            if (!empty($data['aggregates'])) {
+                $this->_aggregates = (array) $data['aggregates'];
+            }
+        }
+        return $this;
+    }
+
     public function toArray()
     {
         $result = parent::toArray();
+        $result['kind'] = 'collection';
 
         if (!empty($this->_aggregates)) {
             $result['aggregates'] = $this->_aggregates;
         }
 
         return $result;
-    }
-
-    public function reset()
-    {
-        parent::reset();
-        $this->_aggregates = [];
     }
 
     /**

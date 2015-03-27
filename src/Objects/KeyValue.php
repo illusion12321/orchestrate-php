@@ -71,34 +71,32 @@ class KeyValue extends AbstractObject implements KeyValueInterface
 
     public function init(array $data)
     {
-        if (empty($data)) {
-            return;
-        }
+        if (!empty($data)) {
 
-        if (!empty($data['path'])) {
-            $data = array_merge($data, $data['path']);
-        }
+            if (!empty($data['path'])) {
+                $data = array_merge($data, $data['path']);
+            }
 
-        foreach ($data as $key => $value) {
-            if ($key === 'collection') {
-                $this->setCollection($value);
-            } elseif ($key === 'key') {
-                $this->setKey($value);
-            } elseif ($key === 'ref') {
-                $this->setRef($value);
-            } elseif ($key === 'value') {
-                $this->setValue((array) $value);
-            } elseif ($key === 'score') {
-                $this->_score = (float) $value;
-            } elseif ($key === 'distance') {
-                $this->_distance = (float) $value;
-            } elseif ($key === 'reftime') {
-                $this->_reftime = (int) $value;
-            } elseif ($key === 'tombstone') {
-                $this->_tombstone = (boolean) $value;
+            foreach ($data as $key => $value) {
+                if ($key === 'collection') {
+                    $this->setCollection($value);
+                } elseif ($key === 'key') {
+                    $this->setKey($value);
+                } elseif ($key === 'ref') {
+                    $this->setRef($value);
+                } elseif ($key === 'value') {
+                    $this->setValue((array) $value);
+                } elseif ($key === 'score') {
+                    $this->_score = (float) $value;
+                } elseif ($key === 'distance') {
+                    $this->_distance = (float) $value;
+                } elseif ($key === 'reftime') {
+                    $this->_reftime = (int) $value;
+                } elseif ($key === 'tombstone') {
+                    $this->_tombstone = (boolean) $value;
+                }
             }
         }
-
         return $this;
     }
 

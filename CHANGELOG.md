@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## HEAD
+## 0.12.0 - 2015-03-27
+- Added Serializable to objects.
 - Simple but major change, arrays values set to a KeyValue/Event do not get converted to ObjectArray anymore. This provides consistency with our model subclass feature, as any subclass public property would not get the ObjectArray convertion, therefore creating an inconsistent behaviour.
 - ObjectArrays are only created when extract values with getValue or extract methods.
 
@@ -24,7 +25,7 @@
 - Implemented two-way relation put/delete.
 - Implemented KeyRangeBuilder (collection list) and TimeRangeBuilder (event list), replacing array range parameters.
 - Removed setApiVersion, still too early to know if we can just change it when a new version comes up.
-- Added on JMESPath to objects
+- Added on JMESPath to objects.
 
 ## 0.9.0 - 2015-03-09
 - Implemented Refs, Events and Graph directly within the KeyValue class, check out our README.

@@ -1,7 +1,5 @@
 # TODO and IDEAS
 
-- add toArray and init to Relations class, so it can add the missing parameters, to be used on Serializable -- same for Refs, Events --- Collection did its job
-
 - could have find/search/findFirst method on KeyValue to search the collection and load the first match.
 - Collection could follow too? findFirst?
 

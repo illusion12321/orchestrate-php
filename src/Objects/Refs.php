@@ -13,6 +13,36 @@ class Refs extends AbstractList
         $this->setKey($key);
     }
 
+    public function reset()
+    {
+        parent::reset();
+        $this->_key = null;
+    }
+
+    public function init(array $data)
+    {
+        if (!empty($data)) {
+            parent::init($data);
+
+            if (isset($data['key'])) {
+                $this->setKey($data['key']);
+            }
+        }
+        return $this;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+        $result['kind'] = 'refs';
+
+        if (!empty($this->_key)) {
+            $result['key'] = $this->_key;
+        }
+
+        return $result;
+    }
+
     /**
      * @param int $limit
      * @param int $offset

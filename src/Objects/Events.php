@@ -26,6 +26,43 @@ class Events extends AbstractList
         $this->setType($type);
     }
 
+    public function reset()
+    {
+        parent::reset();
+        $this->_key = null;
+        $this->_type = null;
+    }
+
+    public function init(array $data)
+    {
+        if (!empty($data)) {
+            parent::init($data);
+
+            if (isset($data['key'])) {
+                $this->setKey($data['key']);
+            }
+            if (isset($data['type'])) {
+                $this->setType($data['type']);
+            }
+        }
+        return $this;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+        $result['kind'] = 'events';
+
+        if (!empty($this->_key)) {
+            $result['key'] = $this->_key;
+        }
+        if (!empty($this->_type)) {
+            $result['type'] = $this->_type;
+        }
+
+        return $result;
+    }
+
     /**
      * Gets a list of events in reverse chronological order,
      * specified by the limit and time range parameters.

@@ -50,6 +50,43 @@ class Relations extends AbstractList
         return $this;
     }
 
+    public function reset()
+    {
+        parent::reset();
+        $this->_key = null;
+        $this->_depth = null;
+    }
+
+    public function init(array $data)
+    {
+        if (!empty($data)) {
+            parent::init($data);
+
+            if (isset($data['key'])) {
+                $this->setKey($data['key']);
+            }
+            if (isset($data['depth'])) {
+                $this->setDepth($data['depth']);
+            }
+        }
+        return $this;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+        $result['kind'] = 'relations';
+
+        if (!empty($this->_key)) {
+            $result['key'] = $this->_key;
+        }
+        if (!empty($this->_depth)) {
+            $result['depth'] = $this->_depth;
+        }
+
+        return $result;
+    }
+
     /**
      * @param int $limit
      * @param int $offset

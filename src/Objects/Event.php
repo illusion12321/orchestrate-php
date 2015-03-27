@@ -80,37 +80,35 @@ class Event extends AbstractObject implements EventInterface
 
     public function init(array $data)
     {
-        if (empty($data)) {
-            return;
-        }
+        if (!empty($data)) {
 
-        if (!empty($data['path'])) {
-            $data = array_merge($data, $data['path']);
-        }
+            if (!empty($data['path'])) {
+                $data = array_merge($data, $data['path']);
+            }
 
-        foreach ($data as $key => $value) {
+            foreach ($data as $key => $value) {
 
-            if ($key === 'collection') {
-                $this->setCollection($value);
-            } elseif ($key === 'key') {
-                $this->setKey($value);
-            } elseif ($key === 'type') {
-                $this->setType($value);
-            } elseif ($key === 'timestamp') {
-                $this->setTimestamp($value);
-            } elseif ($key === 'ordinal') {
-                $this->setOrdinal($value);
-            } elseif ($key === 'ref') {
-                $this->setRef($value);
-            } elseif ($key === 'reftime') {
-                $this->_reftime = (int) $value;
-            } elseif ($key === 'ordinal_str') {
-                $this->_ordinalStr = $value;
-            } elseif ($key === 'value') {
-                $this->setValue((array) $value);
+                if ($key === 'collection') {
+                    $this->setCollection($value);
+                } elseif ($key === 'key') {
+                    $this->setKey($value);
+                } elseif ($key === 'type') {
+                    $this->setType($value);
+                } elseif ($key === 'timestamp') {
+                    $this->setTimestamp($value);
+                } elseif ($key === 'ordinal') {
+                    $this->setOrdinal($value);
+                } elseif ($key === 'ref') {
+                    $this->setRef($value);
+                } elseif ($key === 'reftime') {
+                    $this->_reftime = (int) $value;
+                } elseif ($key === 'ordinal_str') {
+                    $this->_ordinalStr = $value;
+                } elseif ($key === 'value') {
+                    $this->setValue((array) $value);
+                }
             }
         }
-
         return $this;
     }
 
