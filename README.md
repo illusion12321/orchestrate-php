@@ -13,7 +13,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 
 Requirements:
 - PHP must be 5.4 or higher.
-- [Guzzle 5](http://guzzlephp.org/) as HTTP client.
+- [Guzzle 5](https://github.com/guzzle/guzzle) as HTTP client.
 - [JMESPath](https://github.com/jmespath/jmespath.php).
 
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
@@ -855,10 +855,10 @@ $collection->get(100, $range);
 // Please note, the max limit currently imposed by Orchestrate is 100
 
 
-// now get array of the results
+// now get the results
 $collection->getResults();
 
-// or go ahead and iterate over the results directly!
+// or go ahead and iterate over them directly!
 foreach ($collection as $item) {
     
     echo $item->title;
