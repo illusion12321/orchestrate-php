@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\ClientInterface;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
@@ -10,6 +11,7 @@ abstract class AbstractList extends AbstractResponse implements
 \ArrayAccess,
 \IteratorAggregate,
 \Countable,
+\Serializable,
 ListInterface,
 ToJsonInterface,
 ReusableObjectInterface
@@ -57,6 +59,24 @@ ReusableObjectInterface
     public function __construct($collection = null)
     {
         $this->setCollection($collection);
+    }
+
+    /**
+     * Set the client which this object, and all of its children,
+     * will use to make Orchestrate API requests.
+     *
+     * @param ClientInterface $client
+     */
+    public function setClient(ClientInterface $client)
+    {
+        parent::setClient($client);
+
+        foreach ($this->getResults() as $item) {
+            if ($item instanceof AbstractResponse) {
+                $item->setClient($client);
+            }
+        }
+        return $this;
     }
 
     public function offsetGet($offset)
@@ -109,16 +129,23 @@ ReusableObjectInterface
 
             if ($key === 'total_count') {
                 $this->_totalCount = (int) $value;
+
             } elseif ($key === 'prev') {
                 $this->_prevUrl = $value;
+
             } elseif ($key === 'next') {
                 $this->_nextUrl = $value;
+
             } elseif ($key === 'results') {
                 $this->_results = new ObjectArray(array_map(
                     [$this, 'createChildrenClass'],
                     $value
                 ));
-                if (isset($this->_results[0]) && method_exists($this->_results[0], 'getCollection')) {
+
+                // set Collection name if not already
+                if (!$this->_collection && isset($this->_results[0])
+                    && method_exists($this->_results[0], 'getCollection')
+                ) {
                     $this->setCollection($this->_results[0]->getCollection());
                 }
             }
@@ -131,7 +158,7 @@ ReusableObjectInterface
     {
         $result = [
             'kind' => 'list',
-            'count' => count($this->getResults()),
+            'count' => count($this),
             'total_count' => $this->_totalCount,
             'results' => $this->getResults()->toArray(),
         ];
@@ -159,7 +186,6 @@ ReusableObjectInterface
 
     public function extractValues($expression)
     {
-        // print_r($this->getValues()->toArray());exit;
         $result = JmesPath::search($expression, $this->getValues()->toArray());
         return is_array($result) ? new ObjectArray($result) : $result;
     }
@@ -196,6 +222,45 @@ ReusableObjectInterface
     {
         $this->getResults()->merge($list->getResults());
         return $this;
+    }
+
+    public function serialize()
+    {
+        $data = $this->toArray();
+        $data['childClass'] = $this->getChildClass()->name;
+        $data['defaultChildClass'] = static::$defaultChildClass;
+        $data['minimumChildInterface'] = static::$minimumChildInterface;
+
+        return serialize($data);
+    }
+
+    /**
+     * @param string $serialized
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function unserialize($serialized)
+    {
+        if (is_string($serialized)) {
+            $data = unserialize($serialized);
+
+            if (is_array($data)) {
+
+                if (!empty($data['childClass'])) {
+                    $this->setChildClass($data['childClass']);
+                }
+                if (!empty($data['defaultChildClass'])) {
+                    static::$defaultChildClass = $data['defaultChildClass'];
+                }
+                if (!empty($data['defaultChildClass'])) {
+                    static::$minimumChildInterface = $data['minimumChildInterface'];
+                }
+
+                $this->init($data);
+                return;
+            }
+        }
+        throw new \InvalidArgumentException('Invalid serialized data type.');
     }
 
     /**
@@ -338,8 +403,11 @@ ReusableObjectInterface
 
     protected function createChildrenClass(array $values)
     {
-        return $this->getChildClass()->newInstance()
-                    ->setClient($this->getClient(true))
-                    ->init($values);
+        $item = $this->getChildClass()->newInstance()->init($values);
+
+        if ($client = $this->getClient()) {
+            $item->setClient($client);
+        }
+        return $item;
     }
 }

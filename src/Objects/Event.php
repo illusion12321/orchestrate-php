@@ -64,30 +64,6 @@ class Event extends AbstractObject implements EventInterface
         return $this->_ordinalStr;
     }
 
-    public function toArray()
-    {
-        $result = [
-            'kind' => 'event',
-            'path' => [
-                'collection' => $this->getCollection(),
-                'kind' => 'event',
-                'key' => $this->getKey(),
-                'type' => $this->getType(),
-                'timestamp' => $this->getTimestamp(),
-                'ordinal' => $this->getOrdinal(),
-                'ref' => $this->getRef(),
-                'reftime' => $this->getReftime(),
-                'ordinal_str' => $this->getOrdinalStr(),
-            ],
-            'value' => parent::toArray(),
-            'timestamp' => $this->getTimestamp(),
-            'ordinal' => $this->getOrdinal(),
-            'reftime' => $this->getReftime(),
-        ];
-
-        return $result;
-    }
-
     public function reset()
     {
         parent::reset();
@@ -133,10 +109,33 @@ class Event extends AbstractObject implements EventInterface
             } elseif ($key === 'value') {
                 $this->setValue((array) $value);
             }
-
         }
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        $result = [
+            'kind' => 'event',
+            'path' => [
+                'collection' => $this->getCollection(),
+                'kind' => 'event',
+                'key' => $this->getKey(),
+                'type' => $this->getType(),
+                'timestamp' => $this->getTimestamp(),
+                'ordinal' => $this->getOrdinal(),
+                'ref' => $this->getRef(),
+                'reftime' => $this->getReftime(),
+                'ordinal_str' => $this->getOrdinalStr(),
+            ],
+            'value' => parent::toArray(),
+            'timestamp' => $this->getTimestamp(),
+            'ordinal' => $this->getOrdinal(),
+            'reftime' => $this->getReftime(),
+        ];
+
+        return $result;
     }
 
     public function get()

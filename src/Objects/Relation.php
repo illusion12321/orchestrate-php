@@ -114,6 +114,37 @@ ReusableObjectInterface
         return $this;
     }
 
+    public function reset()
+    {
+        parent::reset();
+        $this->_source = null;
+        $this->_relation = null;
+        $this->_destination = null;
+        $this->_timestamp = null;
+    }
+
+    public function init(array $data)
+    {
+        if (empty($data)) {
+            return;
+        }
+
+        foreach ($data as $key => $value) {
+
+            if ($key === 'source') {
+                $this->setSource((new KeyValue())->init($value));
+            } elseif ($key === 'destination') {
+                $this->setDestination((new KeyValue())->init($value));
+            } elseif ($key === 'relation') {
+                $this->setRelation($value);
+            } elseif ($key === 'timestamp') {
+                $this->setTimestamp($value);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * @return array
      */
@@ -149,38 +180,6 @@ ReusableObjectInterface
     public function toJson($options = 0, $depth = 512)
     {
         return json_encode($this->toArray(), $options, $depth);
-    }
-
-    public function reset()
-    {
-        parent::reset();
-        $this->_source = null;
-        $this->_relation = null;
-        $this->_destination = null;
-        $this->_timestamp = null;
-    }
-
-    public function init(array $data)
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        foreach ($data as $key => $value) {
-
-            if ($key === 'source') {
-                $this->setSource((new KeyValue())->init($value));
-            } elseif ($key === 'destination') {
-                $this->setDestination((new KeyValue())->init($value));
-            } elseif ($key === 'relation') {
-                $this->setRelation($value);
-            } elseif ($key === 'timestamp') {
-                $this->setTimestamp($value);
-            }
-
-        }
-
-        return $this;
     }
 
     /**

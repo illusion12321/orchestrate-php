@@ -7,6 +7,7 @@ use JmesPath\Env as JmesPath;
 
 abstract class AbstractObject extends AbstractResponse implements
 \ArrayAccess,
+\Serializable,
 ValueInterface,
 ToJsonInterface
 {
@@ -124,7 +125,7 @@ ToJsonInterface
 
     public function setValue(array $values)
     {
-        if ($values) {
+        if (!empty($values)) {
             foreach ($values as $key => $value) {
 
                 if (is_numeric($key)) {
@@ -155,6 +156,30 @@ ToJsonInterface
         return $this;
     }
 
+    public function serialize()
+    {
+        return serialize($this->toArray());
+    }
+
+    /**
+     * @param string $serialized
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function unserialize($serialized)
+    {
+        if (is_string($serialized)) {
+            $data = unserialize($serialized);
+
+            if (is_array($data)) {
+
+                $this->init($data);
+                return;
+            }
+        }
+        throw new \InvalidArgumentException('Invalid serialized data type.');
+    }
+
     private function noIndexedArrayException()
     {
         throw new \RuntimeException('Indexed arrays not allowed at the root of ' . get_class($this) . ' objects.');
@@ -170,7 +195,7 @@ ToJsonInterface
         $result = [];
         foreach ($this->_propertyMap as $key => $methods) {
             if (isset($methods[0])) {
-                $result[$key] = $methods[0]();
+                $result[$key] = $methods[0](); // TODO on toArray should not include null values
             }
         }
         return $result;
