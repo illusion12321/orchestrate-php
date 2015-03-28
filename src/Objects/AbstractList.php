@@ -21,6 +21,11 @@ ReusableObjectInterface
     /**
      * @var string
      */
+    protected static $itemKind = 'item';
+
+    /**
+     * @var string
+     */
     protected static $defaultChildClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
 
     /**
@@ -265,6 +270,22 @@ ReusableObjectInterface
      */
     public function getTotalCount()
     {
+        if ($this->_totalCount === null) {
+
+            // makes a straight Search query for no results
+            $path = $this->getCollection(true);
+            $parameters = [
+                'query' => '@path.kind:(' . static::$itemKind . ')',
+                'limit' => 0,
+            ];
+            $response = $this->getClient(true)->request('GET', $path, ['query' => $parameters]);
+
+            // set value if succesful
+            if ($response->getStatusCode() === 200) {
+                $body = $response->json();
+                $this->_totalCount = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
+            }
+        }
         return $this->_totalCount;
     }
 

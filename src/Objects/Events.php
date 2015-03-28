@@ -10,8 +10,19 @@ class Events extends AbstractList
     use KeyTrait;
     use TypeTrait;
 
+    /**
+     * @var string
+     */
+    protected static $itemKind = 'event';
+
+    /**
+     * @var string
+     */
     protected static $defaultChildClass = '\andrefelipe\Orchestrate\Objects\Event';
 
+    /**
+     * @var string
+     */
     protected static $minimumChildInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
 
     /**
