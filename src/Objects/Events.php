@@ -16,16 +16,6 @@ class Events extends AbstractList
     protected static $itemKind = 'event';
 
     /**
-     * @var string
-     */
-    protected static $defaultChildClass = '\andrefelipe\Orchestrate\Objects\Event';
-
-    /**
-     * @var string
-     */
-    protected static $minimumChildInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
-
-    /**
      * @param string $collection
      * @param string $key
      * @param string $type

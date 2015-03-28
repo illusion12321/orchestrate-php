@@ -1,9 +1,9 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\ClientInterface;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use andrefelipe\Orchestrate\HttpClientInterface;
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use JmesPath\Env as JmesPath;
 
@@ -26,12 +26,32 @@ ReusableObjectInterface
     /**
      * @var string
      */
-    protected static $defaultChildClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
+    protected static $defaultItemClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
 
     /**
      * @var string
      */
-    protected static $minimumChildInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
+    protected static $minimumItemInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
+
+    /**
+     * @var string
+     */
+    protected static $defaultEventClass = '\andrefelipe\Orchestrate\Objects\Event';
+
+    /**
+     * @var string
+     */
+    protected static $minimumEventInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
+
+    /**
+     * @var \ReflectionClass
+     */
+    private $_itemClass;
+
+    /**
+     * @var \ReflectionClass
+     */
+    private $_eventClass;
 
     /**
      * @var ObjectArray
@@ -54,11 +74,6 @@ ReusableObjectInterface
     private $_prevUrl = '';
 
     /**
-     * @var \ReflectionClass
-     */
-    private $_childClass;
-
-    /**
      * @param string $collection
      */
     public function __construct($collection = null)
@@ -70,15 +85,16 @@ ReusableObjectInterface
      * Set the client which this object, and all of its children,
      * will use to make Orchestrate API requests.
      *
-     * @param ClientInterface $client
+     * @param HttpClientInterface $httpClient
      */
-    public function setClient(ClientInterface $client)
+    public function setHttpClient(HttpClientInterface $httpClient)
     {
-        parent::setClient($client);
+        parent::setHttpClient($httpClient);
 
         foreach ($this->getResults() as $item) {
-            if ($item instanceof AbstractResponse) {
-                $item->setClient($client);
+            if ($item instanceof AbstractConnection) {
+                //TODO change to method_exists?
+                $item->setHttpClient($httpClient);
             }
         }
         return $this;
@@ -140,7 +156,7 @@ ReusableObjectInterface
 
                 } elseif ($key === 'results') {
                     $this->_results = new ObjectArray(array_map(
-                        [$this, 'createChildrenClass'],
+                        [$this, 'createInstance'],
                         $value
                     ));
 
@@ -229,9 +245,13 @@ ReusableObjectInterface
     public function serialize()
     {
         $data = $this->toArray();
-        $data['childClass'] = $this->getChildClass()->name;
-        $data['defaultChildClass'] = static::$defaultChildClass;
-        $data['minimumChildInterface'] = static::$minimumChildInterface;
+        $data['itemClass'] = $this->getItemClass()->name;
+        $data['eventClass'] = $this->getEventClass()->name;
+        // TODO check if these vars will turn to private after all, if not add the other values here
+        // $data['defaultItemClass'] = static::$defaultItemClass;
+        // $data['minimumItemInterface'] = static::$minimumItemInterface;
+        // $data['defaultEventClass'] = static::$defaultEventClass;
+        // $data['minimumEventInterface'] = static::$minimumEventInterface;
 
         return serialize($data);
     }
@@ -248,15 +268,20 @@ ReusableObjectInterface
 
             if (is_array($data)) {
 
-                if (!empty($data['childClass'])) {
-                    $this->setChildClass($data['childClass']);
+                if (!empty($data['itemClass'])) {
+                    $this->setItemClass($data['itemClass']);
                 }
-                if (!empty($data['defaultChildClass'])) {
-                    static::$defaultChildClass = $data['defaultChildClass'];
+                if (!empty($data['eventClass'])) {
+                    $this->setEventClass($data['eventClass']);
                 }
-                if (!empty($data['defaultChildClass'])) {
-                    static::$minimumChildInterface = $data['minimumChildInterface'];
-                }
+
+                // TODO same above
+                // if (!empty($data['defaultChildClass'])) {
+                //     static::$defaultChildClass = $data['defaultChildClass'];
+                // }
+                // if (!empty($data['defaultChildClass'])) {
+                //     static::$minimumChildInterface = $data['minimumChildInterface'];
+                // }
 
                 $this->init($data);
                 return;
@@ -278,7 +303,7 @@ ReusableObjectInterface
                 'query' => '@path.kind:(' . static::$itemKind . ')',
                 'limit' => 0,
             ];
-            $response = $this->getClient(true)->request('GET', $path, ['query' => $parameters]);
+            $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
 
             // set value if succesful
             if ($response->getStatusCode() === 200) {
@@ -342,7 +367,7 @@ ReusableObjectInterface
 
             if (!empty($body['results'])) {
                 $this->_results = new ObjectArray(array_map(
-                    [$this, 'createChildrenClass'],
+                    [$this, 'createInstance'],
                     $body['results']
                 ));
             }
@@ -370,7 +395,7 @@ ReusableObjectInterface
         if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($url, '/' . $this->getClient(true)->getApiVersion() . '/');
+            $url = ltrim($url, '/' . $this->getHttpClient(true)->getApiVersion() . '/');
 
             // request
             $this->request('GET', $url);
@@ -381,51 +406,108 @@ ReusableObjectInterface
     }
 
     /**
-     * Get the ReflectionClass that is being used to instantiate this list's children.
+     * Get the ReflectionClass that is being used to instantiate this list's items (KeyValue).
      *
      * @return \ReflectionClass
      */
-    public function getChildClass()
+    public function getItemClass()
     {
-        if (!isset($this->_childClass)) {
-            $this->_childClass = new \ReflectionClass(static::$defaultChildClass);
+        if (!isset($this->_itemClass)) {
+            $this->_itemClass = new \ReflectionClass(static::$defaultItemClass);
 
-            if (!$this->_childClass->implementsInterface(static::$minimumChildInterface)) {
-                throw new \RuntimeException('Child classes must implement ' . static::$minimumChildInterface);
+            if (!$this->_itemClass->implementsInterface(static::$minimumItemInterface)) {
+                throw new \RuntimeException('Item classes must implement ' . static::$minimumItemInterface);
             }
         }
-        return $this->_childClass;
+        return $this->_itemClass;
     }
 
     /**
-     * Set which class should be used to instantiate this list's children.
+     * Set which class should be used to instantiate this list's items (KeyValue).
      *
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
      *
      * @return AbstractList self
      */
-    public function setChildClass($class)
+    public function setItemClass($class)
     {
         if ($class instanceof \ReflectionClass) {
-            $this->_childClass = $class;
+            $this->_itemClass = $class;
         } else {
-            $this->_childClass = new \ReflectionClass($class);
+            $this->_itemClass = new \ReflectionClass($class);
         }
 
-        if (!$this->_childClass->implementsInterface(static::$minimumChildInterface)) {
-            throw new \RuntimeException('Child classes must implement ' . static::$minimumChildInterface);
+        if (!$this->_itemClass->implementsInterface(static::$minimumItemInterface)) {
+            throw new \RuntimeException('Item classes must implement ' . static::$minimumItemInterface);
         }
 
         return $this;
     }
 
-    protected function createChildrenClass(array $values)
+    /**
+     * Get the ReflectionClass that is being used to instantiate this list's events.
+     *
+     * @return \ReflectionClass
+     */
+    public function getEventClass()
     {
-        $item = $this->getChildClass()->newInstance()->init($values);
+        if (!isset($this->_eventClass)) {
+            $this->_eventClass = new \ReflectionClass(static::$defaultEventClass);
 
-        if ($client = $this->getClient()) {
-            $item->setClient($client);
+            if (!$this->_eventClass->implementsInterface(static::$minimumEventInterface)) {
+                throw new \RuntimeException('Event classes must implement ' . static::$minimumEventInterface);
+            }
         }
-        return $item;
+        return $this->_eventClass;
+    }
+
+    /**
+     * Set which class should be used to instantiate this list's events.
+     *
+     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
+     *
+     * @return AbstractList self
+     */
+    public function setEventClass($class)
+    {
+        if ($class instanceof \ReflectionClass) {
+            $this->_eventClass = $class;
+        } else {
+            $this->_eventClass = new \ReflectionClass($class);
+        }
+
+        if (!$this->_eventClass->implementsInterface(static::$minimumEventInterface)) {
+            throw new \RuntimeException('Event classes must implement ' . static::$minimumEventInterface);
+        }
+
+        return $this;
+    }
+
+    /**
+     *
+     * @param array $itemValues
+     */
+    protected function createInstance(array $itemValues)
+    {
+        if (!empty($itemValues['kind'])) {
+
+            if ($kind === 'item') {
+                $class = $this->getItemClass();
+
+            } else if ($kind === 'event') {
+                $class = $this->getEventClass();
+
+            } else {
+                return null;
+            }
+
+            $item = $class->newInstance()->init($itemValues);
+
+            if ($client = $this->getHttpClient()) {
+                $item->setHttpClient($client);
+            }
+            return $item;
+        }
+        return null;
     }
 }

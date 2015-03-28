@@ -8,7 +8,7 @@ use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 
-class Event extends AbstractObject implements EventInterface
+class Event extends AbstractItem implements EventInterface
 {
     use CollectionTrait;
     use KeyTrait;

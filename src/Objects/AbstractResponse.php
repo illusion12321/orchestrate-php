@@ -1,70 +1,21 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\ClientInterface;
 use \GuzzleHttp\Message\Response;
 
-abstract class AbstractResponse
+abstract class AbstractResponse extends AbstractConnection
 {
     // TODO create some interfaces here, ResponseInterface and ClientAwareInterface?
 
     /**
      * @var array
      */
-    private $_body;
+    private $_body = null;
 
     /**
      * @var Response
      */
     private $_response = null;
-
-    /**
-     * @var string
-     */
-    private $_status = '';
-
-    /**
-     * @var string
-     */
-    private $_statusCode = 0;
-
-    /**
-     * @var string
-     */
-    private $_statusMessage = '';
-
-    /**
-     * @var ClientInterface
-     */
-    private $_client = null;
-
-    /**
-     * Get current client instance, either of Application or Client class.
-     *
-     * @param boolean $required
-     *
-     * @return ClientInterface
-     */
-    public function getClient($required = false)
-    {
-        if ($required) {
-            $this->noClientException();
-        }
-
-        return $this->_client;
-    }
-
-    /**
-     * Set the client which the object will use to make API requests.
-     *
-     * @param ClientInterface $client
-     */
-    public function setClient(ClientInterface $client)
-    {
-        $this->_client = $client;
-
-        return $this;
-    }
 
     /**
      * Gets the body of the response, independently if it was an error or not.
@@ -94,14 +45,14 @@ abstract class AbstractResponse
     /**
      * Gets the status of the last response.
      * If the request was successful the value is the HTTP Reason-Phrase.
-     * If the request was not successful the value is the Orchestrate Error Code.
+     * If the request was not successful the value is the Orchestrate Error Description.
      *
      * @return string
      * @link https://orchestrate.io/docs/apiref#errors
      */
     public function getStatus()
     {
-        return $this->_status;
+        return $this->_response ? $this->_response->getReasonPhrase() : '';
     }
 
     /**
@@ -111,20 +62,7 @@ abstract class AbstractResponse
      */
     public function getStatusCode()
     {
-        return $this->_statusCode;
-    }
-
-    /**
-     * Gets the status message.
-     * If the request was successful the value is the HTTP Reason-Phrase.
-     * If the request was not successful the value is the Orchestrate Error Description.
-     *
-     * @return string
-     * @link https://orchestrate.io/docs/apiref#errors
-     */
-    public function getStatusMessage()
-    {
-        return $this->_statusMessage;
+        return $this->_response ? $this->_response->getStatusCode() : 0;
     }
 
     /**
@@ -134,21 +72,18 @@ abstract class AbstractResponse
      */
     public function getRequestId()
     {
-        return $this->_response
-        ? $this->_response->getHeader('X-ORCHESTRATE-REQ-ID')
-        : '';
+        return $this->_response ? $this->_response->getHeader('X-ORCHESTRATE-REQ-ID') : '';
     }
 
     /**
-     * Gets the Date header.
+     * Gets the Date header from the response. Note, it's the request date generated from
+     * the Orchestrate service, not our application request.
      *
      * @return string
      */
     public function getRequestDate()
     {
-        return $this->_response
-        ? $this->_response->getHeader('Date')
-        : '';
+        return $this->_response ? $this->_response->getHeader('Date') : '';
     }
 
     /**
@@ -162,9 +97,7 @@ abstract class AbstractResponse
      */
     public function getRequestUrl()
     {
-        return $this->_response
-        ? $this->_response->getEffectiveUrl()
-        : '';
+        return $this->_response ? $this->_response->getEffectiveUrl() : '';
     }
 
     /**
@@ -188,44 +121,8 @@ abstract class AbstractResponse
      */
     public function isError()
     {
-        return !$this->_statusCode
-        || ($this->_statusCode >= 400 && $this->_statusCode <= 599);
-    }
-
-    /**
-     * Store Guzzle Response and define body JSON and status.
-     *
-     * @param Response $response
-     */
-    protected function setResponse(Response $response)
-    {
-        // store
-        $this->_response = $response;
-
-        // process
-        if ($response) {
-            $this->_body = $response->json();
-            $this->_statusMessage = $response->getReasonPhrase();
-            $this->_status = $this->_statusMessage;
-            $this->_statusCode = $response->getStatusCode();
-
-            if ($this->isError()) {
-
-                // try to get the Orchestrate error messages
-
-                if (!empty($this->_body['code'])) {
-                    $this->_status = $this->_body['code'];
-                }
-                if (!empty($this->_body['message'])) {
-                    $this->_statusMessage = $this->_body['message'];
-                }
-            }
-        } else {
-            $this->_body = null;
-            $this->_status = 'Internal Server Error';
-            $this->_statusCode = 500;
-            $this->_statusMessage = 'Invalid Response';
-        }
+        $code = $this->getStatusCode();
+        return !$code || ($code >= 400 && $code <= 599);
     }
 
     /**
@@ -235,27 +132,29 @@ abstract class AbstractResponse
     {
         $this->_response = null;
         $this->_body = null;
-        $this->_status = '';
-        $this->_statusCode = 0;
-        $this->_statusMessage = '';
-    }
-
-    protected function request($method, $url = null, array $options = [])
-    {
-        // request at the Client HTTP client
-        $response = $this->getClient(true)->request($method, $url, $options);
-
-        // and store/process the results
-        $this->setResponse($response);
     }
 
     /**
-     * @throws \BadMethodCallException if 'client' is not set yet.
+     * Request the current HTTP client and store the response and json body internally.
+     *
+     * More information on the parameters please go to the Guzzle docs.
+     *
+     * @param string     $method  HTTP method (GET, POST, PUT, etc.)
+     * @param string|Url $url     HTTP URL to connect to
+     * @param array      $options Array of options to apply to the request
+     *
+     * @link http://docs.guzzlephp.org/clients.html#request-options
      */
-    protected function noClientException()
+    protected function request($method, $url = null, array $options = [])
     {
-        if (!$this->_client) {
-            throw new \BadMethodCallException('There is no client set yet. Please do so through setClient() method.');
+        // request
+        $this->_response = $this->getHttpClient(true)->request($method, $url, $options);
+
+        // set body
+        if ($this->_response) {
+            $this->_body = $this->_response->json();
+        } else {
+            $this->_body = null;
         }
     }
 }

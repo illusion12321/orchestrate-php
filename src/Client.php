@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
+use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
@@ -16,114 +17,24 @@ use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Client extends AbstractClient
+class Client extends AbstractConnection
 {
     /**
-     * @var string
+     * @param string $apiKey
+     * @param string $host
      */
-    private static $defaultKeyValueClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
-
-    /**
-     * @var string
-     */
-    private static $minimumKeyValueInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
-
-    /**
-     * @var string
-     */
-    private static $defaultEventClass = '\andrefelipe\Orchestrate\Objects\Event';
-
-    /**
-     * @var string
-     */
-    private static $minimumEventInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
-
-    /**
-     * @var \ReflectionClass
-     */
-    private $_keyValueClass;
-
-    /**
-     * @var \ReflectionClass
-     */
-    private $_eventClass;
-
-    /**
-     * Get the ReflectionClass that is being used to instantiate this client's KeyValue instances.
-     *
-     * @return \ReflectionClass
-     */
-    public function getKeyValueClass()
+    public function __construct($apiKey = null, $host = null)
     {
-        if (!isset($this->_keyValueClass)) {
-            $this->_keyValueClass = new \ReflectionClass(self::$defaultKeyValueClass);
-
-            if (!$this->_keyValueClass->implementsInterface(self::$minimumKeyValueInterface)) {
-                throw new \RuntimeException('Child classes must implement ' . self::$minimumKeyValueInterface);
-            }
-        }
-        return $this->_keyValueClass;
+        $this->_httpClient = new HttpClient($apiKey, $host);
     }
 
     /**
-     * Set which class should be used to instantiate this client's KeyValue instances.
-     *
-     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     *
-     * @return Client self
+     * @return boolean
+     * @link https://orchestrate.io/docs/apiref#authentication-ping
      */
-    public function setKeyValueClass($class)
+    public function ping()
     {
-        if ($class instanceof \ReflectionClass) {
-            $this->_keyValueClass = $class;
-        } else {
-            $this->_keyValueClass = new \ReflectionClass($class);
-        }
-
-        if (!$this->_keyValueClass->implementsInterface(self::$minimumKeyValueInterface)) {
-            throw new \RuntimeException('Child classes must implement ' . self::$minimumKeyValueInterface);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the ReflectionClass that is being used to instantiate this list's events instances.
-     *
-     * @return \ReflectionClass
-     */
-    public function getEventClass()
-    {
-        if (!isset($this->_eventClass)) {
-            $this->_eventClass = new \ReflectionClass(self::$defaultEventClass);
-
-            if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
-                throw new \RuntimeException('Child classes must implement ' . self::$minimumEventInterface);
-            }
-        }
-        return $this->_eventClass;
-    }
-
-    /**
-     * Set which class should be used to instantiate this list's events instances.
-     *
-     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     *
-     * @return Client self
-     */
-    public function setEventClass($class)
-    {
-        if ($class instanceof \ReflectionClass) {
-            $this->_eventClass = $class;
-        } else {
-            $this->_eventClass = new \ReflectionClass($class);
-        }
-
-        if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
-            throw new \RuntimeException('Child classes must implement ' . self::$minimumEventInterface);
-        }
-
-        return $this;
+        return $this->_httpClient->ping();
     }
 
     // Collection
@@ -157,8 +68,9 @@ class Client extends AbstractClient
     public function listCollection($collection, $limit = 10, KeyRangeBuilder $range = null)
     {
         $list = (new Collection($collection))
-            ->setClient($this)
-            ->setChildClass($this->getKeyValueClass());
+            ->setItemClass($this->getItemClass())
+            ->setEventClass($this->getEventClass())
+            ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $range);
         return $list;
@@ -178,8 +90,9 @@ class Client extends AbstractClient
     public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         $list = (new Collection($collection))
-            ->setClient($this)
-            ->setChildClass($this->getKeyValueClass());
+            ->setItemClass($this->getItemClass())
+            ->setEventClass($this->getEventClass())
+            ->setHttpClient($this->getHttpClient(true));
 
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
@@ -197,7 +110,7 @@ class Client extends AbstractClient
      */
     public function get($collection, $key, $ref = null)
     {
-        $item = $this->newKeyValue($collection, $key);
+        $item = $this->newItem($collection, $key);
 
         $item->get($ref);
         return $item;
@@ -214,7 +127,7 @@ class Client extends AbstractClient
      */
     public function put($collection, $key, array $value, $ref = null)
     {
-        $item = $this->newKeyValue($collection, $key);
+        $item = $this->newItem($collection, $key);
 
         $item->put($value, $ref);
         return $item;
@@ -232,7 +145,7 @@ class Client extends AbstractClient
      */
     public function patch($collection, $key, PatchBuilder $operations, $ref = null, $reload = false)
     {
-        $item = $this->newKeyValue($collection, $key);
+        $item = $this->newItem($collection, $key);
 
         $item->patch($operations, $ref, $reload);
         return $item;
@@ -250,7 +163,7 @@ class Client extends AbstractClient
      */
     public function patchMerge($collection, $key, array $value, $ref = null, $reload = false)
     {
-        $item = $this->newKeyValue($collection, $key);
+        $item = $this->newItem($collection, $key);
 
         $item->patchMerge($value, $ref, $reload);
         return $item;
@@ -265,7 +178,7 @@ class Client extends AbstractClient
      */
     public function post($collection, array $value)
     {
-        $item = $this->newKeyValue($collection);
+        $item = $this->newItem($collection);
 
         $item->post($value);
         return $item;
@@ -281,7 +194,7 @@ class Client extends AbstractClient
      */
     public function delete($collection, $key, $ref = null)
     {
-        $item = $this->newKeyValue($collection, $key);
+        $item = $this->newItem($collection, $key);
 
         $item->delete($ref);
         return $item;
@@ -296,7 +209,7 @@ class Client extends AbstractClient
      */
     public function purge($collection, $key)
     {
-        $item = $this->newKeyValue($collection, $key);
+        $item = $this->newItem($collection, $key);
 
         $item->purge();
         return $item;
@@ -317,8 +230,8 @@ class Client extends AbstractClient
     public function listRefs($collection, $key, $limit = 10, $offset = 0, $values = false)
     {
         $list = (new Refs($collection, $key))
-            ->setClient($this)
-            ->setChildClass($this->getKeyValueClass());
+            ->setItemClass($this->getItemClass())
+            ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $offset, $values);
         return $list;
@@ -432,8 +345,8 @@ class Client extends AbstractClient
     public function listEvents($collection, $key, $type, $limit = 10, TimeRangeBuilder $range = null)
     {
         $list = (new Events($collection, $key, $type))
-            ->setClient($this)
-            ->setChildClass($this->getEventClass());
+            ->setEventClass($this->getEventClass())
+            ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $range);
         return $list;
@@ -454,8 +367,8 @@ class Client extends AbstractClient
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
-        $source = $this->newKeyValue($collection, $key);
-        $destination = $this->newKeyValue($toCollection, $toKey);
+        $source = $this->newItem($collection, $key);
+        $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
         $relation->put($bothWays);
@@ -475,8 +388,8 @@ class Client extends AbstractClient
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
-        $source = $this->newKeyValue($collection, $key);
-        $destination = $this->newKeyValue($toCollection, $toKey);
+        $source = $this->newItem($collection, $key);
+        $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
         $relation->delete($bothWays);
@@ -496,8 +409,8 @@ class Client extends AbstractClient
     public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
     {
         $list = (new Relations($collection, $key, $kind))
-            ->setClient($this)
-            ->setChildClass($this->getKeyValueClass());
+            ->setItemClass($this->getItemClass())
+            ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $offset);
         return $list;
@@ -506,17 +419,29 @@ class Client extends AbstractClient
     /**
      * Helper to create KeyValue instances.
      *
+     * @param string $collection
+     * @param string $key
+     * @param string $ref
+     *
      * @return KeyValueInterface
      */
-    private function newKeyValue($collection = null, $key = null, $ref = null)
+    private function newItem($collection = null, $key = null, $ref = null)
     {
-        return $this->getKeyValueClass()
-                    ->newInstance($collection, $key, $ref)
-                    ->setClient($this);
+        return $this->getItemClass()->newInstance()
+                    ->setCollection($collection)
+                    ->setKey($key)
+                    ->setRef($ref)
+                    ->setHttpClient($this->getHttpClient(true));
     }
 
     /**
      * Helper to create Event instances.
+     *
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
      *
      * @return EventInterface
      */
@@ -527,13 +452,12 @@ class Client extends AbstractClient
         $timestamp = null,
         $ordinal = null
     ) {
-        return $this->getEventClass()
-                    ->newInstance(
-                        $collection,
-                        $key,
-                        $type,
-                        $timestamp,
-                        $ordinal
-                    )->setClient($this);
+        return $this->getEventClass()->newInstance()
+                    ->setCollection($collection)
+                    ->setKey($key)
+                    ->setType($type)
+                    ->setTimestamp($timestamp)
+                    ->setOrdinal($ordinal)
+                    ->setHttpClient($this->getHttpClient(true));
     }
 }

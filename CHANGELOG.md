@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## HEAD
+- *Work in progress to implement Events Search*
+- 'setChildClass' is split into 'setItemClass' and 'setEventClass' as now Collections can search both items and events.
+- The HTTP is split to its own class, simplifing much of our code base.
+- 'setClient' method is now 'setHttpClient' so it doesn't confuse with the Client class.
+- Improved totalCount method to actually make an API call if the total count is not know yet.
+- Several improvements throughout the library.
+
 ## 0.12.0 - 2015-03-27
 - Added Serializable to objects.
 - Simple but major change, arrays values set to a KeyValue/Event do not get converted to ObjectArray anymore. This provides consistency with our model subclass feature, as any subclass public property would not get the ObjectArray convertion, therefore creating an inconsistent behaviour.
@@ -49,7 +57,7 @@
 - Objects now have a handy toJson method.
 
 ## 0.6.0 - 2015-02-04
-- Removed the automatic client linking for the Objects, it has to be linked manually with setClient(). It would create conflicts on larger systems, where multiple clients could be created anywhere.
+- Removed the automatic client linking for the Objects, it has to be linked manually with setHttpClient(). It would create conflicts on larger systems, where multiple clients could be created anywhere.
 - Many getters that has required values for the API calls now has the option to throw errors
 - General code cleanup and inline docs improvements
 

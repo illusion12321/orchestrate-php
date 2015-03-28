@@ -104,7 +104,7 @@ $app = new Application();
 // same credentials constructor as the Client above applies
 // they both share the same client capabilities
 
-$collection = $client->collection('collection');
+$collection = $app->collection('collection');
 $item = $collection->item('key');
 // no API calls where made yet
 
@@ -184,7 +184,7 @@ if ($item->get()) { // API call to get the current key
 
 Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Client. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
 
-**Note**, the credentials and the HTTP client are only available at the `Application` or `Client` objects, so all objects must reference to them in order to do API class. You can do so via the `setClient` method. But that's only needed if you want to instantiate the objects directly. If you use the methods as described above, that's handled for you.
+**Note**, the Http client is automatically instantiated by the `Application` and `Client` objects, and all objects created by them have the Http client set, and are ready to do API calls. If you are programatically instantiating objects, use the `setHttpClient` method to have them able to do API class. Also feel free to change any options on the Http client, it's a subclass of Guzzle Client. 
 
 
 
@@ -215,17 +215,12 @@ if ($item->get()) {
     // in case if was an error, it would return results like these:
 
     echo $item->getStatus();
-    // items_not_found
-    // — the Orchestrate Error code
+    // The requested items could not be found.
+    // — the Orchestrate Error Description
     
     echo $item->getStatusCode();
     // 404
     // — the HTTP response status code
-
-    echo $item->getStatusMessage();
-    // The requested items could not be found.
-    // — the status message, in case of error, the Orchestrate message is used
-    // intead of the default HTTP Reason-Phrases
     
     print_r($item->getBody());
     // Array
@@ -524,41 +519,51 @@ In that case you will also want to create a class to act as your Collection.
 // Members.php
 namespace MyProject\Models;
 
-use \andrefelipe\Orchestrate\Application;
 use \andrefelipe\Orchestrate\Objects\Collection;
+use \andrefelipe\Orchestrate\HttpClientInterface;
 
 class Members extends Collection
 {
-    public function __construct(Application $client)
+    public function __construct(HttpClientInterface $httpClient)
     {
-        // set client
-        $this->setClient($client);
+        // set http client
+        $this->setHttpClient($httpClient);
 
-        // set collection
+        // set collection name
         $this->setCollection('members');
-        $this->setChildClass('\MyProject\Models\Member');
+
+        // set child classes
+        $this->setItemClass('\MyProject\Models\Member');
+
+        // could set the Event class too if desired
+        // $this->setEventClass('\MyProject\Models\MemberActivity');        
     }
 }
 
 // at this approach, whenever we create items from this collection,
 // it will be Member objects
+use \andrefelipe\Orchestrate\HttpClient;
 use \MyProject\Models\Members;
 
-$members = new Members($app);
+// let's instantiate a Http client programatically
+// same constructor as the Client / Application applies
+$httpClient = new HttpClient(); 
+
+$members = new Members($httpClient);
 
 $item = $members->item('john'); // instance of Member
 
 ```
 
-If you are using the Client approach, you can change which classes to use with: 
+If you are using the Client class, you can change which classes to use with: 
 ```php
 
-$client->setKeyValueClass($class);
+$client->setItemClass($class);
 $client->setEventClass($class);
 
 // where $class is a fully qualified name of a class that implements, at minimum:
-// \andrefelipe\Orchestrate\Objects\KeyValueInterface for KeyValue
-// \andrefelipe\Orchestrate\Objects\EventInterface for Event
+// andrefelipe\Orchestrate\Objects\KeyValueInterface for KeyValue
+// andrefelipe\Orchestrate\Objects\EventInterface for Event
 ```
 
 
@@ -611,9 +616,14 @@ if ($client->ping()) {
 }
 
 // Approach 2 - Object
-if ($client->ping()) {
+if ($application->ping()) {
     // success
 }
+// or directly at the http client
+if ($collection->getHttpClient()->ping()) {
+    // success
+}
+
 ```
 
 

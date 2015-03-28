@@ -1,14 +1,23 @@
 # TODO and IDEAS
 
+- Move setItemClass to traits to complete the implementation of the Client class.
+
 - Study the best pattern to include the Events Search, including thoughts on the new $itemKind internal var
 
-- could have find/search/findFirst method on KeyValue to search the collection and load the first match.
-- Collection could follow too? findFirst?
+- Will Events handle both items and events like Collection? Should them merge together? Should we merge Refs too? (not good to merge...)
+
+- KeyValue should support setEventClass after all.
+
 
 - Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
 ---Do not use the object itself to build the query chain, it's confusing---
+
+- Provide a quicker access to query builders, for instance $item->patchBuilder()->add(...)->copy(...)->patch(); ?
+
+- could have find/search/findFirst method on KeyValue to search the collection and load the first match.
+- Collection could follow too? findFirst?
 
 - Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
 

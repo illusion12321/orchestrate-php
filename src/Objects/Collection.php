@@ -15,19 +15,48 @@ class Collection extends AbstractList
     private $_aggregates;
 
     /**
+     * Constructs an item instance. A KeyValue or a custom class you set with setItemClass().
+     *
      * @param string $key
      * @param string $ref
      *
-     * @return KeyValueInterface Construct a collection item instance. A KeyValue or a custom class you set with setChildClass().
+     * @return KeyValueInterface
      */
     public function item($key = null, $ref = null)
     {
-        return $this->getChildClass()->newInstance()
+        return $this->getItemClass()->newInstance()
                     ->setCollection($this->getCollection(true))
                     ->setKey($key)
                     ->setRef($ref)
-                    ->setClient($this->getClient(true));
+                    ->setHttpClient($this->getHttpClient(true));
     }
+
+    /**
+     * Constructs an event instance. An Event or a custom class you set with setEventClass().
+     *
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     *
+     * @return EventInterface
+     */
+    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
+    {
+        return $this->getEventClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setType($type)
+                    ->setTimestamp($timestamp)
+                    ->setOrdinal($ordinal)
+                    ->setHttpClient($this->getHttpClient(true));
+    }
+
+    // public function events($key = null, $type = null)
+    // {
+    //     return (new Events($this->getCollection(true), $key, $type))
+    //         ->setHttpClient($this->getHttpClient(true));
+    // }
 
     /**
      * @return array

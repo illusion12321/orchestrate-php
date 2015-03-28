@@ -7,8 +7,7 @@ namespace andrefelipe\Orchestrate\Common;
 interface ToJsonInterface extends ToArrayInterface
 {
     /**
-     * Get the JSON representation of an object.
-     * Uses toArray method.
+     * Get the JSON representation of an object. Uses toArray output.
      *
      * @return string
      */

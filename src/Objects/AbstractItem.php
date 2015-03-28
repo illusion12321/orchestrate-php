@@ -5,7 +5,7 @@ use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use JmesPath\Env as JmesPath;
 
-abstract class AbstractObject extends AbstractResponse implements
+abstract class AbstractItem extends AbstractResponse implements
 \ArrayAccess,
 \Serializable,
 ValueInterface,

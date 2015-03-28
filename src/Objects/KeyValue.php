@@ -7,7 +7,7 @@ use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
 use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
-class KeyValue extends AbstractObject implements KeyValueInterface
+class KeyValue extends AbstractItem implements KeyValueInterface
 {
     use CollectionTrait;
     use KeyTrait;
@@ -331,8 +331,8 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     public function refs()
     {
         return (new Refs($this->getCollection(true), $this->getKey(true)))
-            ->setClient($this->getClient(true))
-            ->setChildClass(new \ReflectionClass($this));
+            ->setHttpClient($this->getHttpClient(true))
+            ->setItemClass(new \ReflectionClass($this));
 
         // this new instance may be cached, just check subclasses scope
     }
@@ -340,7 +340,7 @@ class KeyValue extends AbstractObject implements KeyValueInterface
     public function events($type)
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))
-            ->setClient($this->getClient(true));
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     public function event($type, $timestamp = null, $ordinal = null)
@@ -351,20 +351,20 @@ class KeyValue extends AbstractObject implements KeyValueInterface
             $type,
             $timestamp,
             $ordinal
-        ))->setClient($this->getClient(true));
+        ))->setHttpClient($this->getHttpClient(true));
     }
 
     public function relations($kind)
     {
         return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
-            ->setClient($this->getClient(true))
-            ->setChildClass(new \ReflectionClass($this));
+            ->setHttpClient($this->getHttpClient(true))
+            ->setItemClass(new \ReflectionClass($this));
     }
 
     public function relation($kind, KeyValueInterface $destination)
     {
         return (new Relation($this, $kind, $destination))
-            ->setClient($this->getClient(true));
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     /**
