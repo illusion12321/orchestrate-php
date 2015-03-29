@@ -147,7 +147,7 @@ ReusableObjectInterface
      */
     public function toArray()
     {
-        $result = [
+        $data = [
             'kind' => 'relationship',
             'relation' => $this->getRelation(),
             'timestamp' => $this->getTimestamp(),
@@ -155,7 +155,7 @@ ReusableObjectInterface
 
         $source = $this->getSource();
         if ($source) {
-            $result['source'] = [
+            $data['source'] = [
                 'collection' => $source->getCollection(),
                 'kind' => 'item',
                 'key' => $source->getKey(),
@@ -164,14 +164,14 @@ ReusableObjectInterface
 
         $destination = $this->getDestination();
         if ($destination) {
-            $result['destination'] = [
+            $data['destination'] = [
                 'collection' => $destination->getCollection(),
                 'kind' => 'item',
                 'key' => $destination->getKey(),
             ];
         }
 
-        return $result;
+        return $data;
     }
 
     public function toJson($options = 0, $depth = 512)

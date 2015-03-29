@@ -1,12 +1,11 @@
 # TODO and IDEAS
 
-- Move setItemClass to traits to complete the implementation of the Client class.
-
-- Study the best pattern to include the Events Search, including thoughts on the new $itemKind internal var
+- Study the best pattern to include the Events Search
 
 - Will Events handle both items and events like Collection? Should them merge together? Should we merge Refs too? (not good to merge...)
 
-- KeyValue should support setEventClass after all.
+- Events search has aggregate s right? Add missing paramneter to Events class, or end up merging with Collection?
+
 
 
 - Implement more common interfaces, and general organization of the classes / folders
@@ -17,7 +16,31 @@
 - Provide a quicker access to query builders, for instance $item->patchBuilder()->add(...)->copy(...)->patch(); ?
 
 - could have find/search/findFirst method on KeyValue to search the collection and load the first match.
+
 - Collection could follow too? findFirst?
+
+- Maybe go further on the classMap so one KV could easily instance different event classes, for example?
+```php
+$classMap = [
+    [
+        'collection' => 'users',
+        'class' => '\MyProject\Models\Users'
+    ],
+    [
+        'item' => 'users',
+        'class' => '\MyProject\Models\User'
+    ],
+    [
+        'event' => 'users/activity',
+        'class' => '\MyProject\Models\UsersActivity'
+    ],
+    [
+        'event' => 'users/anotherEvent',
+        'class' => '\MyProject\Models\UsersAnotherEvent'
+    ],
+]
+// But review carefully because may add complexity, where proper Events subclass would be handling well after all
+```
 
 - Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
 

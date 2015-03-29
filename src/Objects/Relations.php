@@ -74,17 +74,17 @@ class Relations extends AbstractList
 
     public function toArray()
     {
-        $result = parent::toArray();
-        $result['kind'] = 'relations';
+        $data = parent::toArray();
+        $data['kind'] = 'relations';
 
         if (!empty($this->_key)) {
-            $result['key'] = $this->_key;
+            $data['key'] = $this->_key;
         }
         if (!empty($this->_depth)) {
-            $result['depth'] = $this->_depth;
+            $data['depth'] = $this->_depth;
         }
 
-        return $result;
+        return $data;
     }
 
     /**
@@ -120,5 +120,25 @@ class Relations extends AbstractList
         if (empty($this->_depth)) {
             throw new \BadMethodCallException('There is no relation depth set yet. Please do so through setDepth() method.');
         }
+    }
+
+    /**
+     * @param array $itemValues
+     */
+    protected function createInstance(array $itemValues)
+    {
+        if (!empty($itemValues['path']['kind'])) {
+            $kind = $itemValues['path']['kind'];
+
+            if ($kind === 'item') {
+                $item = (new KeyValue())->init($itemValues);
+
+                if ($client = $this->getHttpClient()) {
+                    $item->setHttpClient($client);
+                }
+                return $item;
+            }
+        }
+        return null;
     }
 }

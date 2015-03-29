@@ -114,7 +114,7 @@ class Event extends AbstractItem implements EventInterface
 
     public function toArray()
     {
-        $result = [
+        $data = [
             'kind' => 'event',
             'path' => [
                 'collection' => $this->getCollection(),
@@ -133,7 +133,7 @@ class Event extends AbstractItem implements EventInterface
             'reftime' => $this->getReftime(),
         ];
 
-        return $result;
+        return $data;
     }
 
     public function get()

@@ -19,59 +19,24 @@ ReusableObjectInterface
     use CollectionTrait;
 
     /**
-     * @var string
-     */
-    protected static $itemKind = 'item';
-
-    /**
-     * @var string
-     */
-    protected static $defaultItemClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
-
-    /**
-     * @var string
-     */
-    protected static $minimumItemInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
-
-    /**
-     * @var string
-     */
-    protected static $defaultEventClass = '\andrefelipe\Orchestrate\Objects\Event';
-
-    /**
-     * @var string
-     */
-    protected static $minimumEventInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
-
-    /**
-     * @var \ReflectionClass
-     */
-    private $_itemClass;
-
-    /**
-     * @var \ReflectionClass
-     */
-    private $_eventClass;
-
-    /**
      * @var ObjectArray
      */
-    private $_results;
+    protected $_results = null;
 
     /**
      * @var int
      */
-    private $_totalCount = null;
+    protected $_totalCount = null;
 
     /**
      * @var string
      */
-    private $_nextUrl = '';
+    protected $_nextUrl = '';
 
     /**
      * @var string
      */
-    private $_prevUrl = '';
+    protected $_prevUrl = '';
 
     /**
      * @param string $collection
@@ -174,21 +139,23 @@ ReusableObjectInterface
 
     public function toArray()
     {
-        $result = [
+        $data = [
             'kind' => 'list',
             'count' => count($this),
-            'total_count' => $this->_totalCount,
             'results' => $this->getResults()->toArray(),
         ];
 
+        if ($this->_totalCount !== null) {
+            $data['total_count'] = $this->_totalCount;
+        }
         if ($this->_nextUrl) {
-            $result['next'] = $this->_nextUrl;
+            $data['next'] = $this->_nextUrl;
         }
         if ($this->_prevUrl) {
-            $result['prev'] = $this->_prevUrl;
+            $data['prev'] = $this->_prevUrl;
         }
 
-        return $result;
+        return $data;
     }
 
     public function toJson($options = 0, $depth = 512)
@@ -244,16 +211,7 @@ ReusableObjectInterface
 
     public function serialize()
     {
-        $data = $this->toArray();
-        $data['itemClass'] = $this->getItemClass()->name;
-        $data['eventClass'] = $this->getEventClass()->name;
-        // TODO check if these vars will turn to private after all, if not add the other values here
-        // $data['defaultItemClass'] = static::$defaultItemClass;
-        // $data['minimumItemInterface'] = static::$minimumItemInterface;
-        // $data['defaultEventClass'] = static::$defaultEventClass;
-        // $data['minimumEventInterface'] = static::$minimumEventInterface;
-
-        return serialize($data);
+        return serialize($this->toArray());
     }
 
     /**
@@ -268,21 +226,6 @@ ReusableObjectInterface
 
             if (is_array($data)) {
 
-                if (!empty($data['itemClass'])) {
-                    $this->setItemClass($data['itemClass']);
-                }
-                if (!empty($data['eventClass'])) {
-                    $this->setEventClass($data['eventClass']);
-                }
-
-                // TODO same above
-                // if (!empty($data['defaultChildClass'])) {
-                //     static::$defaultChildClass = $data['defaultChildClass'];
-                // }
-                // if (!empty($data['defaultChildClass'])) {
-                //     static::$minimumChildInterface = $data['minimumChildInterface'];
-                // }
-
                 $this->init($data);
                 return;
             }
@@ -295,22 +238,6 @@ ReusableObjectInterface
      */
     public function getTotalCount()
     {
-        if ($this->_totalCount === null) {
-
-            // makes a straight Search query for no results
-            $path = $this->getCollection(true);
-            $parameters = [
-                'query' => '@path.kind:(' . static::$itemKind . ')',
-                'limit' => 0,
-            ];
-            $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
-
-            // set value if succesful
-            if ($response->getStatusCode() === 200) {
-                $body = $response->json();
-                $this->_totalCount = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
-            }
-        }
         return $this->_totalCount;
     }
 
@@ -358,7 +285,6 @@ ReusableObjectInterface
 
             // reset local properties
             $this->_results = null;
-            $this->_totalCount = null;
             $this->_nextUrl = '';
             $this->_prevUrl = '';
 
@@ -388,6 +314,10 @@ ReusableObjectInterface
 
     /**
      * Helper for next/prev methods, to sanitize the URL and request.
+     *
+     * @param string $url Orchestrate URL to request, usually a page URL.
+     *
+     * @return boolean Success of operation.
      */
     protected function getUrl($url)
     {
@@ -403,111 +333,5 @@ ReusableObjectInterface
         }
 
         return false;
-    }
-
-    /**
-     * Get the ReflectionClass that is being used to instantiate this list's items (KeyValue).
-     *
-     * @return \ReflectionClass
-     */
-    public function getItemClass()
-    {
-        if (!isset($this->_itemClass)) {
-            $this->_itemClass = new \ReflectionClass(static::$defaultItemClass);
-
-            if (!$this->_itemClass->implementsInterface(static::$minimumItemInterface)) {
-                throw new \RuntimeException('Item classes must implement ' . static::$minimumItemInterface);
-            }
-        }
-        return $this->_itemClass;
-    }
-
-    /**
-     * Set which class should be used to instantiate this list's items (KeyValue).
-     *
-     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     *
-     * @return AbstractList self
-     */
-    public function setItemClass($class)
-    {
-        if ($class instanceof \ReflectionClass) {
-            $this->_itemClass = $class;
-        } else {
-            $this->_itemClass = new \ReflectionClass($class);
-        }
-
-        if (!$this->_itemClass->implementsInterface(static::$minimumItemInterface)) {
-            throw new \RuntimeException('Item classes must implement ' . static::$minimumItemInterface);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the ReflectionClass that is being used to instantiate this list's events.
-     *
-     * @return \ReflectionClass
-     */
-    public function getEventClass()
-    {
-        if (!isset($this->_eventClass)) {
-            $this->_eventClass = new \ReflectionClass(static::$defaultEventClass);
-
-            if (!$this->_eventClass->implementsInterface(static::$minimumEventInterface)) {
-                throw new \RuntimeException('Event classes must implement ' . static::$minimumEventInterface);
-            }
-        }
-        return $this->_eventClass;
-    }
-
-    /**
-     * Set which class should be used to instantiate this list's events.
-     *
-     * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
-     *
-     * @return AbstractList self
-     */
-    public function setEventClass($class)
-    {
-        if ($class instanceof \ReflectionClass) {
-            $this->_eventClass = $class;
-        } else {
-            $this->_eventClass = new \ReflectionClass($class);
-        }
-
-        if (!$this->_eventClass->implementsInterface(static::$minimumEventInterface)) {
-            throw new \RuntimeException('Event classes must implement ' . static::$minimumEventInterface);
-        }
-
-        return $this;
-    }
-
-    /**
-     *
-     * @param array $itemValues
-     */
-    protected function createInstance(array $itemValues)
-    {
-        if (!empty($itemValues['kind'])) {
-
-            if ($kind === 'item') {
-                $class = $this->getItemClass();
-
-            } else if ($kind === 'event') {
-                $class = $this->getEventClass();
-
-            } else {
-                return null;
-            }
-
-            $item = $class->newInstance()->init($itemValues);
-
-            if ($client = $this->getHttpClient()) {
-                $item->setHttpClient($client);
-            }
-            return $item;
-        }
-        return null;
     }
 }

@@ -9,54 +9,13 @@ use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
  */
 class Collection extends AbstractList
 {
+    use EventClassTrait;
+    use ItemClassTrait;
+
     /**
      * @var array
      */
     private $_aggregates;
-
-    /**
-     * Constructs an item instance. A KeyValue or a custom class you set with setItemClass().
-     *
-     * @param string $key
-     * @param string $ref
-     *
-     * @return KeyValueInterface
-     */
-    public function item($key = null, $ref = null)
-    {
-        return $this->getItemClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setRef($ref)
-                    ->setHttpClient($this->getHttpClient(true));
-    }
-
-    /**
-     * Constructs an event instance. An Event or a custom class you set with setEventClass().
-     *
-     * @param string $key
-     * @param string $type
-     * @param int $timestamp
-     * @param int $ordinal
-     *
-     * @return EventInterface
-     */
-    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
-    {
-        return $this->getEventClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setType($type)
-                    ->setTimestamp($timestamp)
-                    ->setOrdinal($ordinal)
-                    ->setHttpClient($this->getHttpClient(true));
-    }
-
-    // public function events($key = null, $type = null)
-    // {
-    //     return (new Events($this->getCollection(true), $key, $type))
-    //         ->setHttpClient($this->getHttpClient(true));
-    // }
 
     /**
      * @return array
@@ -69,6 +28,30 @@ class Collection extends AbstractList
         return $this->_aggregates;
     }
 
+    /**
+     * @return int
+     */
+    public function getTotalCount()
+    {
+        if ($this->_totalCount === null) {
+
+            // makes a straight Search query for no results
+            $path = $this->getCollection(true);
+            $parameters = [
+                'query' => '@path.kind:item',
+                'limit' => 0,
+            ];
+            $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
+
+            // set value if succesful
+            if ($response->getStatusCode() === 200) {
+                $body = $response->json();
+                $this->_totalCount = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
+            }
+        }
+        return $this->_totalCount;
+    }
+
     public function reset()
     {
         parent::reset();
@@ -78,25 +61,34 @@ class Collection extends AbstractList
     public function init(array $data)
     {
         if (!empty($data)) {
-            parent::init($data);
 
+            if (!empty($data['itemClass'])) {
+                $this->setItemClass($data['itemClass']);
+            }
+            if (!empty($data['eventClass'])) {
+                $this->setEventClass($data['eventClass']);
+            }
             if (!empty($data['aggregates'])) {
                 $this->_aggregates = (array) $data['aggregates'];
             }
+
+            parent::init($data);
         }
         return $this;
     }
 
     public function toArray()
     {
-        $result = parent::toArray();
-        $result['kind'] = 'collection';
+        $data = parent::toArray();
+        $data['kind'] = 'collection';
+        $data['itemClass'] = $this->getItemClass()->name;
+        $data['eventClass'] = $this->getEventClass()->name;
 
         if (!empty($this->_aggregates)) {
-            $result['aggregates'] = $this->_aggregates;
+            $data['aggregates'] = $this->_aggregates;
         }
 
-        return $result;
+        return $data;
     }
 
     /**
@@ -186,15 +178,93 @@ class Collection extends AbstractList
         return $this->isSuccess();
     }
 
+    /**
+     * Constructs an item instance. A KeyValue or a custom class you set with setItemClass().
+     *
+     * @param string $key
+     * @param string $ref
+     *
+     * @return KeyValueInterface
+     */
+    public function item($key = null, $ref = null)
+    {
+        return $this->getItemClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setRef($ref)
+                    ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
+     * Constructs an event instance. An Event or a custom class you set with setEventClass().
+     *
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     *
+     * @return EventInterface
+     */
+    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
+    {
+        return $this->getEventClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setType($type)
+                    ->setTimestamp($timestamp)
+                    ->setOrdinal($ordinal)
+                    ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
+     *
+     * @return Events
+     */
+    public function events($key = null, $type = null)
+    {
+        return (new Events())
+            ->setCollection($this->getCollection(true))
+            ->setKey($key)
+            ->setType($type)
+            ->setHttpClient($this->getHttpClient(true));
+    }
+
     protected function request($method, $url = null, array $options = [])
     {
         parent::request($method, $url, $options);
 
         if ($this->isSuccess()) {
-
             if (isset($this->body['aggregates'])) {
                 $this->_aggregates = (array) $this->body['aggregates'];
             }
         }
+    }
+
+    /**
+     * @param array $itemValues
+     */
+    protected function createInstance(array $itemValues)
+    {
+        if (!empty($itemValues['path']['kind'])) {
+            $kind = $itemValues['path']['kind'];
+
+            if ($kind === 'item') {
+                $class = $this->getItemClass();
+
+            } else if ($kind === 'event') {
+                $class = $this->getEventClass();
+
+            } else {
+                return null;
+            }
+
+            $item = $class->newInstance()->init($itemValues);
+
+            if ($client = $this->getHttpClient()) {
+                $item->setHttpClient($client);
+            }
+            return $item;
+        }
+        return null;
     }
 }

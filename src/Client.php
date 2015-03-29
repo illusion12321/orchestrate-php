@@ -4,7 +4,9 @@ namespace andrefelipe\Orchestrate;
 use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\Event;
+use andrefelipe\Orchestrate\Objects\EventClassTrait;
 use andrefelipe\Orchestrate\Objects\Events;
+use andrefelipe\Orchestrate\Objects\ItemClassTrait;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Relation;
@@ -19,13 +21,16 @@ use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
  */
 class Client extends AbstractConnection
 {
+    use EventClassTrait;
+    use ItemClassTrait;
+
     /**
      * @param string $apiKey
      * @param string $host
      */
     public function __construct($apiKey = null, $host = null)
     {
-        $this->_httpClient = new HttpClient($apiKey, $host);
+        $this->setHttpClient(new HttpClient($apiKey, $host));
     }
 
     /**
@@ -34,7 +39,7 @@ class Client extends AbstractConnection
      */
     public function ping()
     {
-        return $this->_httpClient->ping();
+        return $this->getHttpClient(true)->ping();
     }
 
     // Collection
@@ -409,7 +414,6 @@ class Client extends AbstractConnection
     public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
     {
         $list = (new Relations($collection, $key, $kind))
-            ->setItemClass($this->getItemClass())
             ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $offset);

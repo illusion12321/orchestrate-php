@@ -16,7 +16,7 @@ class Application extends AbstractConnection
      */
     public function __construct($apiKey = null, $host = null)
     {
-        $this->_httpClient = new HttpClient($apiKey, $host);
+        $this->setHttpClient(new HttpClient($apiKey, $host));
     }
 
     /**
@@ -25,7 +25,7 @@ class Application extends AbstractConnection
      */
     public function ping()
     {
-        return $this->_httpClient->ping();
+        return $this->getHttpClient(true)->ping();
     }
 
     /**
@@ -34,25 +34,8 @@ class Application extends AbstractConnection
      */
     public function collection($name)
     {
-        return (new Collection())->setCollection($name)->setHttpClient($this);
+        return (new Collection())
+            ->setCollection($name)
+            ->setHttpClient($this->getHttpClient(true));
     }
-
-    // public function item($key = null, $ref = null)
-    // {
-    //     return $this->getChildClass()->newInstance()
-    //                 ->setCollection($this->getCollection(true))
-    //                 ->setKey($key)
-    //                 ->setRef($ref)
-    //                 ->setHttpClient($this->getHttpClient(true));
-    // }
-
-    // public function events($collection, $key = null, $type = null)
-    // {
-    //     return (new Events())
-    //         ->setCollection($collection)
-    //         ->setKey($key)
-    //         ->setType($type)
-    //         ->setHttpClient($this);
-    // }
-
 }

@@ -909,7 +909,7 @@ foreach ($collection as $item) {
 $collection->getNextUrl(); // string
 $collection->getPrevUrl(); // string
 count($collection); // count of the current set of results
-$collection->getTotalCount(); // count of the total results, if available
+$collection->getTotalCount(); // count of the total results
 $collection->nextPage(); // loads next set of results
 $collection->prevPage(); // loads previous set of results
 ```
@@ -955,7 +955,7 @@ foreach ($refs as $item) {
 $refs->getNextUrl(); // string
 $refs->getPrevUrl(); // string
 count($refs); // count of the current set of results
-$refs->getTotalCount(); // count of the total results available
+$refs->getTotalCount(); // count of the total results
 $refs->nextPage(); // loads next set of results
 $refs->prevPage(); // loads previous set of results
 ```
@@ -991,7 +991,7 @@ $collection->getAggregates(); // array of the Aggregate results, if any
 $collection->getNextUrl(); // string
 $collection->getPrevUrl(); // string
 count($collection); // count of the current set of results
-$collection->getTotalCount(); // count of the total results available
+$collection->getTotalCount(); // count of the total results
 $collection->nextPage(); // loads next set of results
 $collection->prevPage(); // loads previous set of results
 ```
@@ -1148,8 +1148,11 @@ $range->from($event)->to($anotherEvent);
 $events = $client->listEvents('collection', 'key', 'type', 10, $range);
 
 // Approach 2 - Object
-$item = $collection->item('key');
+// from Collection
+$events = $collection->events('key', 'type');
+// from KeyValue
 $events = $item->events('type'); // note the plural 'events'
+
 $events->get(10, $range);
 
 
@@ -1167,7 +1170,7 @@ foreach ($events as $event) {
 $events->getNextUrl(); // string
 $events->getPrevUrl(); // string
 count($events); // count of the current set of results
-$events->getTotalCount(); // count of the total results available
+$events->getTotalCount(); // count of the total results
 $events->nextPage(); // loads next set of results
 $events->prevPage(); // loads previous set of results
 ```
@@ -1209,7 +1212,7 @@ foreach ($relations as $item) {
 $relations->getNextUrl(); // string
 $relations->getPrevUrl(); // string
 count($relations); // count of the current set of results
-$relations->getTotalCount(); // count of the total results available
+$relations->getTotalCount(); // count of the total results, if available
 $relations->nextPage(); // loads next set of results
 $relations->prevPage(); // loads previous set of results
 

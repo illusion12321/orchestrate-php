@@ -8,7 +8,6 @@ use andrefelipe\Orchestrate\Common\ToJsonInterface;
  */
 interface EventInterface extends
 \ArrayAccess,
-\Countable,
 ValueInterface,
 ToJsonInterface,
 ReusableObjectInterface

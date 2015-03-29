@@ -5,6 +5,7 @@ use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 
 class Refs extends AbstractList
 {
+    use ItemClassTrait;
     use KeyTrait;
 
     public function __construct($collection = null, $key = null)
@@ -33,14 +34,14 @@ class Refs extends AbstractList
 
     public function toArray()
     {
-        $result = parent::toArray();
-        $result['kind'] = 'refs';
+        $data = parent::toArray();
+        $data['kind'] = 'refs';
 
         if (!empty($this->_key)) {
-            $result['key'] = $this->_key;
+            $data['key'] = $this->_key;
         }
 
-        return $result;
+        return $data;
     }
 
     /**
@@ -70,5 +71,30 @@ class Refs extends AbstractList
         $this->request('GET', $path, ['query' => $parameters]);
 
         return $this->isSuccess();
+    }
+
+    /**
+     * @param array $itemValues
+     */
+    protected function createInstance(array $itemValues)
+    {
+        if (!empty($itemValues['path']['kind'])) {
+            $kind = $itemValues['path']['kind'];
+
+            if ($kind === 'item') {
+                $class = $this->getItemClass();
+
+            } else {
+                return null;
+            }
+
+            $item = $class->newInstance()->init($itemValues);
+
+            if ($client = $this->getHttpClient()) {
+                $item->setHttpClient($client);
+            }
+            return $item;
+        }
+        return null;
     }
 }

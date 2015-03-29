@@ -102,7 +102,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
     public function toArray()
     {
-        $result = [
+        $data = [
             'kind' => 'item',
             'path' => [
                 'collection' => $this->getCollection(),
@@ -114,22 +114,22 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         ];
 
         if ($this->_score !== null) {
-            $result['score'] = $this->_score;
+            $data['score'] = $this->_score;
         }
 
         if ($this->_distance !== null) {
-            $result['distance'] = $this->_distance;
+            $data['distance'] = $this->_distance;
         }
 
         if ($this->_reftime !== null) {
-            $result['path']['reftime'] = $this->_reftime;
+            $data['path']['reftime'] = $this->_reftime;
         }
 
         if ($this->_tombstone) {
-            $result['path']['tombstone'] = $this->_tombstone;
+            $data['path']['tombstone'] = $this->_tombstone;
         }
 
-        return $result;
+        return $data;
     }
 
     public function get($ref = null)
@@ -357,8 +357,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function relations($kind)
     {
         return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
-            ->setHttpClient($this->getHttpClient(true))
-            ->setItemClass(new \ReflectionClass($this));
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     public function relation($kind, KeyValueInterface $destination)
