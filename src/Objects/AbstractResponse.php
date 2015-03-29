@@ -5,7 +5,7 @@ use \GuzzleHttp\Message\Response;
 
 abstract class AbstractResponse extends AbstractConnection
 {
-    // TODO create some interfaces here, ResponseInterface and ClientAwareInterface?
+    // TODO create some interfaces here? ResponseInterface
 
     /**
      * @var array

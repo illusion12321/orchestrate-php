@@ -81,9 +81,13 @@ class Collection extends AbstractList
     {
         $data = parent::toArray();
         $data['kind'] = 'collection';
-        $data['itemClass'] = $this->getItemClass()->name;
-        $data['eventClass'] = $this->getEventClass()->name;
 
+        if ($this->getItemClass()->name !== self::$defaultItemClass) {
+            $data['itemClass'] = $this->getItemClass()->name;
+        }
+        if ($this->getEventClass()->name !== self::$defaultEventClass) {
+            $data['eventClass'] = $this->getEventClass()->name;
+        }
         if (!empty($this->_aggregates)) {
             $data['aggregates'] = $this->_aggregates;
         }
@@ -159,15 +163,12 @@ class Collection extends AbstractList
             'query' => $query,
             'limit' => $limit,
         ];
-
         if (!empty($sort)) {
             $parameters['sort'] = implode(',', (array) $sort);
         }
-
         if (!empty($aggregate)) {
             $parameters['aggregate'] = implode(',', (array) $aggregate);
         }
-
         if ($offset) {
             $parameters['offset'] = $offset;
         }
@@ -234,8 +235,9 @@ class Collection extends AbstractList
         parent::request($method, $url, $options);
 
         if ($this->isSuccess()) {
-            if (isset($this->body['aggregates'])) {
-                $this->_aggregates = (array) $this->body['aggregates'];
+            $body = $this->getBody();
+            if (isset($body['aggregates'])) {
+                $this->_aggregates = (array) $body['aggregates'];
             }
         }
     }

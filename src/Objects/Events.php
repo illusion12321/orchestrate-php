@@ -12,6 +12,11 @@ class Events extends AbstractList
     use TypeTrait;
 
     /**
+     * @var array
+     */
+    private $_aggregates;
+
+    /**
      * @param string $collection
      * @param string $key
      * @param string $type
@@ -21,6 +26,17 @@ class Events extends AbstractList
         parent::__construct($collection);
         $this->setKey($key);
         $this->setType($type);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAggregates()
+    {
+        if (!is_array($this->_aggregates)) {
+            $this->_aggregates = [];
+        }
+        return $this->_aggregates;
     }
 
     /**
@@ -52,6 +68,7 @@ class Events extends AbstractList
         parent::reset();
         $this->_key = null;
         $this->_type = null;
+        $this->_aggregates = null;
     }
 
     public function init(array $data)
@@ -67,6 +84,9 @@ class Events extends AbstractList
             if (isset($data['type'])) {
                 $this->setType($data['type']);
             }
+            if (!empty($data['aggregates'])) {
+                $this->_aggregates = (array) $data['aggregates'];
+            }
 
             parent::init($data);
         }
@@ -77,13 +97,18 @@ class Events extends AbstractList
     {
         $data = parent::toArray();
         $data['kind'] = 'events';
-        $data['eventClass'] = $this->getEventClass()->name;
 
+        if ($this->getEventClass()->name !== self::$defaultEventClass) {
+            $data['eventClass'] = $this->getEventClass()->name;
+        }
         if (!empty($this->_key)) {
             $data['key'] = $this->_key;
         }
         if (!empty($this->_type)) {
             $data['type'] = $this->_type;
+        }
+        if (!empty($this->_aggregates)) {
+            $data['aggregates'] = $this->_aggregates;
         }
 
         return $data;
@@ -118,6 +143,50 @@ class Events extends AbstractList
     }
 
     /**
+     * @param string $query
+     * @param string|array $sort
+     * @param string|array $aggregate
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#search-events
+     */
+    public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
+    {
+        // define request options
+        $queryParts = ['@path.kind:event'];
+        if (!empty($this->_key)) {
+            $queryParts[] = '@path.key:' . $this->_key;
+        }
+        if (!empty($this->_type)) {
+            $queryParts[] = '@path.type:' . $this->_type;
+        }
+        if ($query) {
+            $queryParts[] = $query;
+        }
+
+        $parameters = [
+            'query' => implode(' AND ', $queryParts),
+            'limit' => $limit,
+        ];
+        if (!empty($sort)) {
+            $parameters['sort'] = implode(',', (array) $sort);
+        }
+        if (!empty($aggregate)) {
+            $parameters['aggregate'] = implode(',', (array) $aggregate);
+        }
+        if ($offset) {
+            $parameters['offset'] = $offset;
+        }
+
+        // request
+        $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
+
+        return $this->isSuccess();
+    }
+
+    /**
      * Constructs an event instance. An Event or a custom class you set with setEventClass().
      *
      * @param string $key
@@ -136,6 +205,18 @@ class Events extends AbstractList
                     ->setTimestamp($timestamp)
                     ->setOrdinal($ordinal)
                     ->setHttpClient($this->getHttpClient(true));
+    }
+
+    protected function request($method, $url = null, array $options = [])
+    {
+        parent::request($method, $url, $options);
+
+        if ($this->isSuccess()) {
+            $body = $this->getBody();
+            if (isset($body['aggregates'])) {
+                $this->_aggregates = (array) $body['aggregates'];
+            }
+        }
     }
 
     /**

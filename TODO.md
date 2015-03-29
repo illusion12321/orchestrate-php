@@ -1,13 +1,5 @@
 # TODO and IDEAS
 
-- Study the best pattern to include the Events Search
-
-- Will Events handle both items and events like Collection? Should them merge together? Should we merge Refs too? (not good to merge...)
-
-- Events search has aggregate s right? Add missing paramneter to Events class, or end up merging with Collection?
-
-
-
 - Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))

@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## HEAD
-- *Work in progress to implement Events Search*
+- Implemented Events Search!
 - 'setChildClass' is split into 'setItemClass' and 'setEventClass' as now Collections can search both items and events.
 - The HTTP client is split to its own class, simplifing much of our code base.
 - 'setClient' method is now 'setHttpClient' so it doesn't confuse with the Client class.

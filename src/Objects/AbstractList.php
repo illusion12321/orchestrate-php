@@ -57,8 +57,7 @@ ReusableObjectInterface
         parent::setHttpClient($httpClient);
 
         foreach ($this->getResults() as $item) {
-            if ($item instanceof AbstractConnection) {
-                //TODO change to method_exists?
+            if ($item instanceof ConnectionInterface) {
                 $item->setHttpClient($httpClient);
             }
         }

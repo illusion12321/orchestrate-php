@@ -12,12 +12,12 @@ trait EventClassTrait
     /**
      * @var string
      */
-    private static $defaultEventClass = '\andrefelipe\Orchestrate\Objects\Event';
+    private static $defaultEventClass = 'andrefelipe\Orchestrate\Objects\Event';
 
     /**
      * @var string
      */
-    private static $minimumEventInterface = '\andrefelipe\Orchestrate\Objects\EventInterface';
+    private static $minimumEventInterface = 'andrefelipe\Orchestrate\Objects\EventInterface';
 
     /**
      * Get the ReflectionClass that is being used to instantiate this list's events.

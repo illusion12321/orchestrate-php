@@ -11,12 +11,12 @@ trait ItemClassTrait
     /**
      * @var string
      */
-    private static $defaultItemClass = '\andrefelipe\Orchestrate\Objects\KeyValue';
+    private static $defaultItemClass = 'andrefelipe\Orchestrate\Objects\KeyValue';
 
     /**
      * @var string
      */
-    private static $minimumItemInterface = '\andrefelipe\Orchestrate\Objects\KeyValueInterface';
+    private static $minimumItemInterface = 'andrefelipe\Orchestrate\Objects\KeyValueInterface';
 
     /**
      * Get the ReflectionClass that is being used to instantiate this list's items (KeyValue).
