@@ -11,7 +11,8 @@ interface KeyValueInterface extends
 \ArrayAccess,
 ValueInterface,
 ToJsonInterface,
-ReusableObjectInterface
+ReusableObjectInterface,
+ConnectionInterface
 {
     /**
      * @param boolean $required
@@ -140,7 +141,7 @@ ReusableObjectInterface
     /**
      * @return Events
      */
-    public function events($type);
+    public function events($type = null);
 
     /**
      * @return Event

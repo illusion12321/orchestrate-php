@@ -10,7 +10,8 @@ interface EventInterface extends
 \ArrayAccess,
 ValueInterface,
 ToJsonInterface,
-ReusableObjectInterface
+ReusableObjectInterface,
+ConnectionInterface
 {
 
     /**

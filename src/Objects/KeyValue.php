@@ -337,13 +337,14 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         // this new instance may be cached, just check subclasses scope
     }
 
-    public function events($type)
+    public function events($type = null)
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))
             ->setHttpClient($this->getHttpClient(true));
     }
 
-    public function event($type, $timestamp = null, $ordinal = null)
+    public function event($type, $timestamp = null, $ordinal = null) // TODO should type be null too!?
+
     {
         return (new Event(
             $this->getCollection(true),
