@@ -6,85 +6,50 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\Response;
 
 /**
- * Class that implements the ClientInterface methods and the children classes.
- *
- * @link https://orchestrate.io/docs/apiref
+ * HTTP Client prepared for Orchestrate API.
  */
 class HttpClient extends GuzzleClient implements HttpClientInterface
 {
-    /**
-     * @var string
-     */
-    private $_host = 'https://api.orchestrate.io';
+    const DEFAULT_HOST = 'https://api.orchestrate.io';
+    const DEFAULT_VERSION = 'v0';
 
     /**
-     * @var string
+     * @param array $config Client configuration settings
+     *     - base_url: Base URL of the client that is merged into relative URLs.
+     *       Can be a string or an array that contains a URI template followed
+     *       by an associative array of expansion variables to inject into the
+     *       URI template.
+     *     - handler: callable RingPHP handler used to transfer requests
+     *     - message_factory: Factory used to create request and response object
+     *     - defaults: Default request options to apply to each request
+     *     - emitter: Event emitter used for request events
+     *     - fsm: (internal use only) The request finite state machine. A
+     *       function that accepts a transaction and optional final state. The
+     *       function is responsible for transitioning a request through its
+     *       lifecycle events.
      */
-    private $_apiVersion = 'v0';
-
-    /**
-     * @var string
-     */
-    private $_apiKey;
-
-    /**
-     * @param string $apiKey
-     * @param string $host
-     */
-    public function __construct($apiKey = null, $host = null)
+    public function __construct(array $config = [])
     {
-        $this->setApiKey($apiKey)
-             ->setHost($host);
-
-        // set defaults
-        parent::__construct([
-            'base_url' => $this->getHost() . '/' . $this->getApiVersion() . '/',
-            'defaults' => [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                ],
-                'auth' => [$this->getApiKey(), null],
-            ],
-        ]);
-    }
-
-    /**
-     * @return string
-     */
-    public function getApiKey()
-    {
-        return $this->_apiKey;
-    }
-
-    public function setApiKey($key) // TODO actually change the guzzle defaults upon set
-
-    {
-        if ($key) {
-            $this->_apiKey = $key;
-        } else {
-            $this->_apiKey = getenv('ORCHESTRATE_API_KEY');
+        if (!isset($config['base_url'])) {
+            $config['base_url'] = self::DEFAULT_HOST . '/' . self::DEFAULT_VERSION . '/';
         }
-
-        return $this;
+        parent::__construct($config);
     }
 
-    public function getHost()
+    protected function getDefaultOptions()
     {
-        return $this->_host;
+        $settings = parent::getDefaultOptions();
+        $settings['headers'] = [
+            'Content-Type' => 'application/json',
+        ];
+        $settings['auth'] = [getenv('ORCHESTRATE_API_KEY'), null];
+
+        return $settings;
     }
 
-    public function setHost($host)
+    public function setApiKey($key)
     {
-        if ($host) {
-            $this->_host = rtrim($host, '/');
-            $this->_host = rtrim($host, '/v0');
-        }
-
-        return $this;
-    }
-    public function getApiVersion()
-    {
-        return $this->_apiVersion;
+        $this->setDefaultOption('auth', [$key, null]);
     }
 
     public function ping()

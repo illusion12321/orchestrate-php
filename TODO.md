@@ -1,5 +1,11 @@
 # TODO and IDEAS
 
+- adicionar o readme do search
+- fazer o set do apikey / host do Guzzle HttpClient
+
+- Should the HTTP client be passed as reference!?
+
+
 - Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))

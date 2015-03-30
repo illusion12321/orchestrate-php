@@ -324,7 +324,7 @@ ReusableObjectInterface
         if ($url) {
 
             // remove version and slashes at the beginning
-            $url = ltrim($url, '/' . $this->getHttpClient(true)->getApiVersion() . '/');
+            $url = ltrim($url, '/' . $this->getHttpClient(true)->getApiVersion() . '/'); //TODO find a way to do without the getApiVersion
 
             // request
             $this->request('GET', $url);

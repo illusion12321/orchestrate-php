@@ -1,47 +1,23 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-// use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\Response;
 
 /**
- * Interface implement the basis HTTP client methods
+ * Interface implementing the minimun required HTTP client methods.
  */
 interface HttpClientInterface
 {
-    /**
-     * @return string
-     */
-    public function getApiKey();
 
     /**
      * @param string $key
-     *
-     * @return HttpClient self
      */
     public function setApiKey($key);
 
     /**
      * @return string
      */
-    public function getHost();
-
-    /**
-     * @param string $host
-     *
-     * @return HttpClient self
-     */
-    public function setHost($host);
-
-    /**
-     * @return string
-     */
-    public function getApiVersion();
-
-    /**
-     * @param string $version
-     */
-    // public function setApiVersion($version);
+    // public function getApiVersion();
 
     /**
      * @return boolean
@@ -51,7 +27,7 @@ interface HttpClientInterface
 
     /**
      * This method wraps both createRequest and send methods, and provides a consistent
-     * return of Response instances.
+     * return of a Response object.
      *
      * More information on the parameters please go to the Guzzle docs.
      *

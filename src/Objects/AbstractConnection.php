@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\HttpClientInterface;
 
 /**
- *
+ * Provides the bare basis, a connection to a HTTP service.
  */
 abstract class AbstractConnection implements ConnectionInterface
 {
@@ -35,7 +35,7 @@ abstract class AbstractConnection implements ConnectionInterface
     protected function noHttpClientException()
     {
         if (!$this->_httpClient) {
-            throw new \BadMethodCallException('There is no Http client set yet. Please do so through setHttpClient() method.');
+            throw new \BadMethodCallException('There is no HTTP client set yet. Please do so through setHttpClient() method.');
         }
     }
 }

@@ -1,23 +1,15 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Collection;
 
 /**
+ * Resource-like interface for Orchestrate API.
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Application extends AbstractConnection
+class Application extends AbstractClientBase
 {
-    /**
-     * @param string $apiKey
-     * @param string $host
-     */
-    public function __construct($apiKey = null, $host = null)
-    {
-        $this->setHttpClient(new HttpClient($apiKey, $host));
-    }
 
     /**
      * @return boolean

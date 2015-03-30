@@ -1,7 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\EventClassTrait;
@@ -16,31 +15,14 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
 /**
+ * Client interface for Orchestrate API.
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Client extends AbstractConnection
+class Client extends AbstractClientBase
 {
     use EventClassTrait;
     use ItemClassTrait;
-
-    /**
-     * @param string $apiKey
-     * @param string $host
-     */
-    public function __construct($apiKey = null, $host = null)
-    {
-        $this->setHttpClient(new HttpClient($apiKey, $host));
-    }
-
-    /**
-     * @return boolean
-     * @link https://orchestrate.io/docs/apiref#authentication-ping
-     */
-    public function ping()
-    {
-        return $this->getHttpClient(true)->ping();
-    }
 
     // Collection
 
@@ -349,12 +331,37 @@ class Client extends AbstractConnection
      */
     public function listEvents($collection, $key, $type, $limit = 10, TimeRangeBuilder $range = null)
     {
-        $list = (new Events($collection, $key, $type))
+        $events = (new Events($collection, $key, $type))
             ->setEventClass($this->getEventClass())
             ->setHttpClient($this->getHttpClient(true));
 
-        $list->get($limit, $range);
-        return $list;
+        $events->get($limit, $range);
+        return $events;
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $type
+     * @param string $query
+     * @param string|array $sort
+     * @param string|array $aggregate
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return Events
+     * @link https://orchestrate.io/docs/apiref#search-events
+     */
+    public function searchEvents($collection, $key, $type, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
+    {
+        $events = (new Events($collection))
+            ->setKey($key)
+            ->setType($type)
+            ->setEventClass($this->getEventClass())
+            ->setHttpClient($this->getHttpClient(true));
+
+        $events->search($query, $sort, $aggregate, $limit, $offset);
+        return $events;
     }
 
     // Graph
