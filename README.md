@@ -575,7 +575,7 @@ $client->setEventClass($class);
 
 Objects can be serialized and stored in your prefered cache for later re-use. 
 
-It is valuable to cache in JSON format, because any part of your application, in any language, could take advantage of that cache. But if your use case is strictly PHP you can have the best performance. In my ultra simple test, JSON decoding and instantiation is 3 times slower than unserialize.
+It is valuable to cache in JSON format, because any part of your application, in any language, could take advantage of that cache. But if your use case is strictly PHP you can have the best performance. In my ultra simple test, serialization is 3 times faster than JSON decoding and instantiation.
 
 ```php
 // serialize single item
@@ -975,7 +975,7 @@ $collection->search('title:"The Title*"');
 // now get array of the search results
 $itemList = $results->getResults();
 
-// or go ahead and iterate over the results directly!
+// or go ahead and iterate over the results directly
 foreach ($collection as $item) {
     
     echo $item->title;
@@ -1001,14 +1001,20 @@ All Search parameters are supported, and it includes [Geo](https://orchestrate.i
 // public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
 
 // aggregates example
-$results = $collection->search(
+$collection->search(
     'value.created_date:[2014-01-01 TO 2014-12-31]',
     null,
     'value.created_date:time_series:month'
 );
 ```
 
+Mixing event search is supported too:
+```php
+$collection->search('@path.kind:(item event) AND title:"The Title*"');
+// results will be either KeyValue or Event
+```
 
+Searching only events would be fine too, but for that you may be interested in the [Events](https://github.com/andrefelipe/orchestrate-php#event-search) class.
 
 
 
@@ -1176,6 +1182,71 @@ $events->prevPage(); // loads previous set of results
 ```
 
 
+
+
+### Event Search:
+
+```php
+// Approach 1 - Client
+$collection = $client->searchEvents('collection', 'key', 'type', 'title:"The Title*"');
+// if you don't need key or type, pass null
+$collection = $client->searchEvents('collection', null, 'type', 'title:"The Title*"');
+
+
+// Approach 2 - Object
+$events = $collection->events();
+$events->search('title:"The Title*"');
+
+// optionaly add key and event type with:
+$events = $collection->events('key', 'type');
+// or
+$events->setKey('key');
+$events->setType('type');
+// then do the api call
+$events->search('title:"The Title*"');
+
+// Also, create Events objects from KeyValues too:
+$events = $item->events('type');
+// where it will already have the Key set
+
+
+// As you may guess, the query parameter is prefixed with:
+// @path.kind:event AND @path.key:your_key AND @path.type:your_type
+// where key and type is only added if not empty
+
+
+// now go ahead and iterate over the results directly
+foreach ($events as $event) {
+    
+    echo $event->title;
+
+    $event->getScore(); // search score
+    $event->getDistance(); // populated if it was a Geo query
+}
+
+// aggregates
+$events->getAggregates(); // array of the Aggregate results, if any 
+
+// pagination
+$events->getNextUrl(); // string
+$events->getPrevUrl(); // string
+count($events); // count of the current set of results
+$events->getTotalCount(); // count of the total results
+$events->nextPage(); // loads next set of results
+$events->prevPage(); // loads previous set of results
+```
+
+Like the [Collection Search](#search), all search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
+```php
+// public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+
+// aggregates example
+$events->search(
+    'value.created_date:[2014-01-01 TO 2014-12-31]',
+    null,
+    'value.created_date:time_series:month'
+);
+```
 
 
 
