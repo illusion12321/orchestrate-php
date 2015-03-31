@@ -1014,7 +1014,7 @@ $collection->search('@path.kind:(item event) AND title:"The Title*"');
 // results will be either KeyValue or Event
 ```
 
-Searching only events would be fine too, but for that you may be interested in the [Events](https://github.com/andrefelipe/orchestrate-php#event-search) class.
+Searching only events would be fine too, but for that you may be interested in the [Events](#event-search) class.
 
 
 
