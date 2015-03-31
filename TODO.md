@@ -1,8 +1,8 @@
 # TODO and IDEAS
 
-
 - Should the HTTP client be passed as reference!?
 
+- aggregates should return as ObjectArray right?
 
 - Implement more common interfaces, and general organization of the classes / folders
 

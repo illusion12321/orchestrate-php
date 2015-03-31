@@ -14,6 +14,8 @@ class HttpClient extends GuzzleClient implements HttpClientInterface
     const DEFAULT_VERSION = 'v0';
 
     /**
+     * Plese note, base_url must have a trailing slash, for example: https://api.orchestrate.io/v0/
+     *
      * @param array $config Client configuration settings
      *     - base_url: Base URL of the client that is merged into relative URLs.
      *       Can be a string or an array that contains a URI template followed

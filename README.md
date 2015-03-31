@@ -546,12 +546,17 @@ use \andrefelipe\Orchestrate\HttpClient;
 use \MyProject\Models\Members;
 
 // let's instantiate a Http client programatically
-// same constructor as the Client / Application applies
-$httpClient = new HttpClient(); 
+$httpClient = new HttpClient();
+// set api key with:
+// $httpClient->setApiKey('my-key');
+// change host and version with:
+// $httpClient = new HttpClient(['base_url' => 'https://api.orchestrate.io/v0/']);
 
+// instatiate the collection
 $members = new Members($httpClient);
 
-$item = $members->item('john'); // instance of Member
+// and the member
+$item = $members->item('john'); // instance of Member class
 
 ```
 
