@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## HEAD
+## 0.13.0 - 2015-03-31
 - Implemented Events Search!
 - 'setChildClass' is split into 'setItemClass' and 'setEventClass' as now Collections can search both items and events.
+- Collections and KeyValues can create event instances.
 - The HTTP client is split to its own class, simplifing much of our code base.
 - 'setClient' method is now 'setHttpClient' so it doesn't confuse with the Client class.
 - Improved totalCount method to actually make an API call if the total count is not know yet.

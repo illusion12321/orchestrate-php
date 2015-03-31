@@ -1,7 +1,5 @@
 # TODO and IDEAS
 
-- adicionar o readme do search
-- fazer o set do apikey / host do Guzzle HttpClient
 
 - Should the HTTP client be passed as reference!?
 
@@ -11,7 +9,7 @@
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
 ---Do not use the object itself to build the query chain, it's confusing---
 
-- Provide a quicker access to query builders, for instance $item->patchBuilder()->add(...)->copy(...)->patch(); ?
+- Provide a quicker access to query builders by allowing regular arrays, that get passed to a init on each query builder
 
 - could have find/search/findFirst method on KeyValue to search the collection and load the first match.
 

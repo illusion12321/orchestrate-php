@@ -18,6 +18,57 @@ class Collection extends AbstractList
     private $_aggregates;
 
     /**
+     * Constructs an item instance. A KeyValue or a custom class you set with setItemClass().
+     *
+     * @param string $key
+     * @param string $ref
+     *
+     * @return KeyValueInterface
+     */
+    public function item($key = null, $ref = null)
+    {
+        return $this->getItemClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setRef($ref)
+                    ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
+     * Constructs an event instance. An Event or a custom class you set with setEventClass().
+     *
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     *
+     * @return EventInterface
+     */
+    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
+    {
+        return $this->getEventClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setType($type)
+                    ->setTimestamp($timestamp)
+                    ->setOrdinal($ordinal)
+                    ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
+     *
+     * @return Events
+     */
+    public function events($key = null, $type = null)
+    {
+        return (new Events())
+            ->setCollection($this->getCollection(true))
+            ->setKey($key)
+            ->setType($type)
+            ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
      * @return array
      */
     public function getAggregates()
@@ -177,57 +228,6 @@ class Collection extends AbstractList
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
 
         return $this->isSuccess();
-    }
-
-    /**
-     * Constructs an item instance. A KeyValue or a custom class you set with setItemClass().
-     *
-     * @param string $key
-     * @param string $ref
-     *
-     * @return KeyValueInterface
-     */
-    public function item($key = null, $ref = null)
-    {
-        return $this->getItemClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setRef($ref)
-                    ->setHttpClient($this->getHttpClient(true));
-    }
-
-    /**
-     * Constructs an event instance. An Event or a custom class you set with setEventClass().
-     *
-     * @param string $key
-     * @param string $type
-     * @param int $timestamp
-     * @param int $ordinal
-     *
-     * @return EventInterface
-     */
-    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
-    {
-        return $this->getEventClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setType($type)
-                    ->setTimestamp($timestamp)
-                    ->setOrdinal($ordinal)
-                    ->setHttpClient($this->getHttpClient(true));
-    }
-
-    /**
-     *
-     * @return Events
-     */
-    public function events($key = null, $type = null)
-    {
-        return (new Events())
-            ->setCollection($this->getCollection(true))
-            ->setKey($key)
-            ->setType($type)
-            ->setHttpClient($this->getHttpClient(true));
     }
 
     protected function request($method, $url = null, array $options = [])

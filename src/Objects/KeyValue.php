@@ -334,7 +334,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             ->setHttpClient($this->getHttpClient(true))
             ->setItemClass(new \ReflectionClass($this));
 
-        // this new instance may be cached, just check subclasses scope
+        // this new reflection instance may be cached, just check subclasses scope
     }
 
     public function events($type = null)
@@ -343,8 +343,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             ->setHttpClient($this->getHttpClient(true));
     }
 
-    public function event($type, $timestamp = null, $ordinal = null) // TODO should type be null too!?
-
+    public function event($type = null, $timestamp = null, $ordinal = null)
     {
         return (new Event(
             $this->getCollection(true),

@@ -146,7 +146,7 @@ ConnectionInterface
     /**
      * @return Event
      */
-    public function event($type, $timestamp = null, $ordinal = null);
+    public function event($type = null, $timestamp = null, $ordinal = null);
 
     /**
      * @return Relations

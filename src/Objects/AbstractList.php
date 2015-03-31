@@ -261,7 +261,11 @@ ReusableObjectInterface
      */
     public function nextPage()
     {
-        return $this->getUrl($this->_nextUrl);
+        if ($this->_nextUrl) {
+            $this->request('GET', $this->_nextUrl);
+            return $this->isSuccess();
+        }
+        return false;
     }
 
     /**
@@ -269,7 +273,11 @@ ReusableObjectInterface
      */
     public function prevPage()
     {
-        return $this->getUrl($this->_prevUrl);
+        if ($this->_prevUrl) {
+            $this->request('GET', $this->_prevUrl);
+            return $this->isSuccess();
+        }
+        return false;
     }
 
     /**
@@ -309,28 +317,5 @@ ReusableObjectInterface
                 $this->_prevUrl = $body['prev'];
             }
         }
-    }
-
-    /**
-     * Helper for next/prev methods, to sanitize the URL and request.
-     *
-     * @param string $url Orchestrate URL to request, usually a page URL.
-     *
-     * @return boolean Success of operation.
-     */
-    protected function getUrl($url)
-    {
-        // load next set of values
-        if ($url) {
-
-            // remove version and slashes at the beginning
-            $url = ltrim($url, '/' . $this->getHttpClient(true)->getApiVersion() . '/'); //TODO find a way to do without the getApiVersion
-
-            // request
-            $this->request('GET', $url);
-            return $this->isSuccess();
-        }
-
-        return false;
     }
 }

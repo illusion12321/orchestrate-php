@@ -6,7 +6,7 @@ use andrefelipe\Orchestrate\Objects\AbstractConnection;
 /**
  * Provides the entry point for Orchestrate clients. Instantiates a default HTTP client on construction.
  */
-abstract class AbstractClientBase extends AbstractConnection
+abstract class AbstractHttpConnection extends AbstractConnection
 {
     /**
      * @param string $apiKey
@@ -35,5 +35,4 @@ abstract class AbstractClientBase extends AbstractConnection
     {
         return $this->getHttpClient(true)->ping();
     }
-
 }
