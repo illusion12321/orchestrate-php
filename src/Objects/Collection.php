@@ -253,7 +253,7 @@ class Collection extends AbstractList
             if ($kind === 'item') {
                 $class = $this->getItemClass();
 
-            } else if ($kind === 'event') {
+            } elseif ($kind === 'event') {
                 $class = $this->getEventClass();
 
             } else {

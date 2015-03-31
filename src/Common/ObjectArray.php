@@ -110,7 +110,7 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
     {
         if (is_object($source)) {
             $source = get_object_vars($source);
-        } else if (!is_array($source)) {
+        } elseif (!is_array($source)) {
             return;
         }
         $index = count($target);
