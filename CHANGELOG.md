@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## HEAD
+## 0.13.1 - 2015-04-02
 - Added host and version parameters to HttpClient constructor.
 - Removed AbstractHttpConnection as we simplified Application and Client constructor.
 
