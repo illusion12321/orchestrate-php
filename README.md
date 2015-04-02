@@ -549,8 +549,8 @@ use \MyProject\Models\Members;
 $httpClient = new HttpClient();
 // set api key with:
 // $httpClient->setApiKey('my-key');
-// change host and version with:
-// $httpClient = new HttpClient(['base_url' => 'https://api.orchestrate.io/v0/']);
+// change host and version at the constructor:
+// $httpClient = new HttpClient('https://api.orchestrate.io', 'v0');
 
 // instatiate the collection
 $members = new Members($httpClient);

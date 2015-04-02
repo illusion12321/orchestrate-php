@@ -14,13 +14,11 @@ class HttpClient extends GuzzleClient implements HttpClientInterface
     const DEFAULT_VERSION = 'v0';
 
     /**
-     * Plese note, base_url must have a trailing slash, for example: https://api.orchestrate.io/v0/
      *
+     * @param array $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
+     * @param array $version Orchestrate API version. Defaults to 'v0'
      * @param array $config Client configuration settings
-     *     - base_url: Base URL of the client that is merged into relative URLs.
-     *       Can be a string or an array that contains a URI template followed
-     *       by an associative array of expansion variables to inject into the
-     *       URI template.
+     *     - base_url: Base URL is set via $host and $version parameters,
      *     - handler: callable RingPHP handler used to transfer requests
      *     - message_factory: Factory used to create request and response object
      *     - defaults: Default request options to apply to each request
@@ -30,11 +28,13 @@ class HttpClient extends GuzzleClient implements HttpClientInterface
      *       function is responsible for transitioning a request through its
      *       lifecycle events.
      */
-    public function __construct(array $config = [])
+    public function __construct($host = null, $version = null, array $config = [])
     {
-        if (!isset($config['base_url'])) {
-            $config['base_url'] = self::DEFAULT_HOST . '/' . self::DEFAULT_VERSION . '/';
-        }
+        $base_url = $host ? trim($host, '/') : self::DEFAULT_HOST;
+        $base_url .= '/' . ($version ? trim($version, '/') : self::DEFAULT_VERSION) . '/';
+
+        $config['base_url'] = $base_url;
+
         parent::__construct($config);
     }
 

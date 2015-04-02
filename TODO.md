@@ -4,6 +4,8 @@
 
 - aggregates should return as ObjectArray right?
 
+- add a pingMessage method, for debugging?
+
 - Implement more common interfaces, and general organization of the classes / folders
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))

@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
+use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Collection;
 
 /**
@@ -8,8 +9,26 @@ use andrefelipe\Orchestrate\Objects\Collection;
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Application extends AbstractHttpConnection
+class Application extends AbstractConnection
 {
+    /**
+     * Instantiates a default HTTP client on construction.
+     *
+     * @param string $apiKey Orchestrate API key. If not set gets from env 'ORCHESTRATE_API_KEY'.
+     * @param string $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
+     * @param string $version Orchestrate API version. Defaults to 'v0'
+     */
+    public function __construct($apiKey = null, $host = null, $version = null)
+    {
+        $client = new HttpClient($host, $version);
+
+        if ($apiKey !== null) {
+            $client->setApiKey($apiKey);
+        }
+
+        $this->setHttpClient($client);
+    }
+
     /**
      * @return boolean
      * @link https://orchestrate.io/docs/apiref#authentication-ping
@@ -20,7 +39,6 @@ class Application extends AbstractHttpConnection
     }
 
     /**
-     *
      * @return Collection
      */
     public function collection($name)

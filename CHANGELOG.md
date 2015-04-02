@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## HEAD
+- Added host and version parameters to HttpClient constructor.
+- Removed AbstractHttpConnection as we simplified Application and Client constructor.
+
 ## 0.13.0 - 2015-03-31
 - Implemented Events Search!
 - 'setChildClass' is split into 'setItemClass' and 'setEventClass' as now Collections can search both items and events.
