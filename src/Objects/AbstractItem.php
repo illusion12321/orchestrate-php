@@ -27,6 +27,8 @@ ToJsonInterface
      */
     protected function mapProperty($name, $getterName = true, $setterName = true)
     {
+        $this->_propertyMap[$name] = [];
+
         if ($getterName === true || $setterName === true) {
             $capitalized = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $name)));
 
@@ -38,37 +40,49 @@ ToJsonInterface
             }
         }
 
-        if (!method_exists($this, $getterName)) {
-            throw new \BadMethodCallException('A matching getter method could not be found, tried: ' . $getterName);
+        if ($getterName) {
+            if (method_exists($this, $getterName)) {
+                $this->_propertyMap[$name][0] = [$this, $getterName];
+            } else {
+                throw new \BadMethodCallException('A matching getter method could not be found, tried: ' . $getterName);
+            }            
         }
 
-        if (!method_exists($this, $setterName)) {
-            throw new \BadMethodCallException('A matching setter method could not be found, tried: ' . $setterName);
+        if ($setterName) {
+            if (method_exists($this, $setterName)) {
+                $this->_propertyMap[$name][1] = [$this, $setterName];
+            } else {
+                throw new \BadMethodCallException('A matching setter method could not be found, tried: ' . $setterName);
+            }            
         }
-
-        $this->_propertyMap[$name] = [[$this, $getterName], [$this, $setterName]];
     }
 
-    public function __get($key)
+    public function __get($name)
     {
-        if (isset($this->_propertyMap[$key][0])) {
-            return $this->_propertyMap[$key][0]();
+        if (isset($this->_propertyMap[$name])) {
+            if (isset($this->_propertyMap[$name][0])) {
+                return $this->_propertyMap[$name][0]();
+            } else {
+                return null;
+            }            
         }
-        return isset($this->{$key}) ? $this->{$key} : null;
+        return isset($this->{$name}) ? $this->{$name} : null;
     }
 
-    public function __set($key, $value)
+    public function __set($name, $value)
     {
-        if (isset($this->_propertyMap[$key][1])) {
-            $this->_propertyMap[$key][1]($value);
+        if (isset($this->_propertyMap[$name])) {
+            if (isset($this->_propertyMap[$name][1])) {
+                $this->_propertyMap[$name][1]($value);
+            }
         } else {
-            $this->{$key} = $value;
+            $this->{$name} = $value;
         }
     }
 
-    public function __unset($key)
+    public function __unset($name)
     {
-        return $this->{$key} = null;
+        return $this->{$name} = null;
     }
 
     public function offsetGet($offset)
