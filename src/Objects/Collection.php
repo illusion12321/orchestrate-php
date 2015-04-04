@@ -185,13 +185,8 @@ class Collection extends AbstractList
     {
         if ($collectionName === $this->getCollection(true)) {
 
-            $response = $this->request(
-                'DELETE',
-                $this->getCollection(),
-                ['query' => ['force' => 'true']]
-            );
-
-            return $response->getStatusCode() === 204;
+            $this->request('DELETE', $this->getCollection(), ['query' => ['force' => 'true']]);
+            return $this->getStatusCode() === 204;
         }
 
         return false;
