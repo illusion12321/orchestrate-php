@@ -45,7 +45,7 @@ ToJsonInterface
                 $this->_propertyMap[$name][0] = [$this, $getterName];
             } else {
                 throw new \BadMethodCallException('A matching getter method could not be found, tried: ' . $getterName);
-            }            
+            }
         }
 
         if ($setterName) {
@@ -53,7 +53,7 @@ ToJsonInterface
                 $this->_propertyMap[$name][1] = [$this, $setterName];
             } else {
                 throw new \BadMethodCallException('A matching setter method could not be found, tried: ' . $setterName);
-            }            
+            }
         }
     }
 
@@ -64,7 +64,7 @@ ToJsonInterface
                 return $this->_propertyMap[$name][0]();
             } else {
                 return null;
-            }            
+            }
         }
         return isset($this->{$name}) ? $this->{$name} : null;
     }
