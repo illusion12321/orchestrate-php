@@ -141,10 +141,6 @@ ToJsonInterface
     {
         if (!empty($values)) {
             foreach ($values as $key => $value) {
-
-                if (is_numeric($key)) {
-                    $this->noIndexedArrayException();
-                }
                 $this->{(string) $key} = $value;
             }
         }
