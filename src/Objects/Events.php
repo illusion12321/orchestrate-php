@@ -2,6 +2,7 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
+use andrefelipe\Orchestrate\Objects\Properties\TotalEventsTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
@@ -9,6 +10,7 @@ class Events extends AbstractList
 {
     use EventClassTrait;
     use KeyTrait;
+    use TotalEventsTrait;
     use TypeTrait;
 
     /**
@@ -29,6 +31,27 @@ class Events extends AbstractList
     }
 
     /**
+     * Constructs an event instance. An Event or a custom class you set with setEventClass().
+     *
+     * @param string $key
+     * @param string $type
+     * @param int $timestamp
+     * @param int $ordinal
+     *
+     * @return EventInterface
+     */
+    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
+    {
+        return $this->getEventClass()->newInstance()
+                    ->setCollection($this->getCollection(true))
+                    ->setKey($key)
+                    ->setType($type)
+                    ->setTimestamp($timestamp)
+                    ->setOrdinal($ordinal)
+                    ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
      * @return array
      */
     public function getAggregates()
@@ -37,30 +60,6 @@ class Events extends AbstractList
             $this->_aggregates = [];
         }
         return $this->_aggregates;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalCount()
-    {
-        if ($this->_totalCount === null) {
-
-            // makes a straight Search query for no results
-            $path = $this->getCollection(true);
-            $parameters = [
-                'query' => '@path.kind:event',
-                'limit' => 0,
-            ];
-            $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
-
-            // set value if succesful
-            if ($response->getStatusCode() === 200) {
-                $body = $response->json();
-                $this->_totalCount = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
-            }
-        }
-        return $this->_totalCount;
     }
 
     public function reset()
@@ -184,27 +183,6 @@ class Events extends AbstractList
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
 
         return $this->isSuccess();
-    }
-
-    /**
-     * Constructs an event instance. An Event or a custom class you set with setEventClass().
-     *
-     * @param string $key
-     * @param string $type
-     * @param int $timestamp
-     * @param int $ordinal
-     *
-     * @return EventInterface
-     */
-    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
-    {
-        return $this->getEventClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setType($type)
-                    ->setTimestamp($timestamp)
-                    ->setOrdinal($ordinal)
-                    ->setHttpClient($this->getHttpClient(true));
     }
 
     protected function request($method, $url = null, array $options = [])

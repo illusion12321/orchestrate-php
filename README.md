@@ -4,9 +4,8 @@ Orchestrate.io PHP Client
 A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBaaS.
 
 - Choose which approach you prefer, [client-like or object-like](#getting-started).
-- PHP's magic [get/setter](http://php.net/manual/en/language.oop5.overloading.php#language.oop5.overloading.members), [ArrayAccess](http://php.net/manual/en/class.arrayaccess.php) and [ArrayIterator](http://php.net/manual/en/class.iteratoraggregate.php) built in.
 - [Template engine friendly](#objectarray), with [JMESPath](#jmespath) support.
-- Create [Models](#models) by extending our classes, and easily change child class.
+- Create [Models](#models) by extending our classes, and easily change child classes.
 - [Serialization](#serialization) is supported.
 - [toArray/toJson](#data-access) methods produces the same output format as Orchestrate's export.
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.

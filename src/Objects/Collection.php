@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Objects\Properties\TotalEventsTrait;
+use andrefelipe\Orchestrate\Objects\Properties\TotalItemsTrait;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 
 /**
@@ -11,6 +13,8 @@ class Collection extends AbstractList
 {
     use EventClassTrait;
     use ItemClassTrait;
+    use TotalEventsTrait;
+    use TotalItemsTrait;
 
     /**
      * @var array
@@ -77,30 +81,6 @@ class Collection extends AbstractList
             $this->_aggregates = [];
         }
         return $this->_aggregates;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalCount()
-    {
-        if ($this->_totalCount === null) {
-
-            // makes a straight Search query for no results
-            $path = $this->getCollection(true);
-            $parameters = [
-                'query' => '@path.kind:item',
-                'limit' => 0,
-            ];
-            $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
-
-            // set value if succesful
-            if ($response->getStatusCode() === 200) {
-                $body = $response->json();
-                $this->_totalCount = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
-            }
-        }
-        return $this->_totalCount;
     }
 
     public function reset()

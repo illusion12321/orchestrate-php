@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## HEAD
+- Removed logic from getTotalCount so it doesn't conflict with queries total count.
+- Created getTotalItems and getTotalEvents methods to get the respective values.
+- Fixed collection delete status code.
+
 ## 0.13.1 - 2015-04-02
 - Added host and version parameters to HttpClient constructor.
 - Removed AbstractHttpConnection as we simplified Application and Client constructor.
