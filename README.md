@@ -16,6 +16,9 @@ Requirements:
 - [Guzzle 5](https://github.com/guzzle/guzzle) as HTTP client.
 - [JMESPath](https://github.com/jmespath/jmespath.php).
 
+Sample integrations:
+- Sample code on how to integrate our client in a [Phalcon project](https://github.com/andrefelipe/orchestrate-phalcon).
+
 This client follows very closely [Orchestrate's](https://orchestrate.io) naming conventions, so you can confidently rely on the Orchestrate API Reference: https://orchestrate.io/docs/apiref
 
 *This library is still at 0.x version, there is a [lot of ideas](https://github.com/andrefelipe/orchestrate-php/blob/master/TODO.md) to look at*.
