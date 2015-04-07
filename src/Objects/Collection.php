@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Objects\Properties\TotalEventsTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TotalItemsTrait;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
@@ -17,7 +18,7 @@ class Collection extends AbstractList
     use TotalItemsTrait;
 
     /**
-     * @var array
+     * @var ObjectArray
      */
     private $_aggregates;
 
@@ -73,12 +74,12 @@ class Collection extends AbstractList
     }
 
     /**
-     * @return array
+     * @return ObjectArray
      */
     public function getAggregates()
     {
-        if (!is_array($this->_aggregates)) {
-            $this->_aggregates = [];
+        if (!$this->_aggregates) {
+            $this->_aggregates = new ObjectArray();
         }
         return $this->_aggregates;
     }
@@ -100,7 +101,7 @@ class Collection extends AbstractList
                 $this->setEventClass($data['eventClass']);
             }
             if (!empty($data['aggregates'])) {
-                $this->_aggregates = (array) $data['aggregates'];
+                $this->_aggregates = new ObjectArray($data['aggregates']);
             }
 
             parent::init($data);
@@ -119,8 +120,8 @@ class Collection extends AbstractList
         if ($this->getEventClass()->name !== self::$defaultEventClass) {
             $data['eventClass'] = $this->getEventClass()->name;
         }
-        if (!empty($this->_aggregates)) {
-            $data['aggregates'] = $this->_aggregates;
+        if ($this->_aggregates) {
+            $data['aggregates'] = $this->_aggregates->toArray();
         }
 
         return $data;
@@ -211,8 +212,8 @@ class Collection extends AbstractList
 
         if ($this->isSuccess()) {
             $body = $this->getBody();
-            if (isset($body['aggregates'])) {
-                $this->_aggregates = (array) $body['aggregates'];
+            if (!empty($body['aggregates'])) {
+                $this->_aggregates = new ObjectArray($body['aggregates']);
             }
         }
     }

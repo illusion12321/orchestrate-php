@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TotalEventsTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
@@ -14,7 +15,7 @@ class Events extends AbstractList
     use TypeTrait;
 
     /**
-     * @var array
+     * @var ObjectArray
      */
     private $_aggregates;
 
@@ -52,12 +53,12 @@ class Events extends AbstractList
     }
 
     /**
-     * @return array
+     * @return ObjectArray
      */
     public function getAggregates()
     {
-        if (!is_array($this->_aggregates)) {
-            $this->_aggregates = [];
+        if (!$this->_aggregates) {
+            $this->_aggregates = new ObjectArray();
         }
         return $this->_aggregates;
     }
@@ -84,7 +85,7 @@ class Events extends AbstractList
                 $this->setType($data['type']);
             }
             if (!empty($data['aggregates'])) {
-                $this->_aggregates = (array) $data['aggregates'];
+                $this->_aggregates = new ObjectArray($data['aggregates']);
             }
 
             parent::init($data);
@@ -106,8 +107,8 @@ class Events extends AbstractList
         if (!empty($this->_type)) {
             $data['type'] = $this->_type;
         }
-        if (!empty($this->_aggregates)) {
-            $data['aggregates'] = $this->_aggregates;
+        if ($this->_aggregates) {
+            $data['aggregates'] = $this->_aggregates->toArray();
         }
 
         return $data;
@@ -191,8 +192,8 @@ class Events extends AbstractList
 
         if ($this->isSuccess()) {
             $body = $this->getBody();
-            if (isset($body['aggregates'])) {
-                $this->_aggregates = (array) $body['aggregates'];
+            if (!empty($body['aggregates'])) {
+                $this->_aggregates = new ObjectArray($body['aggregates']);
             }
         }
     }
