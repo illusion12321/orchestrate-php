@@ -1,9 +1,10 @@
 # CHANGELOG
 
-## HEAD
+## 0.13.2 - 2015-04-07
 - Removed logic from getTotalCount so it doesn't conflict with queries total count.
 - Created getTotalItems and getTotalEvents methods to get the respective values.
 - Fixed collection delete status code.
+- getAggregates returns ObjectArray for each object-syntax access.
 
 ## 0.13.1 - 2015-04-02
 - Added host and version parameters to HttpClient constructor.
