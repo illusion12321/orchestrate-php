@@ -12,6 +12,8 @@ use JmesPath\Env as JmesPath;
  */
 class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
 {
+    use ToJsonTrait;
+
     /**
      * @param array $values Values to set to the object on construct.
      */
@@ -75,11 +77,6 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
     public function toArray()
     {
         return self::objectToArray($this);
-    }
-
-    public function toJson($options = 0, $depth = 512)
-    {
-        return json_encode($this->toArray(), $options, $depth);
     }
 
     public function extract($expression)

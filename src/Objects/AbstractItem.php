@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use andrefelipe\Orchestrate\Common\ToJsonTrait;
 use JmesPath\Env as JmesPath;
 
 abstract class AbstractItem extends AbstractResponse implements
@@ -11,6 +12,8 @@ abstract class AbstractItem extends AbstractResponse implements
 ValueInterface,
 ToJsonInterface
 {
+    use ToJsonTrait;
+
     /**
      * @var array Storage for user-defined properties mapped to getter/setters.
      */
@@ -117,11 +120,6 @@ ToJsonInterface
     public function toArray()
     {
         return array_merge($this->getMappedValues(true), ObjectArray::objectToArray($this));
-    }
-
-    public function toJson($options = 0, $depth = 512)
-    {
-        return json_encode($this->toArray(), $options, $depth);
     }
 
     public function extract($expression)

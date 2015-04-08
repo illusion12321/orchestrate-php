@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
+use andrefelipe\Orchestrate\Common\ToJsonTrait;
 use andrefelipe\Orchestrate\HttpClientInterface;
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use JmesPath\Env as JmesPath;
@@ -17,6 +18,7 @@ ToJsonInterface,
 ReusableObjectInterface
 {
     use CollectionTrait;
+    use ToJsonTrait;
 
     /**
      * @var ObjectArray
@@ -155,11 +157,6 @@ ReusableObjectInterface
         }
 
         return $data;
-    }
-
-    public function toJson($options = 0, $depth = 512)
-    {
-        return json_encode($this->toArray(), $options, $depth);
     }
 
     public function extract($expression)
