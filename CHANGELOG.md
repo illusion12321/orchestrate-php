@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## HEAD
+- getTotalItems/getTotalEvents always issue the API call, will return the cached value only if an API error is given
+
 ## 0.13.2 - 2015-04-07
 - Removed logic from getTotalCount so it doesn't conflict with queries total count.
 - Created getTotalItems and getTotalEvents methods to get the respective values.
@@ -34,7 +37,7 @@
 - Ooops, missed a letter 's' on a method.
 
 ## 0.10.1 - 2015-03-13
-- Considered our usage of JMESPath erroneous, by sending our objects directly, it would render array functions useless. So now we only send arrays to JMESPath.
+- Considered our usage of JMESPath erroneous, by sending our objects directly, it would render JMES array functions useless. So now we only send arrays to JMESPath.
 - Changed 'jmesPath' method name to 'extract', it now uses the toArray() method of each object, and returns ObjectArrays when possible.
 - Introduces 'extractValue' (for KV) and 'extractValues' (for lists) methods, which uses getValue/getValues method, providing a less verbose JMESPath expression.
 - Every object has a extract method.

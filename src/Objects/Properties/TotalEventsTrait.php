@@ -18,21 +18,18 @@ trait TotalEventsTrait
      */
     public function getTotalEvents()
     {
-        if ($this->_totalEvents === null) {
+        // makes a straight Search query for no results
+        $path = $this->getCollection(true);
+        $parameters = [
+            'query' => '@path.kind:event',
+            'limit' => 0,
+        ];
+        $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
 
-            // makes a straight Search query for no results
-            $path = $this->getCollection(true);
-            $parameters = [
-                'query' => '@path.kind:event',
-                'limit' => 0,
-            ];
-            $response = $this->getHttpClient(true)->request('GET', $path, ['query' => $parameters]);
-
-            // set value if succesful
-            if ($response->getStatusCode() === 200) {
-                $body = $response->json();
-                $this->_totalEvents = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
-            }
+        // set value if succesful
+        if ($response->getStatusCode() === 200) {
+            $body = $response->json();
+            $this->_totalEvents = !empty($body['total_count']) ? (int) $body['total_count'] : 0;
         }
         return $this->_totalEvents;
     }
