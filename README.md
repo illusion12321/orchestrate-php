@@ -99,10 +99,10 @@ $item = $client->delete('collection', 'key');
 if ($item->isSuccess()) {
     // OK, API call sucessful
 
-    // (more on using the results and responses below)
+    // more on using the results and responses below
 }
 
-// IMPORTANT: The result of all operations by the Client are Objects (see next).
+// IMPORTANT: The result of all operations by the Client are 'Objects' (see next).
 ```
 
 ### 2- Objects
@@ -121,7 +121,7 @@ $item = $collection->item('key');
 
 if ($item->get()) { // API call to get the current key
 
-    // IMPORTANT: The result of all operations in Objects are boolean!
+    // IMPORTANT: The result of all operations in Objects are boolean
 
     // let's add some values
     $item->name = 'Lorem Ipsum';
@@ -130,72 +130,15 @@ if ($item->get()) { // API call to get the current key
     // put back
     if ($item->put()) {
         
-        print_r($this->getValue());
-        // andrefelipe\Orchestrate\Common\ObjectArray Object
-        // (
-        //     [name] => Lorem Ipsum
-        //     [role] => andrefelipe\Orchestrate\Common\ObjectArray Object
-        //         (
-        //             [0] => member
-        //             [1] => user
-        //             [2] => admin
-        //         )
-        // )
-        // ObjectArray is a dynamic class that allows object or array syntax access
-        // i.e. $item->name or $item['name'], plus a few other helpful methods.
-        // This means you can feel free to send it to your template engine.
-        // More on that next.
-
-        echo $item->toJson(JSON_PRETTY_PRINT);
-        // {
-        //     "kind": "item",
-        //     "path": {
-        //         "collection": "collection",
-        //         "kind": "item",
-        //         "key": "key",
-        //         "ref": "20c14e8965d6cbb0"
-        //     },
-        //     "value": {
-        //         "name": "Lorem Ipsum",
-        //         "role": [
-        //             "member",
-        //             "user",
-        //             "admin"
-        //         ]
-        //     }
-        // }
-        // Same output format as Orchestrate's export
-
-        // take the opportunity to create a relation to another item
-        $anotherItem = $collection->item('another-key');
-
-        if ($item->relation('kind', $anotherItem)->put()) {
-
-            // if the relation was successful
-            // take the opportunity to post an event too
-            $values = [
-                'type' => 'relation',
-                'to_item' => $anotherItem->getKey(),
-                'current_ref' => $item->getRef(),
-            ];
-            $item->event('log')->post($values);
-        }
+       // if the put operation was successful
+       // take the opportunity to post an event too
+       $item->event('log')->post(['some' => 'value']);
     }
-
-    // delete the current ref
-    $item->delete(); 
-
-    // delete the entire key and its history
-    $item->purge(); 
-
-    // etc
 }
 
 ```
 
-Choosing one approach over the other is a matter of your use case. For one-stop actions you'll find easier to work with the Client. But on a programatically import, for example, it will be nice to use the objects directly because you can store and manage the data, then later do the API calls.
-
-**Note**, the Http client is automatically instantiated by the `Application` and `Client` objects, and all objects created by them have the Http client set, and are ready to do API calls. If you are programatically instantiating objects, use the `setHttpClient` method to have them able to do API class. Also feel free to change any options on the Http client, it's a subclass of Guzzle Client. 
+**Note**, the Http client is automatically instantiated by the `Application` and `Client` objects, and all objects created by them have the Http client set, ready to make API calls. If you are programatically instantiating objects (i.e. new KeyValue()), use the `setHttpClient` method to have them able to do API class. Also feel free to change any options on the Http client, it's a subclass of Guzzle Client.
 
 
 
@@ -649,13 +592,11 @@ if ($collection->getHttpClient()->ping()) {
 ### Collection Info:
 
 ```php
-
 // get total item count of the collection
 echo $collection->getTotalItems();
 
 // get total event count of the collection
 echo $collection->getTotalEvents();
-
 ```
 
 
