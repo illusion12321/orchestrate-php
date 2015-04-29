@@ -240,7 +240,7 @@ ReusableObjectInterface
     /**
      * @throws \BadMethodCallException if 'relation' is not set yet.
      */
-    protected function noRelationException()
+    private function noRelationException()
     {
         if (empty($this->_relation)) {
             throw new \BadMethodCallException('There is no relation set yet. Please do so through setRelation() method.');

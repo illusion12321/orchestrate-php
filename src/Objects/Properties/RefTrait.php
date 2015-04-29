@@ -49,7 +49,7 @@ trait RefTrait
     /**
      * @throws \BadMethodCallException if 'ref' is not set yet.
      */
-    protected function noRefException()
+    private function noRefException()
     {
         if (!$this->_ref) {
             throw new \BadMethodCallException('There is no ref set yet. Please do so through setRef() method.');

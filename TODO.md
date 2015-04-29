@@ -1,5 +1,7 @@
 # TODO and IDEAS
 
+- MAYBE remove value parameter from put and post, to favor the object syntax? Review the use cases, considering a ODM that would use a 'save' method
+
 - Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
@@ -26,29 +28,6 @@
 - Inline Docs
 
 - Improve the Guzzle implementation, and add parallel and async operations
-
-- Maybe go further on the classMap so one KV could easily instance different event classes, for example?
-```php
-$classMap = [
-    [
-        'collection' => 'users',
-        'class' => '\MyProject\Models\Users'
-    ],
-    [
-        'item' => 'users',
-        'class' => '\MyProject\Models\User'
-    ],
-    [
-        'event' => 'users/activity',
-        'class' => '\MyProject\Models\UsersActivity'
-    ],
-    [
-        'event' => 'users/anotherEvent',
-        'class' => '\MyProject\Models\UsersAnotherEvent'
-    ],
-]
-// But review carefully because may add complexity, where proper Events subclass would be handling well after all
-```
 
 - Add Cache interface right!?
 

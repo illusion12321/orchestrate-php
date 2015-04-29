@@ -32,7 +32,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * @throws \BadMethodCallException if the http client is not set yet.
      */
-    protected function noHttpClientException()
+    private function noHttpClientException()
     {
         if (!$this->_httpClient) {
             throw new \BadMethodCallException('There is no HTTP client set yet. Please do so through setHttpClient() method.');

@@ -11,13 +11,18 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 - Orchestrate's [error responses](https://orchestrate.io/docs/apiref#errors) are honored.
 - Adheres to PHP-FIG [PSR-2](http://www.php-fig.org/psr/psr-2/) and [PSR-4](http://www.php-fig.org/psr/psr-4/)
 
+Add helpful features which Orchestrate API doesn't support (yet):
+- [Bi-directional relation](#graph-put).
+- [Get total item and event count](#collection-info) of a Collection.
+- [Load resulting value](#keyvalue-patch-partial-update---operations) of an item after Patching.
+
+Sample integrations:
+- Sample code on how to integrate our client in a [Phalcon project](https://github.com/andrefelipe/orchestrate-phalcon).
+
 Requirements:
 - PHP must be 5.4 or higher.
 - [Guzzle 5](https://github.com/guzzle/guzzle) as HTTP client.
 - [JMESPath](https://github.com/jmespath/jmespath.php).
-
-Sample integrations:
-- Sample code on how to integrate our client in a [Phalcon project](https://github.com/andrefelipe/orchestrate-phalcon).
 
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/andrefelipe/orchestrate-php.svg)](https://packagist.org/packages/andrefelipe/orchestrate-php)
@@ -634,6 +639,22 @@ if ($application->ping()) {
 if ($collection->getHttpClient()->ping()) {
     // success
 }
+
+```
+
+
+
+
+
+### Collection Info:
+
+```php
+
+// get total item count of the collection
+echo $collection->getTotalItems();
+
+// get total event count of the collection
+echo $collection->getTotalEvents();
 
 ```
 

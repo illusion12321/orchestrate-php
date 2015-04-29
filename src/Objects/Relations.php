@@ -115,7 +115,7 @@ class Relations extends AbstractList
     /**
      * @throws \BadMethodCallException if 'relation depth' is not set yet.
      */
-    protected function noDepthException()
+    private function noDepthException()
     {
         if (empty($this->_depth)) {
             throw new \BadMethodCallException('There is no relation depth set yet. Please do so through setDepth() method.');

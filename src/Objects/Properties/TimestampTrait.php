@@ -82,7 +82,7 @@ trait TimestampTrait
     /**
      * @throws \BadMethodCallException if 'timestamp' is not set yet.
      */
-    protected function noTimestampException()
+    private function noTimestampException()
     {
         if (!$this->_timestamp) {
             throw new \BadMethodCallException('There is no timestamp set yet. Please do so through setTimestamp() method.');

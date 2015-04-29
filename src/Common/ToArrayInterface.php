@@ -7,7 +7,7 @@ namespace andrefelipe\Orchestrate\Common;
 interface ToArrayInterface
 {
     /**
-     * Get the array representation of an object
+     * Get the array representation of an object.
      *
      * @return array
      */

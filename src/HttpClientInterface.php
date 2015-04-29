@@ -15,11 +15,6 @@ interface HttpClientInterface
     public function setApiKey($key);
 
     /**
-     * @return string
-     */
-    // public function getApiVersion();
-
-    /**
      * @return boolean
      * @link https://orchestrate.io/docs/apiref#authentication-ping
      */

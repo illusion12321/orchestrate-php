@@ -42,7 +42,7 @@ trait KeyTrait
     /**
      * @throws \BadMethodCallException if 'key' is not set yet.
      */
-    protected function noKeyException()
+    private function noKeyException()
     {
         if (!$this->_key) {
             throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');

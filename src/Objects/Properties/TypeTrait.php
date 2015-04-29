@@ -42,7 +42,7 @@ trait TypeTrait
     /**
      * @throws \BadMethodCallException if 'type' is not set yet.
      */
-    protected function noTypeException()
+    private function noTypeException()
     {
         if (!$this->_type) {
             throw new \BadMethodCallException('There is no type set yet. Please do so through setType() method.');

@@ -23,7 +23,8 @@ class Collection extends AbstractList
     private $_aggregates;
 
     /**
-     * Constructs an item instance. A KeyValue or a custom class you set with setItemClass().
+     * Constructs an item instance. A KeyValue or a custom class you set with
+     * setItemClass().
      *
      * @param string $key
      * @param string $ref
@@ -40,7 +41,8 @@ class Collection extends AbstractList
     }
 
     /**
-     * Constructs an event instance. An Event or a custom class you set with setEventClass().
+     * Constructs an event instance. An Event or a custom class you set with
+     * setEventClass().
      *
      * @param string $key
      * @param string $type
@@ -131,8 +133,8 @@ class Collection extends AbstractList
      * Gets a lexicographically ordered list of items contained in a collection,
      * specified by the limit and key range parameters.
      *
-     * If there are more results available, the pagination URL can be checked with
-     * getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
+     * If there are more results available, the pagination URL can be checked
+     * with getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
      *
      * @param int $limit The limit of items to return. Defaults to 10 and max to 100.
      * @param KeyRangeBuilder $range

@@ -284,7 +284,7 @@ class Event extends AbstractItem implements EventInterface
     /**
      * @throws \BadMethodCallException if 'ordinal' is not set yet.
      */
-    protected function noOrdinalException()
+    private function noOrdinalException()
     {
         if (!$this->_ordinal) {
             throw new \BadMethodCallException('There is no ordinal set yet. Please do so through setOrdinal() method.');
