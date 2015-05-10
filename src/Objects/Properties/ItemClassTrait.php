@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects;
+namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait for KeyValue factory.
@@ -22,6 +22,7 @@ trait ItemClassTrait
      * Get the ReflectionClass that is being used to instantiate this list's items (KeyValue).
      *
      * @return \ReflectionClass
+     * @throws \RuntimeException If class does not implement minimum interface.
      */
     public function getItemClass()
     {
@@ -41,6 +42,7 @@ trait ItemClassTrait
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
      *
      * @return AbstractList self
+     * @throws \RuntimeException If class does not implement minimum interface.
      */
     public function setItemClass($class)
     {

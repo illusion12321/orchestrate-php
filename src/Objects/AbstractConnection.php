@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\HttpClientInterface;
+use GuzzleHttp\ClientInterface;
 
 /**
  * Provides the bare basis, a connection to a HTTP service.
@@ -9,7 +9,7 @@ use andrefelipe\Orchestrate\HttpClientInterface;
 abstract class AbstractConnection implements ConnectionInterface
 {
     /**
-     * @var HttpClientInterface
+     * @var ClientInterface
      */
     private $_httpClient;
 
@@ -22,7 +22,7 @@ abstract class AbstractConnection implements ConnectionInterface
         return $this->_httpClient;
     }
 
-    public function setHttpClient(HttpClientInterface $httpClient)
+    public function setHttpClient(ClientInterface $httpClient)
     {
         $this->_httpClient = $httpClient;
 

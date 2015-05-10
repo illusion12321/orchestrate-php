@@ -21,8 +21,6 @@
 
 - add a pingMessage method, for debugging?
 
-- Maybe even a getAll to Collection? getFirst?
-
 - Add an appendNextPage appendPrevPage to List, so we get the next set of results without erasing the last page?
 
 - Inline Docs

@@ -1,7 +1,13 @@
 # CHANGELOG
 
 ## HEAD
-- getTotalItems/getTotalEvents always issue the API call, will return the cached value only if an API error is given
+- Upgraded to Guzzle 6, PSR-7 compliant, cleaner and stronger.
+- Requires PHP >= 5.5
+- getTotalItems/getTotalEvents always issue the API call.
+- Added parameter to getTotalEvents to restrict to a specific event type.
+- Renamed getRequestDate to getResponseDate, more accurate and concise.
+- Renamed getRequestId to getOrchestrateRequestId.
+- Removed getRequestUrl method.
 
 ## 0.13.2 - 2015-04-07
 - Removed logic from getTotalCount so it doesn't conflict with queries total count.

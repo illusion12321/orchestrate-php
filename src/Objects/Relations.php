@@ -109,6 +109,9 @@ class Relations extends AbstractList
         // request
         $this->request('GET', $path, ['query' => $parameters]);
 
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
         return $this->isSuccess();
     }
 

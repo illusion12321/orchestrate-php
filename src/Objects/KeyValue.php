@@ -149,7 +149,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             $this->setValue($this->getBody());
             $this->setRefFromETag();
         }
-
         return $this->isSuccess();
     }
 
@@ -188,7 +187,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $this->setValue($newValue);
             }
         }
-
         return $this->isSuccess();
     }
 
@@ -208,7 +206,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $this->setValue($newValue);
             }
         }
-
         return $this->isSuccess();
     }
 
@@ -240,7 +237,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $this->get($this->getRef());
             }
         }
-
         return $this->isSuccess();
     }
 
@@ -272,7 +268,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $this->get($this->getRef());
             }
         }
-
         return $this->isSuccess();
     }
 
@@ -302,7 +297,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             $this->_tombstone = true;
             $this->resetValue();
         }
-
         return $this->isSuccess();
     }
 
@@ -324,7 +318,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             $this->_tombstone = false;
             $this->resetValue();
         }
-
         return $this->isSuccess();
     }
 
@@ -375,11 +368,14 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     private function setKeyRefFromLocation()
     {
         $location = $this->getResponse()->getHeader('Location');
-        if (!$location) {
+        if (empty($location)) {
             $location = $this->getResponse()->getHeader('Content-Location');
         }
+        if (empty($location)) {
+            return;
+        }
 
-        $location = explode('/', trim($location, '/'));
+        $location = explode('/', trim($location[0], '/'));
         if (count($location) > 4) {
             $this->_key = $location[2];
             $this->_ref = $location[4];

@@ -149,7 +149,6 @@ class Event extends AbstractItem implements EventInterface
         if ($this->isSuccess()) {
             $this->init($this->getBody());
         }
-
         return $this->isSuccess();
     }
 
@@ -188,7 +187,6 @@ class Event extends AbstractItem implements EventInterface
                 $this->setValue($newValue);
             }
         }
-
         return $this->isSuccess();
     }
 
@@ -221,7 +219,6 @@ class Event extends AbstractItem implements EventInterface
                 $this->setValue($newValue);
             }
         }
-
         return $this->isSuccess();
     }
 
@@ -253,7 +250,6 @@ class Event extends AbstractItem implements EventInterface
             $this->_ordinalStr = null;
             $this->resetValue();
         }
-
         return $this->isSuccess();
     }
 
@@ -277,7 +273,6 @@ class Event extends AbstractItem implements EventInterface
             $this->_ordinalStr = null;
             $this->resetValue();
         }
-
         return $this->isSuccess();
     }
 
@@ -296,11 +291,14 @@ class Event extends AbstractItem implements EventInterface
         // Location: /v0/collection/key/events/type/1398286518286/6
 
         $location = $this->getResponse()->getHeader('Location');
-        if (!$location) {
+        if (empty($location)) {
             $location = $this->getResponse()->getHeader('Content-Location');
         }
+        if (empty($location)) {
+            return;
+        }
 
-        $location = explode('/', trim($location, '/'));
+        $location = explode('/', trim($location[0], '/'));
 
         if (isset($location[5])) {
             $this->setTimestamp($location[5]);

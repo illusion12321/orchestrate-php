@@ -2,8 +2,8 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
+use andrefelipe\Orchestrate\Objects\Properties\EventClassTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TotalEventsTrait;
 use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
@@ -11,7 +11,6 @@ class Events extends AbstractList
 {
     use EventClassTrait;
     use KeyTrait;
-    use TotalEventsTrait;
     use TypeTrait;
 
     /**
@@ -139,6 +138,10 @@ class Events extends AbstractList
         // request
         $this->request('GET', $path, ['query' => $parameters]);
 
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
+
         return $this->isSuccess();
     }
 
@@ -183,12 +186,18 @@ class Events extends AbstractList
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
 
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
         return $this->isSuccess();
     }
 
-    protected function request($method, $url = null, array $options = [])
+    /**
+     * Adds aggregates support.
+     */
+    protected function setResponseValues()
     {
-        parent::request($method, $url, $options);
+        parent::setResponseValues();
 
         if ($this->isSuccess()) {
             $body = $this->getBody();

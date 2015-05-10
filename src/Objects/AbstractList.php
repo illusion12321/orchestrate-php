@@ -4,8 +4,8 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
-use andrefelipe\Orchestrate\HttpClientInterface;
 use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
+use GuzzleHttp\ClientInterface;
 use JmesPath\Env as JmesPath;
 
 abstract class AbstractList extends AbstractResponse implements
@@ -52,9 +52,9 @@ ReusableObjectInterface
      * Set the client which this object, and all of its children,
      * will use to make Orchestrate API requests.
      *
-     * @param HttpClientInterface $httpClient
+     * @param ClientInterface $httpClient
      */
-    public function setHttpClient(HttpClientInterface $httpClient)
+    public function setHttpClient(ClientInterface $httpClient)
     {
         parent::setHttpClient($httpClient);
 
@@ -260,6 +260,10 @@ ReusableObjectInterface
     {
         if ($this->_nextUrl) {
             $this->request('GET', $this->_nextUrl);
+
+            if ($this->isSuccess()) {
+                $this->setResponseValues();
+            }
             return $this->isSuccess();
         }
         return false;
@@ -272,44 +276,39 @@ ReusableObjectInterface
     {
         if ($this->_prevUrl) {
             $this->request('GET', $this->_prevUrl);
+
+            if ($this->isSuccess()) {
+                $this->setResponseValues();
+            }
             return $this->isSuccess();
         }
         return false;
     }
 
     /**
-     * Request and parse the results.
+     * Helper method to set instance values according to current response.
      */
-    protected function request($method, $url = null, array $options = [])
+    protected function setResponseValues()
     {
-        // request
-        parent::request($method, $url, $options);
+        // reset local properties
+        $this->_results = null;
+        $this->_nextUrl = '';
+        $this->_prevUrl = '';
 
-        if ($this->isSuccess()) {
-
-            // reset local properties
-            $this->_results = null;
-            $this->_nextUrl = '';
-            $this->_prevUrl = '';
-
-            // set properties
-            $body = $this->getBody();
-
+        // set properties
+        if ($body = $this->getBody()) {
             if (!empty($body['results'])) {
                 $this->_results = new ObjectArray(array_map(
                     [$this, 'createInstance'],
                     $body['results']
                 ));
             }
-
             if (isset($body['total_count'])) {
                 $this->_totalCount = (int) $body['total_count'];
             }
-
             if (!empty($body['next'])) {
                 $this->_nextUrl = $body['next'];
             }
-
             if (!empty($body['prev'])) {
                 $this->_prevUrl = $body['prev'];
             }

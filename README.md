@@ -20,8 +20,8 @@ Sample integrations:
 - Sample code on how to integrate our client in a [Phalcon project](https://github.com/andrefelipe/orchestrate-phalcon).
 
 Requirements:
-- PHP must be 5.4 or higher.
-- [Guzzle 5](https://github.com/guzzle/guzzle) as HTTP client.
+- PHP must be 5.5 or higher.
+- [Guzzle 6](https://github.com/guzzle/guzzle) as HTTP client.
 - [JMESPath](https://github.com/jmespath/jmespath.php).
 
 
@@ -153,20 +153,13 @@ $item = $collection->item('key'); // returns a KeyValue object
 
 if ($item->get()) {
 
-    echo $item->getRequestId();
-    // ec96acd0-ac7b-11e4-8cf6-22000a0d84a1
-    // - Orchestrate request id, X-ORCHESTRATE-REQ-ID
-
-    echo $item->getRequestDate();
-    // Wed, 04 Feb 2015 14:41:37 GMT
-    // - the HTTP Date header
-
-    echo $item->getRequestUrl();
-    // https://api.orchestrate.io/v0/collection/key
-    // - the effective URL that resulted in this response
+    // ok, request successful
 
 } else {
-    // in case if was an error, it would return results like these:
+    // in case of error, like 404, it would return results like these:
+
+    $response = $item->getResponse());
+    // - Psr\Http\Message\ResponseInterface
 
     echo $item->getStatus();
     // The requested items could not be found.
@@ -176,6 +169,14 @@ if ($item->get()) {
     // 404
     // — the HTTP response status code
     
+    echo $item->getResponseDate();
+    // Wed, 04 Feb 2015 14:41:37 GMT
+    // - the HTTP Date header
+
+    echo $item->getOrchestrateRequestId();
+    // ec96acd0-ac7b-11e4-8cf6-22000a0d84a1
+    // - Orchestrate request id, X-ORCHESTRATE-REQ-ID
+
     print_r($item->getBody());
     // Array
     // (
@@ -194,9 +195,7 @@ if ($item->get()) {
     //     [code] => items_not_found
     // )
     // — the full body of the response, in this case, the Orchestrate error
-
-    $response = $item->getResponse();
-    // - GuzzleHttp\Message\Response
+    
 }
 
 ```
@@ -387,7 +386,7 @@ That won't differ much from an Array memory-wise, because we are storing data as
 // Member.php
 namespace MyProject\Models;
 
-use \andrefelipe\Orchestrate\Objects\KeyValue;
+use andrefelipe\Orchestrate\Objects\KeyValue;
 
 class Member extends KeyValue
 {
@@ -473,12 +472,12 @@ In that case you will also want to create a class to act as your Collection.
 // Members.php
 namespace MyProject\Models;
 
-use \andrefelipe\Orchestrate\Objects\Collection;
-use \andrefelipe\Orchestrate\HttpClientInterface;
+use andrefelipe\Orchestrate\Objects\Collection;
+use GuzzleHttp\ClientInterface;
 
 class Members extends Collection
 {
-    public function __construct(HttpClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient)
     {
         // set http client
         $this->setHttpClient($httpClient);
@@ -496,8 +495,8 @@ class Members extends Collection
 
 // at this approach, whenever we create items from this collection,
 // it will be Member objects
-use \andrefelipe\Orchestrate\HttpClient;
-use \MyProject\Models\Members;
+use andrefelipe\Orchestrate\HttpClient;
+use MyProject\Models\Members;
 
 // let's instantiate a Http client programatically
 $httpClient = new HttpClient();
@@ -576,10 +575,6 @@ if ($client->ping()) {
 
 // Approach 2 - Object
 if ($application->ping()) {
-    // success
-}
-// or directly at the http client
-if ($collection->getHttpClient()->ping()) {
     // success
 }
 

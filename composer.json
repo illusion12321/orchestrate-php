@@ -1,20 +1,20 @@
 {
 	"name": "andrefelipe/orchestrate-php",
-	"homepage": "https://github.com/andrefelipe/orchestrate-php",
-	"description": "PHP client for Orchestrate.io",
-	"keywords": ["orchestrate", "client", "guzzle", "jmespath"],
 	"type": "library",
+	"description": "PHP client for Orchestrate.io",
+	"keywords": ["orchestrate","orchestrate.io","client","guzzle","jmespath"],
+	"homepage": "https://github.com/andrefelipe/orchestrate-php",
 	"license": "MIT",
 	"authors": [
 		{
 			"name": "André Felipe",
-			"homepage": "http://www.andrefelipe.com"
+			"homepage": "https://www.typographicposters.com"
 		}
 	],
 	"require": {
-		"php": ">=5.4.0",
-		"guzzlehttp/guzzle": "~5.2",
-		"mtdowling/jmespath.php": "~2.1"
+		"php": ">=5.5",
+		"guzzlehttp/guzzle": "^6.0@dev",
+		"mtdowling/jmespath.php": "^2.1"
 	},
 	"autoload": {
 		"psr-4": {

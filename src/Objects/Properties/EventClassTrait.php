@@ -1,5 +1,5 @@
 <?php
-namespace andrefelipe\Orchestrate\Objects;
+namespace andrefelipe\Orchestrate\Objects\Properties;
 
 /**
  * Trait for Event factory.
@@ -23,6 +23,7 @@ trait EventClassTrait
      * Get the ReflectionClass that is being used to instantiate this list's events.
      *
      * @return \ReflectionClass
+     * @throws \RuntimeException If class does not implement minimum interface.
      */
     public function getEventClass()
     {
@@ -42,6 +43,7 @@ trait EventClassTrait
      * @param string|\ReflectionClass $class Fully-qualified class name or ReflectionClass.
      *
      * @return AbstractList self
+     * @throws \RuntimeException If class does not implement minimum interface.
      */
     public function setEventClass($class)
     {

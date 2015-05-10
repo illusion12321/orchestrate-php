@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\HttpClientInterface;
+use GuzzleHttp\ClientInterface;
 
 /**
  *
@@ -13,16 +13,16 @@ interface ConnectionInterface
      *
      * @param boolean $required
      *
-     * @return HttpClientInterface
+     * @return ClientInterface
      */
     public function getHttpClient($required = false);
 
     /**
      * Set the Http client which the object will use to make API requests.
      *
-     * @param HttpClientInterface $httpClient
+     * @param ClientInterface $httpClient
      *
-     * @return HttpClientInterface self
+     * @return self
      */
-    public function setHttpClient(HttpClientInterface $httpClient);
+    public function setHttpClient(ClientInterface $httpClient);
 }

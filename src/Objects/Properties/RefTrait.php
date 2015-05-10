@@ -39,11 +39,8 @@ trait RefTrait
 
     private function setRefFromETag()
     {
-        if ($etag = $this->getResponse()->getHeader('ETag')) {
-            $this->_ref = trim($etag, '"');
-        } else {
-            $this->_ref = null;
-        }
+        $etag = $this->getResponse()->getHeader('ETag');
+        $this->_ref = !empty($etag) ? trim($etag[0], '"') : null;
     }
 
     /**

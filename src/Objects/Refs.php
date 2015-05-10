@@ -1,6 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
 use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
 
 class Refs extends AbstractList
@@ -70,6 +71,9 @@ class Refs extends AbstractList
         // request
         $this->request('GET', $path, ['query' => $parameters]);
 
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
         return $this->isSuccess();
     }
 

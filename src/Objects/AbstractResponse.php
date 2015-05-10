@@ -1,41 +1,39 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use \GuzzleHttp\Message\Response;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractResponse extends AbstractConnection
 {
-    // TODO create some interfaces here? ResponseInterface
-
     /**
      * @var array
      */
     private $_body = null;
 
     /**
-     * @var Response
+     * @var ResponseInterface
      */
     private $_response = null;
 
     /**
-     * Gets the body of the response, independently if it was an error or not.
-     * Useful for debugging but for a more specific usage please rely on each
-     * implementation getters.
+     * @var string
+     */
+    private $_status = null;
+
+    /**
+     * Gets the body of the response as associative array.
      *
-     * @return array
+     * @return array|null Body decoded as associative array, or null if unknown.
      */
     public function getBody()
     {
-        if (!is_array($this->_body)) {
-            $this->_body = [];
-        }
         return $this->_body;
     }
 
     /**
-     * Get the Guzzle Response object of the last request.
+     * Get the PSR-7 Response object of the last request.
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public function getResponse()
     {
@@ -45,20 +43,20 @@ abstract class AbstractResponse extends AbstractConnection
     /**
      * Gets the status of the last response.
      * If the request was successful the value is the HTTP Reason-Phrase.
-     * If the request was not successful the value is the Orchestrate Error Description.
+     * If not, the value is the Orchestrate Error Description.
      *
-     * @return string
+     * @return string|null Reason phrase, or null if unknown.
      * @link https://orchestrate.io/docs/apiref#errors
      */
     public function getStatus()
     {
-        return $this->_response ? $this->_response->getReasonPhrase() : '';
+        return $this->_status;
     }
 
     /**
-     * Gets the status code.
+     * Gets the response status code.
      *
-     * @return int
+     * @return int Status code.
      */
     public function getStatusCode()
     {
@@ -68,36 +66,30 @@ abstract class AbstractResponse extends AbstractConnection
     /**
      * Gets the X-ORCHESTRATE-REQ-ID header.
      *
-     * @return string
+     * @return string|null
      */
-    public function getRequestId()
+    public function getOrchestrateRequestId()
     {
-        return $this->_response ? $this->_response->getHeader('X-ORCHESTRATE-REQ-ID') : '';
+        if ($this->_response) {
+            $value = $this->_response->getHeader('X-ORCHESTRATE-REQ-ID');
+            return empty($value) ? null : $value[0];
+        }
+        return null;
     }
 
     /**
-     * Gets the Date header from the response. Note, it's the request date generated from
-     * the Orchestrate service, not our application request.
+     * Gets the Date header from the response. Note, it's the request date
+     * generated from the Orchestrate server, not our application.
      *
-     * @return string
+     * @return string|null Response date header.
      */
-    public function getRequestDate()
+    public function getResponseDate()
     {
-        return $this->_response ? $this->_response->getHeader('Date') : '';
-    }
-
-    /**
-     * Gets the effective URL that was generated for the request.
-     * Useful for debugging or logging, etc.
-     *
-     * Sample for a KeyValue GET:
-     * https://api.orchestrate.io/v0/my-collection/my-key
-     *
-     * @return string
-     */
-    public function getRequestUrl()
-    {
-        return $this->_response ? $this->_response->getEffectiveUrl() : '';
+        if ($this->_response) {
+            $value = $this->_response->getHeader('Date');
+            return empty($value) ? null : $value[0];
+        }
+        return null;
     }
 
     /**
@@ -132,29 +124,49 @@ abstract class AbstractResponse extends AbstractConnection
     {
         $this->_response = null;
         $this->_body = null;
+        $this->_status = null;
     }
 
     /**
-     * Request the current HTTP client and store the response and json body internally.
+     * Request using the current HTTP client and store the response and
+     * decoded json body internally.
      *
      * More information on the parameters please go to the Guzzle docs.
      *
-     * @param string     $method  HTTP method (GET, POST, PUT, etc.)
-     * @param string|Url $url     HTTP URL to connect to
-     * @param array      $options Array of options to apply to the request
+     * @param string $method  HTTP method
+     * @param string $uri     URI
+     * @param array  $options Request options to apply.
      *
-     * @link http://docs.guzzlephp.org/clients.html#request-options
+     * @return ResponseInterface
      */
-    protected function request($method, $url = null, array $options = [])
+    protected function request($method, $uri = null, array $options = [])
     {
+        // safe build query
+        if (isset($options['query']) && is_array($options['query'])) {
+            $options['query'] = \http_build_query(
+                $options['query'],
+                null,
+                '&',
+                PHP_QUERY_RFC3986
+            );
+        }
+
         // request
-        $this->_response = $this->getHttpClient(true)->request($method, $url, $options);
+        $this->_response = $this->getHttpClient(true)
+             ->request($method, $uri, $options);
 
         // set body
-        if ($this->_response) {
-            $this->_body = $this->_response->json();
+        $this->_body = json_decode($this->_response->getBody(), true);
+
+        // set status message
+        if ($this->isError() && !empty($this->_body['message'])) {
+            // honor the Orchestrate error messages
+            $this->_status = $this->_body['message'];
         } else {
-            $this->_body = null;
+            // continue with HTTP Reason-Phrase
+            $this->_status = $this->_response->getReasonPhrase();
         }
+
+        return $this->_response;
     }
 }

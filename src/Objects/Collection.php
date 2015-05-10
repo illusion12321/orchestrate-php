@@ -2,8 +2,8 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Objects\Properties\TotalEventsTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TotalItemsTrait;
+use andrefelipe\Orchestrate\Objects\Properties\EventClassTrait;
+use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 
 /**
@@ -14,8 +14,6 @@ class Collection extends AbstractList
 {
     use EventClassTrait;
     use ItemClassTrait;
-    use TotalEventsTrait;
-    use TotalItemsTrait;
 
     /**
      * @var ObjectArray
@@ -73,6 +71,67 @@ class Collection extends AbstractList
             ->setKey($key)
             ->setType($type)
             ->setHttpClient($this->getHttpClient(true));
+    }
+
+    /**
+     * Gets total item count of the Collection.
+     *
+     * May return zero if request was unsuccesful, in which case you can check
+     * the response with "getResponse" or the aliases "getStatusCode/getStatus".
+     *
+     * @return int|null Item count, or null on request failure.
+     */
+    public function getTotalItems()
+    {
+        // makes a straight Search query for no results
+        $path = $this->getCollection(true);
+        $parameters = [
+            'query' => '@path.kind:item',
+            'limit' => 0,
+        ];
+        parent::request('GET', $path, ['query' => $parameters]);
+
+        if ($this->isSuccess()) {
+            $body = $this->getBody();
+            if (isset($body['total_count'])) {
+                return (int) $body['total_count'];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets total event count of the Collection.
+     *
+     * May return zero if request was unsuccesful, in which case you can check
+     * the response with "getResponse" or the aliases "getStatusCode/getStatus".
+     *
+     * @param string $type Optionally restrict to a specific event type.
+     *
+     * @return int|null Event count, or null on request failure.
+     */
+    public function getTotalEvents($type = null)
+    {
+        // makes a straight Search query for no results
+        $path = $this->getCollection(true);
+        $parameters = [
+            'query' => '@path.kind:event',
+            'limit' => 0,
+        ];
+
+        if ($type) {
+            $parameters['query'] .= ' AND @path.type:' . $type;
+        }
+
+        parent::request('GET', $path, ['query' => $parameters]);
+
+        if ($this->isSuccess()) {
+            $body = $this->getBody();
+            if (isset($body['total_count'])) {
+                return (int) $body['total_count'];
+            }
+        }
+        return null;
     }
 
     /**
@@ -151,6 +210,9 @@ class Collection extends AbstractList
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
 
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
         return $this->isSuccess();
     }
 
@@ -169,6 +231,10 @@ class Collection extends AbstractList
         if ($collectionName === $this->getCollection(true)) {
 
             $this->request('DELETE', $this->getCollection(), ['query' => ['force' => 'true']]);
+
+            if ($this->isSuccess()) {
+                $this->setResponseValues();
+            }
             return $this->getStatusCode() === 204;
         }
 
@@ -205,12 +271,18 @@ class Collection extends AbstractList
         // request
         $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
 
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
         return $this->isSuccess();
     }
 
-    protected function request($method, $url = null, array $options = [])
+    /**
+     * Adds aggregates support.
+     */
+    protected function setResponseValues()
     {
-        parent::request($method, $url, $options);
+        parent::setResponseValues();
 
         if ($this->isSuccess()) {
             $body = $this->getBody();
