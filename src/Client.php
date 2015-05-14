@@ -14,6 +14,7 @@ use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
+use GuzzleHttp\Client as GuzzleClient;
 
 /**
  * Client interface for Orchestrate API.
@@ -34,13 +35,8 @@ class Client extends AbstractConnection
      */
     public function __construct($apiKey = null, $host = null, $version = null)
     {
-        $client = new HttpClient($host, $version);
-
-        if ($apiKey !== null) {
-            $client->setApiKey($apiKey);
-        }
-
-        $this->setHttpClient($client);
+        $config = default_http_config($apiKey, $host, $version);
+        $this->setHttpClient(new GuzzleClient($config));
     }
 
     /**
@@ -49,7 +45,7 @@ class Client extends AbstractConnection
      */
     public function ping()
     {
-        return $this->getHttpClient(true)->ping();
+        return $this->getHttpClient(true)->request('HEAD')->getStatusCode() === 200;
     }
 
     // Collection
@@ -407,7 +403,7 @@ class Client extends AbstractConnection
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
-        $source = $this->newItem($collection, $key);
+        $source      = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
@@ -428,7 +424,7 @@ class Client extends AbstractConnection
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
-        $source = $this->newItem($collection, $key);
+        $source      = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);

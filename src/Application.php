@@ -3,6 +3,7 @@ namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Collection;
+use GuzzleHttp\Client as GuzzleClient;
 
 /**
  * Resource-like interface for Orchestrate API.
@@ -20,13 +21,8 @@ class Application extends AbstractConnection
      */
     public function __construct($apiKey = null, $host = null, $version = null)
     {
-        $client = new HttpClient($host, $version);
-
-        if ($apiKey !== null) {
-            $client->setApiKey($apiKey);
-        }
-
-        $this->setHttpClient($client);
+        $config = default_http_config($apiKey, $host, $version);
+        $this->setHttpClient(new GuzzleClient($config));
     }
 
     /**
@@ -35,7 +31,7 @@ class Application extends AbstractConnection
      */
     public function ping()
     {
-        return $this->getHttpClient(true)->ping();
+        return $this->getHttpClient(true)->request('HEAD')->getStatusCode() === 200;
     }
 
     /**

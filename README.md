@@ -138,7 +138,7 @@ if ($item->get()) { // API call to get the current key
 
 ```
 
-**Note**, the Http client is automatically instantiated by the `Application` and `Client` objects, and all objects created by them have the Http client set, ready to make API calls. If you are programatically instantiating objects (i.e. new KeyValue()), use the `setHttpClient` method to have them able to do API class. Also feel free to change any options on the Http client, it's a subclass of Guzzle Client.
+**Note**, the Http client is automatically instantiated by the `Application` and `Client` objects, and all objects created by them have the Http client set, ready to make API calls. If you are programatically instantiating objects (i.e. new KeyValue()), use the `setHttpClient(GuzzleHttp\ClientInterface $client)` method to have them able to do API class.
 
 
 
@@ -400,11 +400,19 @@ class Member extends KeyValue
     // Rest assure that setting the public vars here will not be stored
     // in your account, if they are null.
     // To check what is going to be stored there, use the toArray() method
+}
+```
 
+Getter/setters are fine too! You could use it you favor to add validation, error protection, custom defaults, etc.
 
-    // getter/setters are fine too!
-    // you could use it you favor to add validation, error protection, custom defaults, etc
+```php
+// Member.php
+namespace MyProject\Models;
 
+use andrefelipe\Orchestrate\Objects\KeyValue;
+
+class Member extends KeyValue
+{
     protected $country_code;
 
     protected $created_date;
@@ -465,8 +473,7 @@ Two distinct things happen when using custom getter/setters:
 
 The example above is a class that will represent each item in a Collection.
 
-In that case you will also want to create a class to act as your Collection.
-
+In that case you will also want to create a class to act as your Collection:
 
 ```php
 // Members.php
@@ -486,24 +493,22 @@ class Members extends Collection
         $this->setCollection('members');
 
         // set child classes
-        $this->setItemClass('\MyProject\Models\Member');
+        $this->setItemClass('MyProject\Models\Member');
 
         // could set the Event class too if desired
-        // $this->setEventClass('\MyProject\Models\MemberActivity');        
+        // $this->setEventClass('MyProject\Models\MemberActivity');        
     }
 }
 
 // at this approach, whenever we create items from this collection,
 // it will be Member objects
-use andrefelipe\Orchestrate\HttpClient;
 use MyProject\Models\Members;
+use andrefelipe\Orchestrate;
+use GuzzleHttp\Client as GuzzleClient;
 
 // let's instantiate a Http client programatically
-$httpClient = new HttpClient();
-// set api key with:
-// $httpClient->setApiKey('my-key');
-// change host and version at the constructor:
-// $httpClient = new HttpClient('https://api.orchestrate.io', 'v0');
+$clientConfig = Orchestrate\default_http_config();
+$httpClient = new GuzzleClient($clientConfig);
 
 // instatiate the collection
 $members = new Members($httpClient);
