@@ -355,7 +355,9 @@ class Client extends AbstractConnection
      */
     public function listEvents($collection, $key, $type, $limit = 10, TimeRangeBuilder $range = null)
     {
-        $events = (new Events($collection, $key, $type))
+        $events = (new Events($collection))
+            ->setKey($key)
+            ->setType($type)
             ->setEventClass($this->getEventClass())
             ->setHttpClient($this->getHttpClient(true));
 
@@ -365,7 +367,6 @@ class Client extends AbstractConnection
 
     /**
      * @param string $collection
-     * @param string $key
      * @param string $type
      * @param string $query
      * @param string|array $sort
@@ -376,10 +377,9 @@ class Client extends AbstractConnection
      * @return Events
      * @link https://orchestrate.io/docs/apiref#search-events
      */
-    public function searchEvents($collection, $key, $type, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
+    public function searchEvents($collection, $type, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         $events = (new Events($collection))
-            ->setKey($key)
             ->setType($type)
             ->setEventClass($this->getEventClass())
             ->setHttpClient($this->getHttpClient(true));
@@ -403,7 +403,7 @@ class Client extends AbstractConnection
      */
     public function putRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
-        $source      = $this->newItem($collection, $key);
+        $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
@@ -424,7 +424,7 @@ class Client extends AbstractConnection
      */
     public function deleteRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
     {
-        $source      = $this->newItem($collection, $key);
+        $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relation($source, $kind, $destination);
