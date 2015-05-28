@@ -14,6 +14,8 @@ trait RefTrait
     private $_ref = null;
 
     /**
+     * @param boolean $required
+     *
      * @return string
      */
     public function getRef($required = false)

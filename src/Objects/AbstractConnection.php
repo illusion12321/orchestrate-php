@@ -9,7 +9,9 @@ use GuzzleHttp\ClientInterface;
 abstract class AbstractConnection implements ConnectionInterface
 {
     /**
-     * @var ClientInterface
+     * @param boolean $required
+     *
+     * @return ClientInterface
      */
     private $_httpClient;
 
@@ -22,6 +24,11 @@ abstract class AbstractConnection implements ConnectionInterface
         return $this->_httpClient;
     }
 
+    /**
+     * @param ClientInterface $httpClient
+     *
+     * @return self
+     */
     public function setHttpClient(ClientInterface $httpClient)
     {
         $this->_httpClient = $httpClient;
