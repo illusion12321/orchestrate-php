@@ -15,15 +15,16 @@ trait CollectionTrait
 
     /**
      * Get collection name.
-     * 
+     *
      * @param boolean $required
      *
      * @return string
+     * @throws \BadMethodCallException if 'collection' is required but not set yet.
      */
     public function getCollection($required = false)
     {
-        if ($required) {
-            $this->noCollectionException();
+        if ($required && !$this->_collection) {
+            throw new \BadMethodCallException('There is no collection set yet. Do so through setCollection() method.');
         }
 
         return $this->_collection;
@@ -31,7 +32,7 @@ trait CollectionTrait
 
     /**
      * Set collection name.
-     * 
+     *
      * @param string $collection
      *
      * @return self
@@ -41,15 +42,5 @@ trait CollectionTrait
         $this->_collection = (string) $collection;
 
         return $this;
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'collection' is not set yet.
-     */
-    private function noCollectionException()
-    {
-        if (!$this->_collection) {
-            throw new \BadMethodCallException('There is no collection set yet. Please do so through setCollection() method.');
-        }
     }
 }

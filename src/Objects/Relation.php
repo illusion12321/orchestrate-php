@@ -45,11 +45,12 @@ ReusableObjectInterface
      * @param boolean $required
      *
      * @return string
+     * @throws \BadMethodCallException if 'relation' is required but not set yet.
      */
     public function getRelation($required = false)
     {
-        if ($required) {
-            $this->noRelationException();
+        if ($required && !$this->_relation) {
+            throw new \BadMethodCallException('There is no relation set yet. Do so through setRelation() method.');
         }
 
         return $this->_relation;
@@ -235,15 +236,5 @@ ReusableObjectInterface
         return $source->getCollection(true) . '/' . $source->getKey(true)
         . '/relation/' . $this->getRelation(true) . '/'
         . $destination->getCollection(true) . '/' . $destination->getKey(true);
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'relation' is not set yet.
-     */
-    private function noRelationException()
-    {
-        if (empty($this->_relation)) {
-            throw new \BadMethodCallException('There is no relation set yet. Please do so through setRelation() method.');
-        }
     }
 }

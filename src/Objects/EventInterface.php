@@ -74,6 +74,7 @@ ConnectionInterface
      * @param boolean $required
      *
      * @return int
+     * @throws \BadMethodCallException if 'ordinal' is required but not set yet.
      */
     public function getOrdinal($required = false);
 

@@ -17,11 +17,12 @@ trait KeyTrait
      * @param boolean $required
      *
      * @return string
+     * @throws \BadMethodCallException if 'key' is required but not set yet.
      */
     public function getKey($required = false)
     {
-        if ($required) {
-            $this->noKeyException();
+        if ($required && !$this->_key) {
+            throw new \BadMethodCallException('There is no key set yet. Do so through setKey() method.');
         }
 
         return $this->_key;
@@ -37,15 +38,5 @@ trait KeyTrait
         $this->_key = (string) $key;
 
         return $this;
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'key' is not set yet.
-     */
-    private function noKeyException()
-    {
-        if (!$this->_key) {
-            throw new \BadMethodCallException('There is no key set yet. Please do so through setKey() method.');
-        }
     }
 }

@@ -28,11 +28,12 @@ class Relations extends AbstractList
      * @param boolean $required
      *
      * @return array
+     * @throws \BadMethodCallException if 'relation depth' is required but not set yet.
      */
     public function getDepth($required = false)
     {
-        if ($required) {
-            $this->noDepthException();
+        if ($required && empty($this->_depth)) {
+            throw new \BadMethodCallException('There is no relation depth set yet. Do so through setDepth() method.');
         }
 
         return $this->_depth;
@@ -113,16 +114,6 @@ class Relations extends AbstractList
             $this->setResponseValues();
         }
         return $this->isSuccess();
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'relation depth' is not set yet.
-     */
-    private function noDepthException()
-    {
-        if (empty($this->_depth)) {
-            throw new \BadMethodCallException('There is no relation depth set yet. Please do so through setDepth() method.');
-        }
     }
 
     /**

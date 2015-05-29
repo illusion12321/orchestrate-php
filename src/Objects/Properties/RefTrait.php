@@ -17,11 +17,12 @@ trait RefTrait
      * @param boolean $required
      *
      * @return string
+     * @throws \BadMethodCallException if 'ref' is required but not set yet.
      */
     public function getRef($required = false)
     {
-        if ($required) {
-            $this->noRefException();
+        if ($required && !$this->_ref) {
+            throw new \BadMethodCallException('There is no ref set yet. Do so through setRef() method.');
         }
 
         return $this->_ref;
@@ -43,15 +44,5 @@ trait RefTrait
     {
         $etag = $this->getResponse()->getHeader('ETag');
         $this->_ref = !empty($etag) ? trim($etag[0], '"') : null;
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'ref' is not set yet.
-     */
-    private function noRefException()
-    {
-        if (!$this->_ref) {
-            throw new \BadMethodCallException('There is no ref set yet. Please do so through setRef() method.');
-        }
     }
 }

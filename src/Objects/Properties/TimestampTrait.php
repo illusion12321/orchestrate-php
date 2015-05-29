@@ -23,11 +23,12 @@ trait TimestampTrait
      * @param boolean $required
      *
      * @return string|int
+     * @throws \BadMethodCallException if 'timestamp' is required but not set yet.
      */
     public function getTimestamp($required = false)
     {
-        if ($required) {
-            $this->noTimestampException();
+        if ($required && !$this->_timestamp) {
+            throw new \BadMethodCallException('There is no timestamp set yet. Do so through setTimestamp() method.');
         }
 
         return $this->_timestamp;
@@ -77,15 +78,5 @@ trait TimestampTrait
         $this->setTimestamp($seconds * 1000);
 
         return $this;
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'timestamp' is not set yet.
-     */
-    private function noTimestampException()
-    {
-        if (!$this->_timestamp) {
-            throw new \BadMethodCallException('There is no timestamp set yet. Please do so through setTimestamp() method.');
-        }
     }
 }

@@ -17,11 +17,12 @@ trait TypeTrait
      * @param boolean $required
      *
      * @return string
+     * @throws \BadMethodCallException if 'type' is required but not set yet.
      */
     public function getType($required = false)
     {
-        if ($required) {
-            $this->noTypeException();
+        if ($required && !$this->_type) {
+            throw new \BadMethodCallException('There is no type set yet. Do so through setType() method.');
         }
 
         return $this->_type;
@@ -37,15 +38,5 @@ trait TypeTrait
         $this->_type = (string) $type;
 
         return $this;
-    }
-
-    /**
-     * @throws \BadMethodCallException if 'type' is not set yet.
-     */
-    private function noTypeException()
-    {
-        if (!$this->_type) {
-            throw new \BadMethodCallException('There is no type set yet. Please do so through setType() method.');
-        }
     }
 }
