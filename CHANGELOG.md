@@ -1,9 +1,9 @@
 # CHANGELOG
 
-## HEAD
+## 0.14.0 - 2015-05-29
 - Upgraded to Guzzle 6, PSR-7 compliant, cleaner and stronger.
 - Requires PHP >= 5.5
-- Removed HttpClient class.
+- Removed our HttpClient class, in favor of direct Guzzle Client instantiation.
 - getTotalItems/getTotalEvents always issue the API call.
 - Added parameter to getTotalEvents to restrict to a specific event type.
 - Renamed getRequestDate to getResponseDate, more concise.
