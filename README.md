@@ -105,17 +105,26 @@ if ($item->isSuccess()) {
 // IMPORTANT: The result of all operations by the Client are 'Objects' (see next).
 ```
 
-### 2- Objects
+### 2- Objects (recommended)
 ##### Actual Orchestrate objects (Collection, KeyValue, Event, etc), which provide an object API as well as the response status.
 
 ```php
 use andrefelipe\Orchestrate\Application;
 
-$app = new Application();
-// same credentials constructor as the Client above applies
-// they both share the same client capabilities
+// provide the parameters, in order: apiKey, host, version
+$application = new Application(
+    'your-api-key',
+    'https://api.aws-eu-west-1.orchestrate.io/',
+    'v0'
+);
 
-$collection = $app->collection('collection');
+$application = new Application();
+// if you don't provide any parameters it will:
+// get the API key from an environment variable 'ORCHESTRATE_API_KEY'
+// use the default host 'https://api.orchestrate.io'
+// and the default API version 'v0'
+
+$collection = $application->collection('collection');
 $item = $collection->item('key');
 // no API calls where made yet
 
