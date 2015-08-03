@@ -1,5 +1,16 @@
 # TODO and IDEAS
 
+- Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
+- Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
+
+- Go ahead and add the collection->my_item map.. that loads the item with get already? OK, but should implement an internal cache right?
+. application->my_collection->my_item
+. application->collection('my_collection')->item('my_item')
+. application->item('my_collection', 'my_item')
+. Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
+
+- MAYBE remove the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
+
 - MAYBE remove value parameter from put and post, to favor the object syntax? Review the use cases, considering a ODM that would use a 'save' method
 
 - Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
@@ -17,7 +28,7 @@
 
 - Implement a better pagination (study AWS 3), including an option to automatically load the next pages when doing a iteration (foreach)
 
-- Maybe implement __toString and __debugInfo for debug pourposes. But study the best pattern before release, so it doesn't change later
+- Maybe implement __toString and __debugInfo for debug pourposes. But study the best pattern before release, so it doesn't change later. __toString could print some like the fully qualified path
 
 - add a pingMessage method, for debugging?
 
@@ -33,7 +44,7 @@
 
 - Add Docs (ApiGen, Sami or something that can be created from the source files)?
 
-- Add sort operations to List objects? basically just a map to PHP sort?
+- Add sort operations to List objects?
 
 - method to move an item to another Collection or even Application?
 
