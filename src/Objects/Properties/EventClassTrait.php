@@ -8,7 +8,6 @@ namespace andrefelipe\Orchestrate\Objects\Properties;
  */
 trait EventClassTrait
 {
-
     /**
      * @var string
      */
@@ -31,7 +30,7 @@ trait EventClassTrait
             $this->_eventClass = new \ReflectionClass(self::$defaultEventClass);
 
             if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
-                throw new \RuntimeException('Event classes must implement ' . self::$minimumEventInterface);
+                throw new \RuntimeException('Event classes must implement '.self::$minimumEventInterface);
             }
         }
         return $this->_eventClass;
@@ -54,7 +53,7 @@ trait EventClassTrait
         }
 
         if (!$this->_eventClass->implementsInterface(self::$minimumEventInterface)) {
-            throw new \RuntimeException('Event classes must implement ' . self::$minimumEventInterface);
+            throw new \RuntimeException('Event classes must implement '.self::$minimumEventInterface);
         }
 
         return $this;

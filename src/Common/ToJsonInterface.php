@@ -8,8 +8,6 @@ interface ToJsonInterface extends ToArrayInterface
 {
     /**
      * Get the JSON representation of an object. Uses the toArray output.
-     * 
-     * For PHP version lower than 5.5 the depth parameter is ignored.
      *
      * @return string
      */

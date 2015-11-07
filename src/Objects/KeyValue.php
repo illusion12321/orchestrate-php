@@ -135,10 +135,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function get($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
 
         if ($ref) {
-            $path .= '/refs/' . trim($ref, '"');
+            $path .= '/refs/'.trim($ref, '"');
         }
 
         // request
@@ -157,7 +157,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $newValue];
 
         if ($ref) {
@@ -167,7 +167,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
 
         } elseif ($ref === false) {
 
@@ -212,7 +212,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function patch(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
@@ -222,7 +222,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
@@ -243,7 +243,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function patchMerge(array $value, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $value];
 
         if ($ref) {
@@ -253,7 +253,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
@@ -274,7 +274,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function delete($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = [];
 
         if ($ref) {
@@ -284,7 +284,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
@@ -303,7 +303,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function purge()
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['query' => ['purge' => 'true']];
 
         // request

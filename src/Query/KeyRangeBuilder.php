@@ -15,11 +15,11 @@ class KeyRangeBuilder implements ToArrayInterface
      */
     protected $range = [];
 
-    public function __construct()
-    {
+    public function __construct() {}
 
-    }
-
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return $this->range;
@@ -44,7 +44,7 @@ class KeyRangeBuilder implements ToArrayInterface
         if ($key instanceof KeyValueInterface) {
             $key = $key->getKey(true);
         }
-        $this->range[($inclusive ? 'start' : 'after') . 'Key'] = (string) $key;
+        $this->range[($inclusive ? 'start' : 'after').'Key'] = (string) $key;
 
         return $this;
     }
@@ -68,7 +68,7 @@ class KeyRangeBuilder implements ToArrayInterface
         if ($key instanceof KeyValueInterface) {
             $key = $key->getKey(true);
         }
-        $this->range[($inclusive ? 'end' : 'before') . 'Key'] = (string) $key;
+        $this->range[($inclusive ? 'end' : 'before').'Key'] = (string) $key;
 
         return $this;
     }

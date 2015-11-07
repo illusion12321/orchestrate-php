@@ -36,10 +36,10 @@ ToJsonInterface
             $capitalized = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $name)));
 
             if ($getterName === true) {
-                $getterName = 'get' . $capitalized;
+                $getterName = 'get'.$capitalized;
             }
             if ($setterName === true) {
-                $setterName = 'set' . $capitalized;
+                $setterName = 'set'.$capitalized;
             }
         }
 
@@ -47,7 +47,7 @@ ToJsonInterface
             if (method_exists($this, $getterName)) {
                 $this->_propertyMap[$name][0] = [$this, $getterName];
             } else {
-                throw new \BadMethodCallException('A matching getter method could not be found, tried: ' . $getterName);
+                throw new \BadMethodCallException('A matching getter method could not be found, tried: '.$getterName);
             }
         }
 
@@ -55,11 +55,15 @@ ToJsonInterface
             if (method_exists($this, $setterName)) {
                 $this->_propertyMap[$name][1] = [$this, $setterName];
             } else {
-                throw new \BadMethodCallException('A matching setter method could not be found, tried: ' . $setterName);
+                throw new \BadMethodCallException('A matching setter method could not be found, tried: '.$setterName);
             }
         }
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function __get($name)
     {
         if (isset($this->_propertyMap[$name])) {
@@ -72,6 +76,10 @@ ToJsonInterface
         return isset($this->{$name}) ? $this->{$name} : null;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
     public function __set($name, $value)
     {
         if (isset($this->_propertyMap[$name])) {
@@ -83,16 +91,27 @@ ToJsonInterface
         }
     }
 
+    /**
+     * @param string $name
+     */
     public function __unset($name)
     {
-        return $this->{$name} = null;
+        $this->{$name} = null;
     }
 
+    /**
+     * @param string $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         return $this->{$offset};
     }
 
+    /**
+     * @param string $offset
+     * @param mixed $value
+     */
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || is_numeric($offset)) {
@@ -102,32 +121,53 @@ ToJsonInterface
         $this->{(string) $offset} = $value;
     }
 
+    /**
+     * @param string $offset
+     */
     public function offsetUnset($offset)
     {
         $this->{$offset} = null;
     }
 
+    /**
+     * @param string $offset
+     * @return boolean
+     */
     public function offsetExists($offset)
     {
         return isset($this->{$offset});
     }
 
+    /**
+     * @return ObjectArray
+     */
     public function getValue()
     {
         return (new ObjectArray($this->getMappedValues()))->merge($this);
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return array_merge($this->getMappedValues(true), ObjectArray::objectToArray($this));
     }
 
+    /**
+     * @param string $expression
+     * @return ObjectArray|mixed|null
+     */
     public function extract($expression)
     {
         $result = JmesPath::search($expression, $this->toArray());
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 
+    /**
+     * @param string $expression
+     * @return ObjectArray|mixed|null
+     */
     public function extractValue($expression)
     {
         $valueArray = array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
@@ -135,6 +175,10 @@ ToJsonInterface
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 
+    /**
+     * @param array $values
+     * @return AbstractItem
+     */
     public function setValue(array $values)
     {
         if (!empty($values)) {
@@ -145,12 +189,19 @@ ToJsonInterface
         return $this;
     }
 
+    /**
+     * @param ValueInterface $item
+     * @return AbstractItem
+     */
     public function mergeValue(ValueInterface $item)
     {
         ObjectArray::mergeObject($item->getValue(), $this);
         return $this;
     }
 
+    /**
+     * @return AbstractItem
+     */
     public function resetValue()
     {
         foreach (ObjectArray::getPublicProperties($this) as $key) {
@@ -164,6 +215,9 @@ ToJsonInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         return serialize($this->toArray());
@@ -171,6 +225,7 @@ ToJsonInterface
 
     /**
      * @param string $serialized
+     * @return mixed
      *
      * @throws \InvalidArgumentException
      */
@@ -190,7 +245,7 @@ ToJsonInterface
 
     private function noIndexedArrayException()
     {
-        throw new \RuntimeException('Indexed arrays not allowed at the root of ' . get_class($this) . ' objects.');
+        throw new \RuntimeException('Indexed arrays not allowed at the root of '.get_class($this).' objects.');
     }
 
     /**

@@ -26,11 +26,18 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
         }
     }
 
+    /**
+     * @param string $key
+     */
     public function __get($key)
     {
         return isset($this->{$key}) ? $this->{$key} : null;
     }
 
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
     public function __set($key, $value)
     {
         if (is_array($value)) {
@@ -40,16 +47,27 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
         }
     }
 
+    /**
+     * @param string $key
+     */
     public function __unset($key)
     {
-        return $this->{$key} = null;
+        $this->{$key} = null;
     }
 
+    /**
+     * @param string $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         return $this->{$offset};
     }
 
+    /**
+     * @param string $offset
+     * @param mixed $value
+     */
     public function offsetSet($offset, $value)
     {
         if ($offset === null) {
@@ -59,26 +77,42 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
         $this->{(string) $offset} = $value;
     }
 
+    /**
+     * @param string $offset
+     */
     public function offsetUnset($offset)
     {
         $this->{$offset} = null;
     }
 
+    /**
+     * @param string $offset
+     * @return boolean
+     */
     public function offsetExists($offset)
     {
         return isset($this->{$offset});
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count(get_object_vars($this));
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return self::objectToArray($this);
     }
 
+    /**
+     * @param string $expression
+     */
     public function extract($expression)
     {
         $result = JmesPath::search($expression, $this->toArray());

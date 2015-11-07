@@ -58,6 +58,10 @@ class Relations extends AbstractList
         $this->_depth = null;
     }
 
+    /**
+     * @param array $data
+     * @return Relations
+     */
     public function init(array $data)
     {
         if (!empty($data)) {
@@ -73,6 +77,9 @@ class Relations extends AbstractList
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $data = parent::toArray();
@@ -98,8 +105,8 @@ class Relations extends AbstractList
     public function get($limit = 10, $offset = 0)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true)
-        . '/relations/' . implode('/', $this->getDepth(true));
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+        .'/relations/'.implode('/', $this->getDepth(true));
 
         $parameters = ['limit' => $limit];
 

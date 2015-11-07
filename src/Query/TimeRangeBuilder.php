@@ -15,11 +15,11 @@ class TimeRangeBuilder implements ToArrayInterface
      */
     protected $range = [];
 
-    public function __construct()
-    {
+    public function __construct() {}
 
-    }
-
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return $this->range;
@@ -49,10 +49,10 @@ class TimeRangeBuilder implements ToArrayInterface
 
         // set
         if ($event instanceof EventInterface) {
-            $event = $event->getTimestamp(true) . ($event->getOrdinal() ? '/' . $event->getOrdinal() : '');
+            $event = $event->getTimestamp(true).($event->getOrdinal() ? '/'.$event->getOrdinal() : '');
         }
 
-        $this->range[($inclusive ? 'start' : 'after') . 'Event'] = $event;
+        $this->range[($inclusive ? 'start' : 'after').'Event'] = $event;
 
         return $this;
     }
@@ -81,7 +81,7 @@ class TimeRangeBuilder implements ToArrayInterface
         unset($this->range['afterEvent']);
 
         // set
-        $this->range[($inclusive ? 'start' : 'after') . 'Event'] = $this->toEventTime($date);
+        $this->range[($inclusive ? 'start' : 'after').'Event'] = $this->toEventTime($date);
 
         return $this;
     }
@@ -110,9 +110,9 @@ class TimeRangeBuilder implements ToArrayInterface
 
         // set
         if ($event instanceof EventInterface) {
-            $event = $event->getTimestamp(true) . ($event->getOrdinal() ? '/' . $event->getOrdinal() : '');
+            $event = $event->getTimestamp(true).($event->getOrdinal() ? '/'.$event->getOrdinal() : '');
         }
-        $this->range[($inclusive ? 'end' : 'before') . 'Event'] = $event;
+        $this->range[($inclusive ? 'end' : 'before').'Event'] = $event;
 
         return $this;
     }
@@ -141,7 +141,7 @@ class TimeRangeBuilder implements ToArrayInterface
         unset($this->range['beforeEvent']);
 
         // set
-        $this->range[($inclusive ? 'end' : 'before') . 'Event'] = $this->toEventTime($date);
+        $this->range[($inclusive ? 'end' : 'before').'Event'] = $this->toEventTime($date);
 
         return $this;
     }

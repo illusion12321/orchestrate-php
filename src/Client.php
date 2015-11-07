@@ -76,8 +76,11 @@ class Client extends AbstractConnection
      * @return Collection
      * @link https://orchestrate.io/docs/apiref#keyvalue-list
      */
-    public function listCollection($collection, $limit = 10, KeyRangeBuilder $range = null)
-    {
+    public function listCollection(
+                        $collection,
+                        $limit = 10,
+        KeyRangeBuilder $range = null
+    ) {
         $list = (new Collection($collection))
             ->setItemClass($this->getItemClass())
             ->setEventClass($this->getEventClass())
@@ -98,8 +101,14 @@ class Client extends AbstractConnection
      * @return Collection
      * @link https://orchestrate.io/docs/apiref#search-collection
      */
-    public function search($collection, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
-    {
+    public function search(
+        $collection,
+        $query,
+        $sort = null,
+        $aggregate = null,
+        $limit = 10,
+        $offset = 0
+    ) {
         $list = (new Collection($collection))
             ->setItemClass($this->getItemClass())
             ->setEventClass($this->getEventClass())
@@ -154,8 +163,13 @@ class Client extends AbstractConnection
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
-    public function patch($collection, $key, PatchBuilder $operations, $ref = null, $reload = false)
-    {
+    public function patch(
+                     $collection,
+                     $key,
+        PatchBuilder $operations,
+                     $ref = null,
+                     $reload = false
+    ) {
         $item = $this->newItem($collection, $key);
 
         $item->patch($operations, $ref, $reload);
@@ -172,8 +186,13 @@ class Client extends AbstractConnection
      * @return KeyValueInterface
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge($collection, $key, array $value, $ref = null, $reload = false)
-    {
+    public function patchMerge(
+              $collection,
+              $key,
+        array $value,
+              $ref = null,
+              $reload = false
+    ) {
         $item = $this->newItem($collection, $key);
 
         $item->patchMerge($value, $ref, $reload);
@@ -238,8 +257,13 @@ class Client extends AbstractConnection
      * @return Refs
      * @link https://orchestrate.io/docs/apiref#refs-list
      */
-    public function listRefs($collection, $key, $limit = 10, $offset = 0, $values = false)
-    {
+    public function listRefs(
+        $collection,
+        $key,
+        $limit = 10,
+        $offset = 0,
+        $values = false
+    ) {
         $list = (new Refs($collection, $key))
             ->setItemClass($this->getItemClass())
             ->setHttpClient($this->getHttpClient(true));
@@ -280,8 +304,15 @@ class Client extends AbstractConnection
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-put
      */
-    public function putEvent($collection, $key, $type, $timestamp, $ordinal, array $value, $ref = null)
-    {
+    public function putEvent(
+              $collection,
+              $key,
+              $type,
+              $timestamp,
+              $ordinal,
+        array $value,
+              $ref = null
+    ) {
         $item = newEvent($collection, $key, $type, $timestamp, $ordinal);
 
         $item->put($value, $ref);
@@ -298,8 +329,13 @@ class Client extends AbstractConnection
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-post
      */
-    public function postEvent($collection, $key, $type, array $value, $timestamp = null)
-    {
+    public function postEvent(
+              $collection,
+              $key,
+              $type,
+        array $value,
+              $timestamp = null
+    ) {
         $item = newEvent($collection, $key, $type);
 
         $item->post($value, $timestamp);
@@ -317,8 +353,14 @@ class Client extends AbstractConnection
      * @return EventInterface
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
-    public function deleteEvent($collection, $key, $type, $timestamp, $ordinal, $ref = null)
-    {
+    public function deleteEvent(
+        $collection,
+        $key,
+        $type,
+        $timestamp,
+        $ordinal,
+        $ref = null
+    ) {
         $item = newEvent($collection, $key, $type, $timestamp, $ordinal);
 
         $item->delete($ref);
@@ -353,8 +395,13 @@ class Client extends AbstractConnection
      * @return Events
      * @link https://orchestrate.io/docs/apiref#events-list
      */
-    public function listEvents($collection, $key, $type, $limit = 10, TimeRangeBuilder $range = null)
-    {
+    public function listEvents(
+                         $collection,
+                         $key,
+                         $type,
+                         $limit = 10,
+        TimeRangeBuilder $range = null
+    ) {
         $events = (new Events($collection))
             ->setKey($key)
             ->setType($type)
@@ -377,8 +424,15 @@ class Client extends AbstractConnection
      * @return Events
      * @link https://orchestrate.io/docs/apiref#search-events
      */
-    public function searchEvents($collection, $type, $query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
-    {
+    public function searchEvents(
+        $collection,
+        $type,
+        $query,
+        $sort = null,
+        $aggregate = null,
+        $limit = 10,
+        $offset = 0
+    ) {
         $events = (new Events($collection))
             ->setType($type)
             ->setEventClass($this->getEventClass())
@@ -401,8 +455,14 @@ class Client extends AbstractConnection
      * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function putRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
-    {
+    public function putRelation(
+        $collection,
+        $key,
+        $kind,
+        $toCollection,
+        $toKey,
+        $bothWays = false
+    ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
@@ -422,8 +482,14 @@ class Client extends AbstractConnection
      * @return Relation
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
-    public function deleteRelation($collection, $key, $kind, $toCollection, $toKey, $bothWays = false)
-    {
+    public function deleteRelation(
+        $collection,
+        $key,
+        $kind,
+        $toCollection,
+        $toKey,
+        $bothWays = false
+    ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
@@ -442,8 +508,13 @@ class Client extends AbstractConnection
      * @return Relations
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function listRelations($collection, $key, $kind, $limit = 10, $offset = 0)
-    {
+    public function listRelations(
+        $collection,
+        $key,
+        $kind,
+        $limit = 10,
+        $offset = 0
+    ) {
         $list = (new Relations($collection, $key, $kind))
             ->setHttpClient($this->getHttpClient(true));
 
@@ -463,10 +534,10 @@ class Client extends AbstractConnection
     private function newItem($collection = null, $key = null, $ref = null)
     {
         return $this->getItemClass()->newInstance()
-                    ->setCollection($collection)
-                    ->setKey($key)
-                    ->setRef($ref)
-                    ->setHttpClient($this->getHttpClient(true));
+            ->setCollection($collection)
+            ->setKey($key)
+            ->setRef($ref)
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     /**
@@ -488,11 +559,11 @@ class Client extends AbstractConnection
         $ordinal = null
     ) {
         return $this->getEventClass()->newInstance()
-                    ->setCollection($collection)
-                    ->setKey($key)
-                    ->setType($type)
-                    ->setTimestamp($timestamp)
-                    ->setOrdinal($ordinal)
-                    ->setHttpClient($this->getHttpClient(true));
+            ->setCollection($collection)
+            ->setKey($key)
+            ->setType($type)
+            ->setTimestamp($timestamp)
+            ->setOrdinal($ordinal)
+            ->setHttpClient($this->getHttpClient(true));
     }
 }

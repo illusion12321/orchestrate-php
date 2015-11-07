@@ -1,7 +1,7 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-const DEFAULT_HOST    = 'https://api.orchestrate.io';
+const DEFAULT_HOST = 'https://api.orchestrate.io';
 const DEFAULT_VERSION = 'v0';
 
 /**
@@ -14,14 +14,14 @@ const DEFAULT_VERSION = 'v0';
 function default_http_config($apiKey = null, $host = null, $version = null)
 {
     $base_uri = $host ? trim($host, '/') : DEFAULT_HOST;
-    $base_uri .= '/' . ($version ? trim($version, '/') : DEFAULT_VERSION) . '/';
+    $base_uri .= '/'.($version ? trim($version, '/') : DEFAULT_VERSION).'/';
 
     return [
-        'base_uri'    => $base_uri,
-        'headers'     => [
+        'base_uri' => $base_uri,
+        'headers' => [
             'Content-Type' => 'application/json',
         ],
-        'auth'        => [$apiKey ?: getenv('ORCHESTRATE_API_KEY'), null],
+        'auth' => [$apiKey ?: getenv('ORCHESTRATE_API_KEY'), null],
         'http_errors' => false,
     ];
 }

@@ -4,18 +4,21 @@ namespace andrefelipe\Orchestrate\Objects;
 use GuzzleHttp\ClientInterface;
 
 /**
- * Provides the bare basis, a connection to a HTTP service.
+ * Provides the bare basis, a connection to a HTTP client.
  */
 abstract class AbstractConnection implements ConnectionInterface
 {
+    /**
+     * @var ClientInterface
+     */
+    private $_httpClient;
+
     /**
      * @param boolean $required
      *
      * @return ClientInterface
      * @throws \BadMethodCallException if the http client is required but not set yet.
      */
-    private $_httpClient;
-
     public function getHttpClient($required = false)
     {
         if ($required && !$this->_httpClient) {

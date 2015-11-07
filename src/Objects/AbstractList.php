@@ -66,31 +66,52 @@ ReusableObjectInterface
         return $this;
     }
 
+    /**
+     * @param string $offset
+     * @return mixed
+     */
     public function offsetGet($offset)
     {
         return $this->getResults()[$offset];
     }
 
+    /**
+     * @param string $offset
+     * @param mixed $value
+     */
     public function offsetSet($offset, $value)
     {
         $this->getResults()[$offset] = $value;
     }
 
+    /**
+     * @param string $offset
+     */
     public function offsetUnset($offset)
     {
         $this->getResults()[$offset] = null;
     }
 
+    /**
+     * @param string $offset
+     * @return boolean
+     */
     public function offsetExists($offset)
     {
         return isset($this->getResults()[$offset]);
     }
 
+    /**
+     * @return \ArrayIterator
+     */
     public function getIterator()
     {
         return new \ArrayIterator($this->getResults());
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->getResults());
@@ -106,6 +127,10 @@ ReusableObjectInterface
         $this->_results = null;
     }
 
+    /**
+     * @param array $data
+     * @return AbstractList
+     */
     public function init(array $data)
     {
         if (!empty($data)) {
@@ -138,6 +163,9 @@ ReusableObjectInterface
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $data = [
@@ -212,6 +240,7 @@ ReusableObjectInterface
 
     /**
      * @param string $serialized
+     * @return mixed
      *
      * @throws \InvalidArgumentException
      */

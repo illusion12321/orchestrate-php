@@ -56,7 +56,7 @@ class Refs extends AbstractList
     public function get($limit = 10, $offset = 0, $values = false)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/refs/';
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/refs/';
 
         $parameters = ['limit' => $limit];
 

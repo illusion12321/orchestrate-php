@@ -148,7 +148,7 @@ abstract class AbstractResponse extends AbstractConnection
 
         // request
         $this->_response = $this->getHttpClient(true)
-             ->request($method, $uri, $options);
+            ->request($method, $uri, $options);
 
         // set body
         $this->_body = json_decode($this->_response->getBody(), true);

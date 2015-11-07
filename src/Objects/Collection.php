@@ -32,10 +32,10 @@ class Collection extends AbstractList
     public function item($key = null, $ref = null)
     {
         return $this->getItemClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setRef($ref)
-                    ->setHttpClient($this->getHttpClient(true));
+            ->setCollection($this->getCollection(true))
+            ->setKey($key)
+            ->setRef($ref)
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     /**
@@ -52,12 +52,12 @@ class Collection extends AbstractList
     public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
     {
         return $this->getEventClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setType($type)
-                    ->setTimestamp($timestamp)
-                    ->setOrdinal($ordinal)
-                    ->setHttpClient($this->getHttpClient(true));
+            ->setCollection($this->getCollection(true))
+            ->setKey($key)
+            ->setType($type)
+            ->setTimestamp($timestamp)
+            ->setOrdinal($ordinal)
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     /**
@@ -120,7 +120,7 @@ class Collection extends AbstractList
         ];
 
         if ($type) {
-            $parameters['query'] .= ' AND @path.type:' . $type;
+            $parameters['query'] .= ' AND @path.type:'.$type;
         }
 
         parent::request('GET', $path, ['query' => $parameters]);

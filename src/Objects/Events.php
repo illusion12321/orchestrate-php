@@ -43,12 +43,12 @@ class Events extends AbstractList
     public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
     {
         return $this->getEventClass()->newInstance()
-                    ->setCollection($this->getCollection(true))
-                    ->setKey($key)
-                    ->setType($type)
-                    ->setTimestamp($timestamp)
-                    ->setOrdinal($ordinal)
-                    ->setHttpClient($this->getHttpClient(true));
+            ->setCollection($this->getCollection(true))
+            ->setKey($key)
+            ->setType($type)
+            ->setTimestamp($timestamp)
+            ->setOrdinal($ordinal)
+            ->setHttpClient($this->getHttpClient(true));
     }
 
     /**
@@ -129,8 +129,8 @@ class Events extends AbstractList
     public function get($limit = 10, TimeRangeBuilder $range = null)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true)
-        . '/events/' . $this->getType(true) . '/';
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+        .'/events/'.$this->getType(true).'/';
 
         $parameters = $range ? $range->toArray() : [];
         $parameters['limit'] = $limit > 100 ? 100 : $limit;
@@ -160,10 +160,10 @@ class Events extends AbstractList
         // define request options
         $queryParts = ['@path.kind:event'];
         if (!empty($this->_key)) {
-            $queryParts[] = '@path.key:' . $this->_key;
+            $queryParts[] = '@path.key:'.$this->_key;
         }
         if (!empty($this->_type)) {
-            $queryParts[] = '@path.type:' . $this->_type;
+            $queryParts[] = '@path.type:'.$this->_type;
         }
         if ($query) {
             $queryParts[] = $query;

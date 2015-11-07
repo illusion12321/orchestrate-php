@@ -32,8 +32,11 @@ ReusableObjectInterface
      * @param string $kind
      * @param KeyValueInterface $destination
      */
-    public function __construct(KeyValueInterface $source = null, $kind = null, KeyValueInterface $destination = null)
-    {
+    public function __construct(
+        KeyValueInterface $source = null,
+                          $kind = null,
+        KeyValueInterface $destination = null
+    ) {
         $this->setSource($source);
         $this->setRelation($kind);
         $this->setDestination($destination);
@@ -233,8 +236,8 @@ ReusableObjectInterface
             $destination = $item;
         }
 
-        return $source->getCollection(true) . '/' . $source->getKey(true)
-        . '/relation/' . $this->getRelation(true) . '/'
-        . $destination->getCollection(true) . '/' . $destination->getKey(true);
+        return $source->getCollection(true).'/'.$source->getKey(true)
+        .'/relation/'.$this->getRelation(true).'/'
+        .$destination->getCollection(true).'/'.$destination->getKey(true);
     }
 }

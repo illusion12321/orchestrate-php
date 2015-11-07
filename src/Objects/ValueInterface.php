@@ -34,6 +34,9 @@ interface ValueInterface
 
     /**
      * Use a JMESPath expression to model the data you need.
+     *
+     * @param string $expression
+     * @return ObjectArray|mixed|null
      */
     public function extractValue($expression);
 }

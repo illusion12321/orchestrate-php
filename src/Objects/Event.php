@@ -34,8 +34,13 @@ class Event extends AbstractItem implements EventInterface
      * @param int $timestamp
      * @param int $ordinal
      */
-    public function __construct($collection = null, $key = null, $type = null, $timestamp = null, $ordinal = null)
-    {
+    public function __construct(
+        $collection = null,
+        $key = null,
+        $type = null,
+        $timestamp = null,
+        $ordinal = null
+    ) {
         $this->setCollection($collection);
         $this->setKey($key);
         $this->setType($type);
@@ -139,8 +144,8 @@ class Event extends AbstractItem implements EventInterface
     public function get()
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
-        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
 
         // request
         $this->request('GET', $path);
@@ -157,8 +162,8 @@ class Event extends AbstractItem implements EventInterface
         $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
-        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
 
         $options = ['json' => $newValue];
 
@@ -169,7 +174,7 @@ class Event extends AbstractItem implements EventInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
@@ -192,14 +197,14 @@ class Event extends AbstractItem implements EventInterface
 
     public function post(array $value = null, $timestamp = null)
     {
-        $path = $this->getCollection(true) . '/' . $this->getKey(true)
-        . '/events/' . $this->getType(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true)
+        .'/events/'.$this->getType(true);
 
         if ($timestamp === true) {
             $timestamp = $this->getTimestamp();
         }
         if ($timestamp) {
-            $path .= '/' . $timestamp;
+            $path .= '/'.$timestamp;
         }
 
         $newValue = $value === null ? parent::toArray() : $value;
@@ -225,8 +230,8 @@ class Event extends AbstractItem implements EventInterface
     public function delete($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
-        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
 
         $options = ['query' => ['purge' => 'true']]; // currently required by Orchestrate
 
@@ -237,7 +242,7 @@ class Event extends AbstractItem implements EventInterface
                 $ref = $this->getRef();
             }
 
-            $options['headers'] = ['If-Match' => '"' . $ref . '"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
@@ -256,8 +261,8 @@ class Event extends AbstractItem implements EventInterface
     public function purge()
     {
         // define request options
-        $path = $this->getCollection(true) . '/' . $this->getKey(true) . '/events/'
-        . $this->getType(true) . '/' . $this->getTimestamp(true) . '/' . $this->getOrdinal(true);
+        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
+        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
 
         $options = ['query' => ['purge' => 'true']];
 

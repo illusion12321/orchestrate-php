@@ -30,7 +30,7 @@ trait ItemClassTrait
             $this->_itemClass = new \ReflectionClass(self::$defaultItemClass);
 
             if (!$this->_itemClass->implementsInterface(self::$minimumItemInterface)) {
-                throw new \RuntimeException('Item classes must implement ' . self::$minimumItemInterface);
+                throw new \RuntimeException('Item classes must implement '.self::$minimumItemInterface);
             }
         }
         return $this->_itemClass;
@@ -53,7 +53,7 @@ trait ItemClassTrait
         }
 
         if (!$this->_itemClass->implementsInterface(self::$minimumItemInterface)) {
-            throw new \RuntimeException('Item classes must implement ' . self::$minimumItemInterface);
+            throw new \RuntimeException('Item classes must implement '.self::$minimumItemInterface);
         }
 
         return $this;
