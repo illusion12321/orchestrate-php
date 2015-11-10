@@ -209,6 +209,30 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         return $this->isSuccess();
     }
 
+    public function bulk(array $value = null)
+    {
+        $newValue = $value === null ? parent::toArray() : $value;
+
+        // request
+        $this->request('POST', $this->getCollection(true), [
+            'body' => json_encode($newValue),
+            'headers' => [
+                'Content-Type' => 'application/orchestrate-export+json'
+            ]
+        ]);
+
+        // set values
+        if ($this->isSuccess()) {
+            $this->setKeyRefFromLocation();
+
+            if ($value !== null) {
+                $this->resetValue();
+                $this->setValue($newValue);
+            }
+        }
+        return $this->isSuccess();
+    }
+
     public function patch(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options

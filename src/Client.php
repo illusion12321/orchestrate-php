@@ -216,6 +216,21 @@ class Client extends AbstractConnection
 
     /**
      * @param string $collection
+     * @param array $values
+     *
+     * @return KeyValueInterface
+     * @link https://orchestrate.io/docs/apiref#bulk
+     */
+    public function bulk($collection, array $values)
+    {
+        $item = $this->newItem($collection);
+
+        $item->bulk($values);
+        return $item;
+    }
+
+    /**
+     * @param string $collection
      * @param string $key
      * @param string $ref
      *
