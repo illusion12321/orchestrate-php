@@ -1,24 +1,30 @@
 # TODO and IDEAS
 
+- Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
+
+- Maybe change 'patchMerge' on KeyValue to just 'merge'
+
+- Study the removal of the 'value' parameter from put and post, to favor the object syntax. Review the use cases, considering a ODM that would use a 'save' method
+
+- Study the removal of the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
+
+- Maybe move the Properties to the Common folder, to better organize, maybe go ahead and do that on some interfaces too
+
 - Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
 - Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
-
-- Go ahead and add the collection->my_item map.. that loads the item with get already? OK, but should implement an internal cache right?
-. application->my_collection->my_item
-. application->collection('my_collection')->item('my_item')
-. application->item('my_collection', 'my_item')
-. Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
-
-- MAYBE remove the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
-
-- MAYBE remove value parameter from put and post, to favor the object syntax? Review the use cases, considering a ODM that would use a 'save' method
-
-- Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
 
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
 ---Do not use the object itself to build the query chain, it's confusing---
 
 - Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder
+
+- MAYBE go ahead and add the collection->my_item map.. that loads the item with get already? OK, but should implement an internal cache right?
+. application->my_collection->my_item
+. application->collection('my_collection')->item('my_item')
+. application->item('my_collection', 'my_item')
+. Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
+
+- Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
 
 - Implement more common interfaces, and general organization of the classes / folders (create an AbstractCollection, to gather all common parts of searchable lists: collection/events)
 
