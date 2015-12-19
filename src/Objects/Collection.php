@@ -302,15 +302,18 @@ class Collection extends AbstractList
 
             if ($kind === 'item') {
                 $class = $this->getItemClass();
+                $item = $class->newInstance()->init($itemValues);
 
             } elseif ($kind === 'event') {
                 $class = $this->getEventClass();
+                $item = $class->newInstance()->init($itemValues);
+
+            } elseif ($kind === 'relationship') {
+                $item = (new Relation())->init($itemValues);
 
             } else {
                 return null;
             }
-
-            $item = $class->newInstance()->init($itemValues);
 
             if ($client = $this->getHttpClient()) {
                 $item->setHttpClient($client);

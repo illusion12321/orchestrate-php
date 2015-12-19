@@ -1,7 +1,13 @@
 # CHANGELOG
 
-## HEAD
+## 0.15.0 - 2015-12-19
+- Introduced the Application object to provide Root Search.
+- Added support for Relation object in searches.
+- Moved the Application within the Objects namespace.
 - Implemented \JsonSerializable to objects.
+- Removed child class support from Client.
+- Added rootSearch method to Client.
+- Lazily instantiates a HTTP client on any object if required.
 
 ## 0.14.0 - 2015-05-29
 - Upgraded to Guzzle 6, PSR-7 compliant, cleaner and stronger.

@@ -1,5 +1,13 @@
 # TODO and IDEAS   
 
+- Upgrade Relation class with value support. As well as RelationInterface and Collection setRelationClass. Probably rename to Relationship to match Orchestrate.
+
+- Review the deprecation of Events and Relations?
+
+- Maybe add an 'newInstance' (or clone) method to each Object, to make it easier to create a empty instance to work on. Probably it should come pre-set with the same name/collection.
+
+- On Application object, add method to setCollectionClass, and allow to set many, by collection name.
+
 - Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
 
 - Maybe change 'patchMerge' on KeyValue to just 'merge'

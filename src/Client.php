@@ -2,12 +2,11 @@
 namespace andrefelipe\Orchestrate;
 
 use andrefelipe\Orchestrate\Objects\AbstractConnection;
+use andrefelipe\Orchestrate\Objects\Application;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\KeyValue;
-use andrefelipe\Orchestrate\Objects\Properties\EventClassTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
 use andrefelipe\Orchestrate\Objects\Refs;
 use andrefelipe\Orchestrate\Objects\Relation;
 use andrefelipe\Orchestrate\Objects\Relations;
@@ -23,9 +22,6 @@ use GuzzleHttp\Client as GuzzleClient;
  */
 class Client extends AbstractConnection
 {
-    use EventClassTrait;
-    use ItemClassTrait;
-
     /**
      * Instantiates a default HTTP client on construction.
      *
@@ -54,7 +50,7 @@ class Client extends AbstractConnection
      * Deletes a collection. Warning this will permanently erase all data within
      * this collection and cannot be reversed!
      *
-     * @return boolean
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#collections-delete
      */
     public function deleteCollection($collection)
@@ -82,8 +78,6 @@ class Client extends AbstractConnection
         KeyRangeBuilder $range = null
     ) {
         $list = (new Collection($collection))
-            ->setItemClass($this->getItemClass())
-            ->setEventClass($this->getEventClass())
             ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $range);
@@ -110,8 +104,30 @@ class Client extends AbstractConnection
         $offset = 0
     ) {
         $list = (new Collection($collection))
-            ->setItemClass($this->getItemClass())
-            ->setEventClass($this->getEventClass())
+            ->setHttpClient($this->getHttpClient(true));
+
+        $list->search($query, $sort, $aggregate, $limit, $offset);
+        return $list;
+    }
+
+    /**
+     * @param string $query
+     * @param string|array $sort
+     * @param string|array $aggregate
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return Application
+     * @link https://orchestrate.io/docs/apiref#search-root
+     */
+    public function rootSearch(
+        $query,
+        $sort = null,
+        $aggregate = null,
+        $limit = 10,
+        $offset = 0
+    ) {
+        $list = (new Application())
             ->setHttpClient($this->getHttpClient(true));
 
         $list->search($query, $sort, $aggregate, $limit, $offset);
@@ -265,7 +281,6 @@ class Client extends AbstractConnection
         $values = false
     ) {
         $list = (new Refs($collection, $key))
-            ->setItemClass($this->getItemClass())
             ->setHttpClient($this->getHttpClient(true));
 
         $list->get($limit, $offset, $values);
@@ -405,7 +420,6 @@ class Client extends AbstractConnection
         $events = (new Events($collection))
             ->setKey($key)
             ->setType($type)
-            ->setEventClass($this->getEventClass())
             ->setHttpClient($this->getHttpClient(true));
 
         $events->get($limit, $range);
@@ -435,7 +449,6 @@ class Client extends AbstractConnection
     ) {
         $events = (new Events($collection))
             ->setType($type)
-            ->setEventClass($this->getEventClass())
             ->setHttpClient($this->getHttpClient(true));
 
         $events->search($query, $sort, $aggregate, $limit, $offset);
@@ -533,7 +546,7 @@ class Client extends AbstractConnection
      */
     private function newItem($collection = null, $key = null, $ref = null)
     {
-        return $this->getItemClass()->newInstance()
+        return (new KeyValue())
             ->setCollection($collection)
             ->setKey($key)
             ->setRef($ref)
@@ -558,7 +571,7 @@ class Client extends AbstractConnection
         $timestamp = null,
         $ordinal = null
     ) {
-        return $this->getEventClass()->newInstance()
+        return (new Event())
             ->setCollection($collection)
             ->setKey($key)
             ->setType($type)

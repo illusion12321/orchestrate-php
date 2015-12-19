@@ -109,7 +109,7 @@ if ($item->isSuccess()) {
 ##### Actual Orchestrate objects (Collection, KeyValue, Event, etc), which provide an object API as well as the response status.
 
 ```php
-use andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Objects\Application;
 
 // provide the parameters, in order: apiKey, host, version
 $application = new Application(
@@ -944,6 +944,65 @@ $refs->prevPage(); // loads previous set of results
 
 
 
+
+
+### Root Search:
+
+```php
+// Approach 1 - Client
+$application = $client->rootSearch('@path.kind:* AND title:"The Title*"');
+
+// Approach 2 - Object
+$application->search('@path.kind:* AND title:"The Title*"');
+
+
+// one way of getting array of the search results
+$itemList = $results->getResults();
+
+// serialize as json
+echo json_encode($application, JSON_PRETTY_PRINT);
+
+// or go ahead and iterate over the results directly
+foreach ($application as $item) {
+    
+    echo $item->title;
+
+    $item->getScore(); // search score
+    $item->getDistance(); // populated if it was a Geo query
+}
+
+// aggregates
+$application->getAggregates(); // array of the Aggregate results, if any 
+
+// pagination
+$application->getNextUrl(); // string
+$application->getPrevUrl(); // string
+count($application); // count of the current set of results
+$application->getTotalCount(); // count of the total results
+$application->nextPage(); // loads next set of results
+$application->prevPage(); // loads previous set of results
+```
+
+All Search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
+```php
+// public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+
+// aggregates example
+$application->search(
+    'value.created_date:[2014-01-01 TO 2014-12-31]',
+    null,
+    'value.created_date:time_series:month'
+);
+```
+
+Mixing any object type is supported too:
+```php
+$application->search('@path.kind:(item event relationship) AND title:"The Title*"');
+// results will be either KeyValue, Event or Relation objects
+```
+
+
+
 ### Search:
 
 ```php
@@ -954,7 +1013,7 @@ $collection = $client->search('collection', 'title:"The Title*"');
 $collection->search('title:"The Title*"');
 
 
-// now get array of the search results
+// one way of getting array of the search results
 $itemList = $results->getResults();
 
 // or go ahead and iterate over the results directly
@@ -990,13 +1049,11 @@ $collection->search(
 );
 ```
 
-Mixing event search is supported too:
+Mixing any object type is supported too:
 ```php
 $collection->search('@path.kind:(item event) AND title:"The Title*"');
-// results will be either KeyValue or Event
+// results will be either KeyValue, Event or Relation objects
 ```
-
-Searching only events would be fine too, but for that you may be interested in the [Events](#event-search) class.
 
 
 

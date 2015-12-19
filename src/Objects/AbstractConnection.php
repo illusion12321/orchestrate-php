@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate as Orchestrate;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -14,15 +16,15 @@ abstract class AbstractConnection implements ConnectionInterface
     private $_httpClient;
 
     /**
-     * @param boolean $required
+     * @param boolean $required Will create a default Http Client if not set.
      *
      * @return ClientInterface
-     * @throws \BadMethodCallException if the http client is required but not set yet.
      */
     public function getHttpClient($required = false)
     {
         if ($required && !$this->_httpClient) {
-            throw new \BadMethodCallException('There is no HTTP client set yet. Do so through setHttpClient() method.');
+            $config = Orchestrate\default_http_config();
+            $this->_httpClient = new GuzzleClient($config);
         }
 
         return $this->_httpClient;

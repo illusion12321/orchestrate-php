@@ -37,9 +37,15 @@ ReusableObjectInterface
                           $kind = null,
         KeyValueInterface $destination = null
     ) {
-        $this->setSource($source);
-        $this->setRelation($kind);
-        $this->setDestination($destination);
+        if ($source) {
+            $this->setSource($source);
+        }
+        if ($kind) {
+            $this->setRelation($kind);
+        }
+        if ($destination) {
+            $this->setDestination($destination);
+        }        
     }
 
     /**
@@ -132,6 +138,11 @@ ReusableObjectInterface
     public function init(array $data)
     {
         if (!empty($data)) {
+            
+            if (!empty($data['path'])) {
+                $data = array_merge($data, $data['path']);
+            }
+
             foreach ($data as $key => $value) {
 
                 if ($key === 'source') {
