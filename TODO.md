@@ -1,4 +1,4 @@
-# TODO and IDEAS
+# TODO and IDEAS   
 
 - Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
 

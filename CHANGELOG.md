@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## HEAD
+- Implemented \JsonSerializable to objects.
+
 ## 0.14.0 - 2015-05-29
 - Upgraded to Guzzle 6, PSR-7 compliant, cleaner and stronger.
 - Requires PHP >= 5.5
