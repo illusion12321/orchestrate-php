@@ -267,7 +267,9 @@ if ($item->get()) {
     // )
 
     // to Json too
-    $item->toJson(JSON_PRETTY_PRINT);
+    echo $item->toJson(JSON_PRETTY_PRINT);
+    // or
+    echo json_encode($item, JSON_PRETTY_PRINT);
     // {
     //     "kind": "item",
     //     "path": {
@@ -552,7 +554,6 @@ It is valuable to cache in JSON format, because any part of your application, in
 ```php
 // serialize single item
 $item = $collection->item('john');
-
 if ($item->get()) {
     file_put_contents('your-cache-path', serialize($item));
 }
@@ -568,6 +569,29 @@ $item = unserialize($data);
 
 $data = file_get_contents('your-cache-path-collection');
 $collection = unserialize($data);
+
+
+
+// you can't recreate your custom classes with JSON
+// but you can work in a similar way
+
+$item = $collection->item('john');
+if ($item->get()) {
+    file_put_contents('your-cache-path', json_encode($item));
+}
+
+// serialize entire collections
+if ($collection->search('*', 'value.created_date:desc', null, 100)) {
+    file_put_contents('your-cache-path-collection', json_encode($collection));
+}
+
+// instantiation
+$data = file_get_contents('your-cache-path');
+$item = (new KeyValue())->init(json_decode($data, true));
+
+$data = file_get_contents('your-cache-path-collection');
+$collection = (new Collection())->init(json_decode($data, true));
+
 
 ```
 
