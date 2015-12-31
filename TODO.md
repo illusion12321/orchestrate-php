@@ -8,6 +8,8 @@
 
 - On Application object, add method to setCollectionClass, and allow to set many, by collection name.
 
+- getReftime could automatically load the reftime if not provided?
+
 - Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
 
 - Maybe change 'patchMerge' on KeyValue to just 'merge'
