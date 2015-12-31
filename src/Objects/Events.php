@@ -97,7 +97,7 @@ class Events extends AbstractList
         $data = parent::toArray();
         $data['kind'] = 'events';
 
-        if ($this->getEventClass()->name !== self::$defaultEventClass) {
+        if ($this->getEventClass()->name !== self::$defaultEventClassName) {
             $data['eventClass'] = $this->getEventClass()->name;
         }
         if (!empty($this->_key)) {

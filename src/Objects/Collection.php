@@ -175,10 +175,10 @@ class Collection extends AbstractList
         $data = parent::toArray();
         $data['kind'] = 'collection';
 
-        if ($this->getItemClass()->name !== self::$defaultItemClass) {
+        if ($this->getItemClass()->name !== self::$defaultItemClassName) {
             $data['itemClass'] = $this->getItemClass()->name;
         }
-        if ($this->getEventClass()->name !== self::$defaultEventClass) {
+        if ($this->getEventClass()->name !== self::$defaultEventClassName) {
             $data['eventClass'] = $this->getEventClass()->name;
         }
         if ($this->_aggregates) {
