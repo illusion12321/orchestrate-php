@@ -513,13 +513,14 @@ class Members extends Collection
 
 // at this approach, whenever we create items from this collection,
 // it will be Member objects
+
+// for example, let's instantiate a Http client programatically
 use MyProject\Models\Members;
 use andrefelipe\Orchestrate;
 use GuzzleHttp\Client as GuzzleClient;
 
-// let's instantiate a Http client programatically
-$clientConfig = Orchestrate\default_http_config();
-$httpClient = new GuzzleClient($clientConfig);
+// creates a pre-configured Guzzle Client with the default settings
+$httpClient = Orchestrate\default_http_client();
 
 // instatiate the collection
 $members = new Members($httpClient);
@@ -540,6 +541,7 @@ $client->setEventClass($class);
 // andrefelipe\Orchestrate\Objects\EventInterface for Event
 ```
 
+For a pratical example, please view [this project](https://github.com/andrefelipe/orchestrate-phalcon).
 
 
 

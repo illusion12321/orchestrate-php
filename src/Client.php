@@ -13,7 +13,6 @@ use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
-use GuzzleHttp\Client as GuzzleClient;
 
 /**
  * Client interface for Orchestrate API.
@@ -23,7 +22,8 @@ use GuzzleHttp\Client as GuzzleClient;
 class Client extends AbstractConnection
 {
     /**
-     * Instantiates a default HTTP client on construction.
+     * If you provide any parameters if will instantiate a HTTP client on construction.
+     * Otherwise it will create one when required, i.e. $this->getHttpClient(true).
      *
      * @param string $apiKey Orchestrate API key. If not set gets from env 'ORCHESTRATE_API_KEY'.
      * @param string $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
@@ -31,8 +31,11 @@ class Client extends AbstractConnection
      */
     public function __construct($apiKey = null, $host = null, $version = null)
     {
-        $config = default_http_config($apiKey, $host, $version);
-        $this->setHttpClient(new GuzzleClient($config));
+        // lazily instantiante
+        if ($apiKey || $host || $version) {
+            $client = default_http_client($apiKey, $host, $version);
+            $this->setHttpClient($client);
+        }
     }
 
     /**

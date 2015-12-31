@@ -3,7 +3,6 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate as Orchestrate;
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use GuzzleHttp\Client as GuzzleClient;
 
 /**
  *
@@ -13,6 +12,7 @@ class Application extends AbstractList
 {
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
+     * Otherwise it will create one when required, i.e. $this->getHttpClient(true).
      *
      * @param string $apiKey Orchestrate API key. If not set gets from env 'ORCHESTRATE_API_KEY'.
      * @param string $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
@@ -22,8 +22,8 @@ class Application extends AbstractList
     {
         // lazily instantiante
         if ($apiKey || $host || $version) {
-            $config = Orchestrate\default_http_config($apiKey, $host, $version);
-            $this->setHttpClient(new GuzzleClient($config));
+            $client = Orchestrate\default_http_client($apiKey, $host, $version);
+            $this->setHttpClient($client);
         }
     }
 

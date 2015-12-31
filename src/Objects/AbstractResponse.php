@@ -143,7 +143,7 @@ abstract class AbstractResponse extends AbstractConnection
     {
         // safely build query
         if (isset($options['query']) && is_array($options['query'])) {
-            $options['query'] = \http_build_query($options['query'], null, '&', PHP_QUERY_RFC3986);
+            $options['query'] = http_build_query($options['query'], null, '&', PHP_QUERY_RFC3986);
         }
 
         // request

@@ -2,7 +2,6 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate as Orchestrate;
-use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -23,8 +22,7 @@ abstract class AbstractConnection implements ConnectionInterface
     public function getHttpClient($required = false)
     {
         if ($required && !$this->_httpClient) {
-            $config = Orchestrate\default_http_config();
-            $this->_httpClient = new GuzzleClient($config);
+            $this->_httpClient = Orchestrate\default_http_client();
         }
 
         return $this->_httpClient;
