@@ -1,8 +1,22 @@
 # TODO and IDEAS   
 
+ver se colocar o distance no Event e Relation
+
+o Relationship tem ref e reftime! confirmar se o get sempre carrega eles.
+
+pode ser que o Relation pode extender o KeyValeu....!!!!
+
+será que o relationship teria tombstone? .. dá para listar os refs?
+
+review.. but probably add getKind to all objects (returning the static value) to lock down the method naming
+
+
+
 - Upgrade Relation class with value support. As well as RelationInterface and Collection setRelationClass. Probably rename to Relationship to match Orchestrate.
 
 - Review the deprecation of Events and Relations?
+
+- Implement Bulk operations support 
 
 - Maybe add an 'newInstance' (or clone) method to each Object, to make it easier to create a empty instance to work on. Probably it should come pre-set with the same name/collection.
 
@@ -23,10 +37,10 @@
 - Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
 - Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
 
-- Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
+- Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder)) or better, use collection->search('query*', $options), where $options = (new Orchestrate/Query/SearchOptions())->limit(10)->sort('title')
 ---Do not use the object itself to build the query chain, it's confusing---
 
-- Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder
+- Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder! I.E. collection->search('query*', ['limit' => 10, 'sort' => 'title'])
 
 - MAYBE go ahead and add the collection->my_item map.. that loads the item with get already? OK, but should implement an internal cache right?
 . application->my_collection->my_item
@@ -35,6 +49,8 @@
 . Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
 
 - Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
+
+- Consider BLOB storage support?
 
 - Implement more common interfaces, and general organization of the classes / folders (create an AbstractCollection, to gather all common parts of searchable lists: collection/events)
 

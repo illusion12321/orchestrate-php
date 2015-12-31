@@ -2,6 +2,7 @@
 
 ## HEAD
 - Added 'default_http_client' function to simplify the Guzzle client instantiation.
+- Internal improvements.
 
 ## 0.15.0 - 2015-12-19
 - Introduced the Application object to provide Root Search.

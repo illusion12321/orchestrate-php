@@ -91,20 +91,20 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             'value' => parent::toArray(),
         ];
 
-        if ($this->_score !== null) {
-            $data['score'] = $this->_score;
-        }
-
-        if ($this->_distance !== null) {
-            $data['distance'] = $this->_distance;
-        }
-
         if ($this->_reftime !== null) {
             $data['path']['reftime'] = $this->_reftime;
         }
 
         if ($this->_tombstone) {
             $data['path']['tombstone'] = $this->_tombstone;
+        }
+
+        if ($this->_score !== null) {
+            $data['score'] = $this->_score;
+        }
+
+        if ($this->_distance !== null) {
+            $data['distance'] = $this->_distance;
         }
 
         return $data;
