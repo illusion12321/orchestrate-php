@@ -1,13 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-
 class Refs extends AbstractList
 {
-    use ItemClassTrait;
-    use KeyTrait;
+    use Properties\ItemClassTrait;
+    use Properties\KeyTrait;
 
     public function __construct($collection = null, $key = null)
     {

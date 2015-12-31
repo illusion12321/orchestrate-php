@@ -2,8 +2,6 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Objects\Properties\EventClassTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 
 /**
@@ -12,13 +10,9 @@ use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
  */
 class Collection extends AbstractList
 {
-    use EventClassTrait;
-    use ItemClassTrait;
-
-    /**
-     * @var ObjectArray
-     */
-    private $_aggregates;
+    use Properties\EventClassTrait;
+    use Properties\ItemClassTrait;
+    use Properties\AggregatesTrait;
 
     /**
      * Constructs an item instance. A KeyValue or a custom class you set with
@@ -132,17 +126,6 @@ class Collection extends AbstractList
             }
         }
         return null;
-    }
-
-    /**
-     * @return ObjectArray
-     */
-    public function getAggregates()
-    {
-        if (!$this->_aggregates) {
-            $this->_aggregates = new ObjectArray();
-        }
-        return $this->_aggregates;
     }
 
     public function reset()

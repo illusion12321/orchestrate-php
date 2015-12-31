@@ -4,7 +4,6 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use GuzzleHttp\ClientInterface;
 use JmesPath\Env as JmesPath;
 
@@ -17,7 +16,7 @@ ListInterface,
 ToJsonInterface,
 ReusableObjectInterface
 {
-    use CollectionTrait;
+    use Properties\CollectionTrait;
     use ToJsonTrait;
 
     /**

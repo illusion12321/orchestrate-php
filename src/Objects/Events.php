@@ -2,21 +2,14 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Objects\Properties\EventClassTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
 class Events extends AbstractList
 {
-    use EventClassTrait;
-    use KeyTrait;
-    use TypeTrait;
-
-    /**
-     * @var ObjectArray
-     */
-    private $_aggregates;
+    use Properties\EventClassTrait;
+    use Properties\KeyTrait;
+    use Properties\TypeTrait;
+    use Properties\AggregatesTrait;
 
     /**
      * @param string $collection
@@ -49,17 +42,6 @@ class Events extends AbstractList
             ->setTimestamp($timestamp)
             ->setOrdinal($ordinal)
             ->setHttpClient($this->getHttpClient());
-    }
-
-    /**
-     * @return ObjectArray
-     */
-    public function getAggregates()
-    {
-        if (!$this->_aggregates) {
-            $this->_aggregates = new ObjectArray();
-        }
-        return $this->_aggregates;
     }
 
     public function reset()

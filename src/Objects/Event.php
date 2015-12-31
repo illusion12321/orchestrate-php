@@ -1,31 +1,16 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
-
 class Event extends AbstractItem implements EventInterface
 {
-    use CollectionTrait;
-    use KeyTrait;
-    use ReftimeTrait;
-    use RefTrait;
-    use TimestampTrait;
-    use TypeTrait;
-
-    /**
-     * @var int
-     */
-    private $_ordinal = null;
-
-    /**
-     * @var string
-     */
-    private $_ordinalStr = null;
+    use Properties\CollectionTrait;
+    use Properties\KeyTrait;
+    use Properties\ReftimeTrait;
+    use Properties\RefTrait;
+    use Properties\TimestampTrait;
+    use Properties\TypeTrait;
+    use Properties\ScoreTrait;
+    use Properties\OrdinalTrait;
 
     /**
      * @param string $collection
@@ -48,27 +33,6 @@ class Event extends AbstractItem implements EventInterface
         $this->setOrdinal($ordinal);
     }
 
-    public function getOrdinal($required = false)
-    {
-        if ($required && !$this->_ordinal) {
-            throw new \BadMethodCallException('There is no ordinal set yet. Do so through setOrdinal() method.');
-        }
-
-        return $this->_ordinal;
-    }
-
-    public function setOrdinal($ordinal)
-    {
-        $this->_ordinal = (int) $ordinal;
-
-        return $this;
-    }
-
-    public function getOrdinalStr()
-    {
-        return $this->_ordinalStr;
-    }
-
     public function reset()
     {
         parent::reset();
@@ -77,9 +41,10 @@ class Event extends AbstractItem implements EventInterface
         $this->_type = null;
         $this->_timestamp = null;
         $this->_ordinal = null;
+        $this->_ordinalStr = null;
         $this->_ref = null;
         $this->_reftime = null;
-        $this->_ordinalStr = null;
+        $this->_score = null;
         $this->resetValue();
     }
 
@@ -106,9 +71,11 @@ class Event extends AbstractItem implements EventInterface
                 } elseif ($key === 'ref') {
                     $this->setRef($value);
                 } elseif ($key === 'reftime') {
-                    $this->_reftime = (int) $value;
+                    $this->setReftime($value);
                 } elseif ($key === 'ordinal_str') {
-                    $this->_ordinalStr = $value;
+                    $this->setOrdinalStr($value);
+                } elseif ($key === 'score') {
+                    $this->setScore($value);
                 } elseif ($key === 'value') {
                     $this->setValue((array) $value);
                 }
@@ -137,6 +104,10 @@ class Event extends AbstractItem implements EventInterface
             'ordinal' => $this->getOrdinal(),
             'reftime' => $this->getReftime(),
         ];
+
+        if ($this->_score !== null) {
+            $data['score'] = $this->_score;
+        }
 
         return $data;
     }
@@ -253,6 +224,7 @@ class Event extends AbstractItem implements EventInterface
             $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;
+            $this->_score = null;
             $this->resetValue();
         }
         return $this->isSuccess();
@@ -276,6 +248,7 @@ class Event extends AbstractItem implements EventInterface
             $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;
+            $this->_score = null;
             $this->resetValue();
         }
         return $this->isSuccess();

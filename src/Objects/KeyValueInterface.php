@@ -12,6 +12,7 @@ interface KeyValueInterface extends
 ValueInterface,
 ToJsonInterface,
 ReusableObjectInterface,
+SearchableInterface,
 ConnectionInterface
 {
     /**
@@ -58,11 +59,6 @@ ConnectionInterface
      * @return int
      */
     public function getReftime();
-
-    /**
-     * @return float
-     */
-    public function getScore();
 
     /**
      * @return float

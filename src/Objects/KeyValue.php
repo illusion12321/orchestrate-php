@@ -1,28 +1,16 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractItem implements KeyValueInterface
 {
-    use CollectionTrait;
-    use KeyTrait;
-    use ReftimeTrait;
-    use RefTrait;
-
-    /**
-     * @var float
-     */
-    private $_score = null;
-
-    /**
-     * @var float
-     */
-    private $_distance = null;
+    use Properties\CollectionTrait;
+    use Properties\KeyTrait;
+    use Properties\ReftimeTrait;
+    use Properties\RefTrait;
+    use Properties\ScoreTrait;
+    use Properties\DistanceTrait;
 
     /**
      * @var boolean
@@ -39,16 +27,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         $this->setCollection($collection);
         $this->setKey($key);
         $this->setRef($ref);
-    }
-
-    public function getScore()
-    {
-        return $this->_score;
-    }
-
-    public function getDistance()
-    {
-        return $this->_distance;
     }
 
     public function isTombstone()
@@ -87,11 +65,11 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 } elseif ($key === 'value') {
                     $this->setValue((array) $value);
                 } elseif ($key === 'score') {
-                    $this->_score = (float) $value;
+                    $this->setScore($value);
                 } elseif ($key === 'distance') {
-                    $this->_distance = (float) $value;
+                    $this->setDistance($value);
                 } elseif ($key === 'reftime') {
-                    $this->_reftime = (int) $value;
+                    $this->setReftime($value);
                 } elseif ($key === 'tombstone') {
                     $this->_tombstone = (boolean) $value;
                 }

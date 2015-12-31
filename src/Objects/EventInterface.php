@@ -11,6 +11,7 @@ interface EventInterface extends
 ValueInterface,
 ToJsonInterface,
 ReusableObjectInterface,
+SearchableInterface,
 ConnectionInterface
 {
 

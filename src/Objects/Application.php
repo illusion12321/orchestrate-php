@@ -10,6 +10,8 @@ use andrefelipe\Orchestrate\Common\ObjectArray;
  */
 class Application extends AbstractList
 {
+    use Properties\AggregatesTrait;
+
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
      * Otherwise it will create one when required.
@@ -37,11 +39,6 @@ class Application extends AbstractList
     }
 
     /**
-     * @var ObjectArray
-     */
-    private $_aggregates;
-
-    /**
      * Creates a new application instance configured with the same Http client.
      * Useful to create different instances to populate with different search results.
      *
@@ -61,17 +58,6 @@ class Application extends AbstractList
         return (new Collection())
             ->setCollection($name)
             ->setHttpClient($this->getHttpClient());
-    }
-
-    /**
-     * @return ObjectArray
-     */
-    public function getAggregates()
-    {
-        if (!$this->_aggregates) {
-            $this->_aggregates = new ObjectArray();
-        }
-        return $this->_aggregates;
     }
 
     public function reset()

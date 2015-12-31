@@ -1,16 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-
 class Relations extends AbstractList
 {
-    use KeyTrait;
-
-    /**
-     * @var array
-     */
-    private $_depth = null;
+    use Properties\KeyTrait;
+    use Properties\DepthTrait;
 
     /**
      * @param string $collection
@@ -22,33 +16,6 @@ class Relations extends AbstractList
         parent::__construct($collection);
         $this->setKey($key);
         $this->setDepth($kind);
-    }
-
-    /**
-     * @param boolean $required
-     *
-     * @return array
-     * @throws \BadMethodCallException if 'relation depth' is required but not set yet.
-     */
-    public function getDepth($required = false)
-    {
-        if ($required && empty($this->_depth)) {
-            throw new \BadMethodCallException('There is no relation depth set yet. Do so through setDepth() method.');
-        }
-
-        return $this->_depth;
-    }
-
-    /**
-     * @param string|array $kind
-     *
-     * @return self
-     */
-    public function setDepth($kind)
-    {
-        $this->_depth = (array) $kind;
-
-        return $this;
     }
 
     public function reset()

@@ -3,29 +3,16 @@ namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
 
 class Relation extends AbstractResponse implements
 ToJsonInterface,
 ReusableObjectInterface
 {
-    use TimestampTrait;
+    use Properties\TimestampTrait;
     use ToJsonTrait;
-
-    /**
-     * @var string
-     */
-    private $_relation = null;
-
-    /**
-     * @var KeyValueInterface
-     */
-    private $_source = null;
-
-    /**
-     * @var KeyValueInterface
-     */
-    private $_destination = null;
+    use Properties\RelationTrait;
+    use Properties\RelationshipTrait;
+    use Properties\ScoreTrait;
 
     /**
      * @param KeyValueInterface $source
@@ -45,85 +32,7 @@ ReusableObjectInterface
         }
         if ($destination) {
             $this->setDestination($destination);
-        }        
-    }
-
-    /**
-     * Get the relation kind between the objects.
-     *
-     * @param boolean $required
-     *
-     * @return string
-     * @throws \BadMethodCallException if 'relation' is required but not set yet.
-     */
-    public function getRelation($required = false)
-    {
-        if ($required && !$this->_relation) {
-            throw new \BadMethodCallException('There is no relation set yet. Do so through setRelation() method.');
         }
-
-        return $this->_relation;
-    }
-
-    /**
-     * @param string $kind
-     *
-     * @return Relation self
-     * @throws \InvalidArgumentException if 'kind' is array. Only one relation can be handled per time.
-     */
-    public function setRelation($kind)
-    {
-        if (is_array($kind)) {
-            throw new \InvalidArgumentException('The kind parameter can not be Array. Only one relation can be handled per time.');
-        }
-
-        $this->_relation = (string) $kind;
-
-        return $this;
-    }
-
-    /**
-     * @param boolean $required
-     *
-     * @return KeyValueInterface
-     */
-    public function getSource($required = false)
-    {
-        return $this->_source;
-    }
-
-    /**
-     * @param KeyValueInterface $item
-     *
-     * @return Relation self
-     */
-    public function setSource(KeyValueInterface $item)
-    {
-        $this->_source = $item;
-
-        return $this;
-    }
-
-    /**
-     * @param boolean $required
-     *
-     * @return KeyValueInterface
-     */
-    public function getDestination($required = false)
-    {
-        return $this->_destination;
-    }
-
-    /**
-     * @param KeyValueInterface $item
-     *
-     * @return Relation self
-     */
-    public function setDestination(KeyValueInterface $item)
-    {
-        $this->_destination = $item;
-
-        return $this;
     }
 
     public function reset()
@@ -133,12 +42,13 @@ ReusableObjectInterface
         $this->_relation = null;
         $this->_destination = null;
         $this->_timestamp = null;
+        $this->_score = null;
     }
 
     public function init(array $data)
     {
         if (!empty($data)) {
-            
+
             if (!empty($data['path'])) {
                 $data = array_merge($data, $data['path']);
             }
@@ -153,6 +63,8 @@ ReusableObjectInterface
                     $this->setRelation($value);
                 } elseif ($key === 'timestamp') {
                     $this->setTimestamp($value);
+                } elseif ($key === 'score') {
+                    $this->setScore($value);
                 }
             }
         }
@@ -186,6 +98,10 @@ ReusableObjectInterface
                 'kind' => 'item',
                 'key' => $destination->getKey(),
             ];
+        }
+
+        if ($this->_score !== null) {
+            $data['score'] = $this->_score;
         }
 
         return $data;
