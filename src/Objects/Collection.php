@@ -35,7 +35,7 @@ class Collection extends AbstractList
             ->setCollection($this->getCollection(true))
             ->setKey($key)
             ->setRef($ref)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**
@@ -57,7 +57,7 @@ class Collection extends AbstractList
             ->setType($type)
             ->setTimestamp($timestamp)
             ->setOrdinal($ordinal)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**
@@ -70,7 +70,7 @@ class Collection extends AbstractList
             ->setCollection($this->getCollection(true))
             ->setKey($key)
             ->setType($type)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**

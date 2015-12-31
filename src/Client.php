@@ -23,7 +23,7 @@ class Client extends AbstractConnection
 {
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
-     * Otherwise it will create one when required, i.e. $this->getHttpClient(true).
+     * Otherwise it will create one when required.
      *
      * @param string $apiKey Orchestrate API key. If not set gets from env 'ORCHESTRATE_API_KEY'.
      * @param string $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
@@ -44,7 +44,7 @@ class Client extends AbstractConnection
      */
     public function ping()
     {
-        return $this->getHttpClient(true)->request('HEAD')->getStatusCode() === 200;
+        return $this->getHttpClient()->request('HEAD')->getStatusCode() === 200;
     }
 
     // Collection
@@ -81,7 +81,7 @@ class Client extends AbstractConnection
         KeyRangeBuilder $range = null
     ) {
         $list = (new Collection($collection))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $range);
         return $list;
@@ -107,7 +107,7 @@ class Client extends AbstractConnection
         $offset = 0
     ) {
         $list = (new Collection($collection))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
@@ -131,7 +131,7 @@ class Client extends AbstractConnection
         $offset = 0
     ) {
         $list = (new Application())
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
@@ -284,7 +284,7 @@ class Client extends AbstractConnection
         $values = false
     ) {
         $list = (new Refs($collection, $key))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $offset, $values);
         return $list;
@@ -423,7 +423,7 @@ class Client extends AbstractConnection
         $events = (new Events($collection))
             ->setKey($key)
             ->setType($type)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $events->get($limit, $range);
         return $events;
@@ -452,7 +452,7 @@ class Client extends AbstractConnection
     ) {
         $events = (new Events($collection))
             ->setType($type)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $events->search($query, $sort, $aggregate, $limit, $offset);
         return $events;
@@ -532,7 +532,7 @@ class Client extends AbstractConnection
         $offset = 0
     ) {
         $list = (new Relations($collection, $key, $kind))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $offset);
         return $list;
@@ -553,7 +553,7 @@ class Client extends AbstractConnection
             ->setCollection($collection)
             ->setKey($key)
             ->setRef($ref)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**
@@ -580,6 +580,6 @@ class Client extends AbstractConnection
             ->setType($type)
             ->setTimestamp($timestamp)
             ->setOrdinal($ordinal)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 }

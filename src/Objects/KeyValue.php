@@ -324,7 +324,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function refs()
     {
         return (new Refs($this->getCollection(true), $this->getKey(true)))
-            ->setHttpClient($this->getHttpClient(true))
+            ->setHttpClient($this->getHttpClient())
             ->setItemClass(new \ReflectionClass($this));
 
         // this new reflection instance may be cached, just check subclasses scope
@@ -333,7 +333,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function events($type = null)
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     public function event($type = null, $timestamp = null, $ordinal = null)
@@ -344,19 +344,19 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             $type,
             $timestamp,
             $ordinal
-        ))->setHttpClient($this->getHttpClient(true));
+        ))->setHttpClient($this->getHttpClient());
     }
 
     public function relations($kind)
     {
         return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     public function relation($kind, KeyValueInterface $destination)
     {
         return (new Relation($this, $kind, $destination))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**

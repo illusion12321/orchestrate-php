@@ -12,7 +12,7 @@ class Application extends AbstractList
 {
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
-     * Otherwise it will create one when required, i.e. $this->getHttpClient(true).
+     * Otherwise it will create one when required.
      *
      * @param string $apiKey Orchestrate API key. If not set gets from env 'ORCHESTRATE_API_KEY'.
      * @param string $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
@@ -33,7 +33,7 @@ class Application extends AbstractList
      */
     public function ping()
     {
-        return $this->getHttpClient(true)->request('HEAD')->getStatusCode() === 200;
+        return $this->getHttpClient()->request('HEAD')->getStatusCode() === 200;
     }
 
     /**
@@ -50,7 +50,7 @@ class Application extends AbstractList
     public function application()
     {
         return (new Application())
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**
@@ -60,7 +60,7 @@ class Application extends AbstractList
     {
         return (new Collection())
             ->setCollection($name)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**

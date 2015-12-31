@@ -48,7 +48,7 @@ class Events extends AbstractList
             ->setType($type)
             ->setTimestamp($timestamp)
             ->setOrdinal($ordinal)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**

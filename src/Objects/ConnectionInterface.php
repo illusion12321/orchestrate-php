@@ -9,16 +9,15 @@ use GuzzleHttp\ClientInterface;
 interface ConnectionInterface
 {
     /**
-     * Get current Http client instance.
-     *
-     * @param boolean $required
+     * Gets the current object's HTTP client. If not set yet, it will create
+     * a pre-configured Guzzle Client with the default settings.
      *
      * @return ClientInterface
      */
-    public function getHttpClient($required = false);
+    public function getHttpClient();
 
     /**
-     * Set the Http client which the object will use to make API requests.
+     * Sets the HTTP client which the object will use to make API requests.
      *
      * @param ClientInterface $httpClient
      *

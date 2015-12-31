@@ -14,25 +14,15 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     private $_httpClient;
 
-    /**
-     * @param boolean $required Will create a default Http Client if not set.
-     *
-     * @return ClientInterface
-     */
-    public function getHttpClient($required = false)
+    public function getHttpClient()
     {
-        if ($required && !$this->_httpClient) {
+        if (!$this->_httpClient) {
             $this->_httpClient = Orchestrate\default_http_client();
         }
 
         return $this->_httpClient;
     }
 
-    /**
-     * @param ClientInterface $httpClient
-     *
-     * @return self
-     */
     public function setHttpClient(ClientInterface $httpClient)
     {
         $this->_httpClient = $httpClient;
