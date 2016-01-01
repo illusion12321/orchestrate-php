@@ -105,7 +105,7 @@ ConnectionInterface
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function put(array $value = null, $ref = null, $both_ways = false)
+    public function put(array $value = null, $ref = null, $both_ways = false);
 
     /**
      * Remove the relation between the two objects.
@@ -115,6 +115,6 @@ ConnectionInterface
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
-    public function delete($both_ways = false)
+    public function delete($both_ways = false);
 
 }

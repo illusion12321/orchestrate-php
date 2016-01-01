@@ -1,16 +1,16 @@
 # TODO and IDEAS   
 
-ver se colocar o distance no Event e Relation
-
-o Relationship tem ref e reftime! confirmar se o get sempre carrega eles.
-
-pode ser que o Relation pode extender o KeyValeu....!!!!
-
-será que o relationship teria tombstone? .. dá para listar os refs?
+ver se colocar o distance no Event e Relation? provavelmente entraria no SearchableInterface
 
 review.. but probably add getKind to all objects (returning the static value) to lock down the method naming
 
+rever o timestamp no Relationship
 
+rever a classe Relations .. para fornecer o list -- renomear Relationship
+
+change putRelation to putRelationship on client?
+
+ver o getRelationshipClass setRelationshipClass
 
 - Upgrade Relation class with value support. As well as RelationInterface and Collection setRelationClass. Probably rename to Relationship to match Orchestrate.
 
