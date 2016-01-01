@@ -81,10 +81,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function toArray()
     {
         $data = [
-            'kind' => 'item',
+            'kind' => self::KIND,
             'path' => [
                 'collection' => $this->getCollection(),
-                'kind' => 'item',
+                'kind' => self::KIND,
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
@@ -331,9 +331,9 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             ->setHttpClient($this->getHttpClient());
     }
 
-    public function relation($kind, KeyValueInterface $destination)
+    public function relationship($kind, KeyValueInterface $destination)
     {
-        return (new Relation($this, $kind, $destination))
+        return (new Relationship($this, $kind, $destination))
             ->setHttpClient($this->getHttpClient());
     }
 

@@ -8,8 +8,8 @@ use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Refs;
-use andrefelipe\Orchestrate\Objects\Relation;
 use andrefelipe\Orchestrate\Objects\Relations;
+use andrefelipe\Orchestrate\Objects\Relationship;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
@@ -482,7 +482,7 @@ class Client extends AbstractConnection
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
-        $relation = new Relation($source, $kind, $destination);
+        $relation = new Relationship($source, $kind, $destination);
         $relation->put($bothWays);
         return $relation;
     }
@@ -509,7 +509,7 @@ class Client extends AbstractConnection
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
-        $relation = new Relation($source, $kind, $destination);
+        $relation = new Relationship($source, $kind, $destination);
         $relation->delete($bothWays);
         return $relation;
     }

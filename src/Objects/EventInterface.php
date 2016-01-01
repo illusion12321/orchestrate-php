@@ -14,6 +14,7 @@ ReusableObjectInterface,
 SearchableInterface,
 ConnectionInterface
 {
+    const KIND = 'event';
 
     /**
      * @param boolean $required

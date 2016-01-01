@@ -87,10 +87,10 @@ class Event extends AbstractItem implements EventInterface
     public function toArray()
     {
         $data = [
-            'kind' => 'event',
+            'kind' => self::KIND,
             'path' => [
                 'collection' => $this->getCollection(),
-                'kind' => 'event',
+                'kind' => self::KIND,
                 'key' => $this->getKey(),
                 'type' => $this->getType(),
                 'timestamp' => $this->getTimestamp(),

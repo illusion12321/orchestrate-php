@@ -169,7 +169,7 @@ class Application extends AbstractList
                 $item = (new Event())->init($itemValues);
 
             } elseif ($kind === 'relationship') {
-                $item = (new Relation())->init($itemValues);
+                $item = (new Relationship())->init($itemValues);
 
             } else {
                 return null;

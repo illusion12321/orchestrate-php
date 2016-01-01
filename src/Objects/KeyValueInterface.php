@@ -15,6 +15,8 @@ ReusableObjectInterface,
 SearchableInterface,
 ConnectionInterface
 {
+    const KIND = 'item';
+
     /**
      * @param boolean $required
      *
@@ -150,7 +152,7 @@ ConnectionInterface
     public function relations($kind);
 
     /**
-     * @return Relation
+     * @return Relationship
      */
-    public function relation($kind, KeyValueInterface $destination);
+    public function relationship($kind, KeyValueInterface $destination);
 }

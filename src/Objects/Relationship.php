@@ -10,14 +10,12 @@ class Relationship extends AbstractItem implements RelationshipInterface
     use Properties\TimestampTrait; // TODO why? again?
     use Properties\ScoreTrait;
 
-    // static KIND = 'relationship'; //TODO test and implement
-
     /**
      * @param KeyValueInterface $source
      * @param string $kind
      * @param KeyValueInterface $destination
      */
-    public static function __construct(
+    public function __construct(
         KeyValueInterface $source = null,
                           $kind = null,
         KeyValueInterface $destination = null
@@ -84,69 +82,76 @@ class Relationship extends AbstractItem implements RelationshipInterface
     public function toArray()
     {
         $data = [
-            'kind' => 'relationship',
-            'relation' => $this->getRelation(),
-            'timestamp' => $this->getTimestamp(),
+
             'path' => [
-                'kind' => 'relationship',
-                'key' => $this->getKey(),
+                'kind' => self::KIND,
+                'source' => null,
+                'destination' => null,
+                'relation' => $this->getRelation(),
                 'ref' => $this->getRef(),
-            ];
-            todo, terminarthis, talvezprecisarevisaropath, masnaverdadepodemandarbalaemigrartudoparaopath, screenshotnodesktop;
-            'value' => parent::toArray(),
+            ],
+            'kind' => self::KIND,
+            // 'timestamp' => $this->getTimestamp(), //TODO Why again?
         ];
 
         $source = $this->getSource();
         if ($source) {
-            $data['source'] = [
-                'collection' => $source->getCollection(),
+            $data['path']['source'] = [
                 'kind' => 'item',
+                'collection' => $source->getCollection(),
                 'key' => $source->getKey(),
             ];
         }
 
         $destination = $this->getDestination();
         if ($destination) {
-            $data['destination'] = [
-                'collection' => $destination->getCollection(),
+            $data['path']['destination'] = [
                 'kind' => 'item',
+                'collection' => $destination->getCollection(),
                 'key' => $destination->getKey(),
             ];
         }
 
         $value = parent::toArray();
         if (!empty($value)) {
-            $data['value'] = parent::toArray(),
+            $data['value'] = $value;
         }
 
         if ($this->_score !== null) {
             $data['score'] = $this->_score;
         }
 
+        $reftime = $this->getReftime();
+        if (!empty($reftime)) {
+            $data['path']['reftime'] = $reftime;
+            $data['reftime'] = $reftime;
+        }
+
         return $data;
     }
 
-    /**
-     * Set the relation between the two objects.
-     * Use the $bothWays parameter to set the relation both ways (2 API calls are made).
-     *
-     * @param boolean $bothWays
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#graph-put
-     */
-    public function put($bothWays = false)
+    public function get()
     {
-        $this->request('PUT', $this->formRelationPath());
+        // define request options
+        $path = $this->formRelationPath();
 
-        if ($bothWays && $this->isSuccess()) {
-            $this->request('PUT', $this->formRelationPath(true));
+        // Orchestrate doesn't support relationship history (refs) yet
+        // if ($ref) {
+        //     $path .= '/refs/'.trim($ref, '"');
+        // }
+
+        // request
+        $this->request('GET', $path);
+
+        // set values
+        if ($this->isSuccess()) {
+            $this->setValue($this->getBody());
+            $this->setRefFromETag();
         }
-
         return $this->isSuccess();
     }
 
-    public function putv(array $value = null, $ref = null)
+    public function put(array $value = null, $ref = null, $both_ways = false)
     {
         $newValue = $value === null ? parent::toArray() : $value;
 
@@ -154,74 +159,62 @@ class Relationship extends AbstractItem implements RelationshipInterface
         $path = $this->formRelationPath();
         $options = ['json' => empty($newValue) ? null : $newValue];
 
-        // if ($ref) {
+        if ($ref) {
 
-        //     // set If-Match
-        //     if ($ref === true) {
-        //         $ref = $this->getRef();
-        //     }
+            // set If-Match
+            if ($ref === true) {
+                $ref = $this->getRef();
+            }
 
-        //     $options['headers'] = ['If-Match' => '"'.$ref.'"'];
+            $options['headers'] = ['If-Match' => '"'.$ref.'"'];
 
-        // } elseif ($ref === false) {
+        } elseif ($ref === false) {
 
-        //     // set If-None-Match
-        //     $options['headers'] = ['If-None-Match' => '"*"'];
-        // }
+            // set If-None-Match
+            $options['headers'] = ['If-None-Match' => '"*"'];
+        }
 
         // request
         $this->request('PUT', $path, $options);
 
-        // set values
         if ($this->isSuccess()) {
-            // $this->setRefFromETag();
 
-            // if ($value !== null) {
-            //     $this->resetValue();
-            //     $this->setValue($newValue);
-            // }
+            // set values
+            $this->setRefFromETag();
+
+            if ($value !== null) {
+                $this->resetValue();
+                $this->setValue($newValue);
+            }
+
+            // put both ways
+            if ($both_ways) {
+                $path = $this->formRelationPath(false, true);
+                $this->request('PUT', $path, $options);
+            }
         }
         return $this->isSuccess();
     }
 
-    /**
-     * Remove the relation between the two objects.
-     * Use the $bothWays parameter to remove the relation both ways (2 API calls are made).
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#graph-delete
-     */
-    public function delete($bothWays = false)
+    public function delete($both_ways = false)
     {
         $options = ['query' => ['purge' => 'true']];
 
         $this->request('DELETE', $this->formRelationPath(), $options);
 
-        if ($bothWays && $this->isSuccess()) {
-            $this->request('DELETE', $this->formRelationPath(true), $options);
+        if ($both_ways && $this->isSuccess()) {
+            $this->request('DELETE', $this->formRelationPath(false, true), $options);
+        }
+
+        if ($this->isSuccess()) {
+            $this->_score = null;
+            // $this->_distance = null;
+            $this->_ref = null;
+            $this->_reftime = null;
+            $this->resetValue();
         }
 
         return $this->isSuccess();
     }
 
-    /**
-     * Helper to form the relation URL path
-     *
-     * @return string
-     */
-    private function formRelationPath($reverse = false)
-    {
-        $source = $this->getSource(true);
-        $destination = $this->getDestination(true);
-
-        if ($reverse) {
-            $item = $source;
-            $source = $destination;
-            $destination = $item;
-        }
-
-        return $source->getCollection(true).'/'.$source->getKey(true)
-        .'/relation/'.$this->getRelation(true).'/'
-        .$destination->getCollection(true).'/'.$destination->getKey(true);
-    }
 }

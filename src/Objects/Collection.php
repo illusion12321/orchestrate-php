@@ -292,7 +292,7 @@ class Collection extends AbstractList
                 $item = $class->newInstance()->init($itemValues);
 
             } elseif ($kind === 'relationship') {
-                $item = (new Relation())->init($itemValues);
+                $item = (new Relationship())->init($itemValues);
 
             } else {
                 return null;

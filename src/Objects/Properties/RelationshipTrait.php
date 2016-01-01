@@ -72,4 +72,25 @@ trait RelationshipTrait
 
         return $this;
     }
+
+    /**
+     * Helper to form the relation URL path
+     *
+     * @return string
+     */
+    private function formRelationPath($plural = false, $reverse = false)
+    {
+        $source = $this->getSource(true);
+        $destination = $this->getDestination(true);
+
+        if ($reverse) {
+            $item = $source;
+            $source = $destination;
+            $destination = $item;
+        }
+
+        return $source->getCollection(true).'/'.$source->getKey(true)
+        .'/relation'.($plural ? 's' : '').'/'.$this->getRelation(true).'/'
+        .$destination->getCollection(true).'/'.$destination->getKey(true);
+    }
 }
