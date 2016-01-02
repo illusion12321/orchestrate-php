@@ -1,18 +1,14 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
 
 /**
  * Define the Event minimum required interface.
  */
 interface EventInterface extends
-\ArrayAccess,
+ObjectInterface,
 ValueInterface,
-ToJsonInterface,
-ReusableObjectInterface,
-SearchableInterface,
-ConnectionInterface
+SearchableInterface
 {
     const KIND = 'event';
 
@@ -140,11 +136,4 @@ ConnectionInterface
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
     public function delete($ref = null);
-
-    /**
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-delete
-     */
-    public function purge();
 }

@@ -1,14 +1,15 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-class Refs extends AbstractList
+class Refs extends AbstractList implements RefsInterface
 {
+    use Properties\CollectionTrait;
     use Properties\ItemClassTrait;
     use Properties\KeyTrait;
 
     public function __construct($collection = null, $key = null)
     {
-        parent::__construct($collection);
+        $this->setCollection($collection);
         $this->setKey($key);
     }
 
@@ -33,7 +34,7 @@ class Refs extends AbstractList
     public function toArray()
     {
         $data = parent::toArray();
-        $data['kind'] = 'refs';
+        $data['kind'] = static::KIND;
 
         if (!empty($this->_key)) {
             $data['key'] = $this->_key;
@@ -42,14 +43,6 @@ class Refs extends AbstractList
         return $data;
     }
 
-    /**
-     * @param int $limit
-     * @param int $offset
-     * @param boolean $values
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#refs-list
-     */
     public function get($limit = 10, $offset = 0, $values = false)
     {
         // define request options

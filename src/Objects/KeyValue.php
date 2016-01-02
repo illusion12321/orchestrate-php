@@ -81,10 +81,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function toArray()
     {
         $data = [
-            'kind' => self::KIND,
+            'kind' => static::KIND,
             'path' => [
                 'collection' => $this->getCollection(),
-                'kind' => self::KIND,
+                'kind' => static::KIND,
                 'key' => $this->getKey(),
                 'ref' => $this->getRef(),
             ],
@@ -304,8 +304,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         return (new Refs($this->getCollection(true), $this->getKey(true)))
             ->setHttpClient($this->getHttpClient())
             ->setItemClass(new \ReflectionClass($this));
-
-        // this new reflection instance may be cached, just check subclasses scope
     }
 
     public function events($type = null)
@@ -325,9 +323,9 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         ))->setHttpClient($this->getHttpClient());
     }
 
-    public function relations($kind)
+    public function relationships($kind)
     {
-        return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
+        return (new Relationships($this->getCollection(true), $this->getKey(true), $kind))
             ->setHttpClient($this->getHttpClient());
     }
 

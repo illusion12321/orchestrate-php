@@ -177,10 +177,6 @@ if ($item->get()) {
     echo $item->getStatusCode();
     // 404
     // — the HTTP response status code
-    
-    echo $item->getResponseDate();
-    // Wed, 04 Feb 2015 14:41:37 GMT
-    // - the HTTP Date header
 
     echo $item->getOrchestrateRequestId();
     // ec96acd0-ac7b-11e4-8cf6-22000a0d84a1

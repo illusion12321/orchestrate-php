@@ -2,16 +2,15 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
 use JmesPath\Env as JmesPath;
 
-abstract class AbstractItem extends AbstractResponse implements
-\ArrayAccess,
-\Serializable,
+abstract class AbstractItem extends AbstractConnection implements
+ObjectInterface,
 ValueInterface,
-ToJsonInterface
+SearchableInterface
 {
+    use Properties\KindTrait;
     use ToJsonTrait;
 
     /**

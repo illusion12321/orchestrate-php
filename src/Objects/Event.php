@@ -91,10 +91,10 @@ class Event extends AbstractItem implements EventInterface
     public function toArray()
     {
         $data = [
-            'kind' => self::KIND,
+            'kind' => static::KIND,
             'path' => [
                 'collection' => $this->getCollection(),
-                'kind' => self::KIND,
+                'kind' => static::KIND,
                 'key' => $this->getKey(),
                 'type' => $this->getType(),
                 'timestamp' => $this->getTimestamp(),
@@ -229,31 +229,6 @@ class Event extends AbstractItem implements EventInterface
 
         // update values
         if ($this->isSuccess()) {
-            $this->_ref = null;
-            $this->_reftime = null;
-            $this->_ordinalStr = null;
-            $this->_score = null;
-            $this->_distance = null;
-            $this->resetValue();
-        }
-        return $this->isSuccess();
-    }
-
-    public function purge()
-    {
-        // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
-
-        $options = ['query' => ['purge' => 'true']];
-
-        // request
-        $this->request('DELETE', $path, $options);
-
-        // null ref if success, as it will never exist again
-        if ($this->isSuccess()) {
-            $this->_timestamp = null;
-            $this->_ordinal = null;
             $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;

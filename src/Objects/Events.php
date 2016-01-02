@@ -4,8 +4,9 @@ namespace andrefelipe\Orchestrate\Objects;
 use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
-class Events extends AbstractList
+class Events extends AbstractList implements EventsInterface
 {
+    use Properties\CollectionTrait;
     use Properties\EventClassTrait;
     use Properties\KeyTrait;
     use Properties\TypeTrait;
@@ -18,30 +19,9 @@ class Events extends AbstractList
      */
     public function __construct($collection = null, $key = null, $type = null)
     {
-        parent::__construct($collection);
+        $this->setCollection($collection);
         $this->setKey($key);
         $this->setType($type);
-    }
-
-    /**
-     * Constructs an event instance. An Event or a custom class you set with setEventClass().
-     *
-     * @param string $key
-     * @param string $type
-     * @param int $timestamp
-     * @param int $ordinal
-     *
-     * @return EventInterface
-     */
-    public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
-    {
-        return $this->getEventClass()->newInstance()
-            ->setCollection($this->getCollection(true))
-            ->setKey($key)
-            ->setType($type)
-            ->setTimestamp($timestamp)
-            ->setOrdinal($ordinal)
-            ->setHttpClient($this->getHttpClient());
     }
 
     public function reset()
@@ -77,7 +57,7 @@ class Events extends AbstractList
     public function toArray()
     {
         $data = parent::toArray();
-        $data['kind'] = 'events';
+        $data['kind'] = static::KIND;
 
         if ($this->getEventClass()->name !== self::$defaultEventClassName) {
             $data['eventClass'] = $this->getEventClass()->name;
@@ -95,19 +75,6 @@ class Events extends AbstractList
         return $data;
     }
 
-    /**
-     * Gets a list of events in reverse chronological order,
-     * specified by the limit and time range parameters.
-     *
-     * If there are more results available, the pagination URL can be checked with
-     * getNextUrl/getPrevUrl, and queried with nextPage/prevPage methods.
-     *
-     * @param int $limit The limit of items to return. Defaults to 10 and max to 100.
-     * @param TimeRangeBuilder $range
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-list
-     */
     public function get($limit = 10, TimeRangeBuilder $range = null)
     {
         // define request options
@@ -127,16 +94,6 @@ class Events extends AbstractList
         return $this->isSuccess();
     }
 
-    /**
-     * @param string $query
-     * @param string|array $sort
-     * @param string|array $aggregate
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#search-events
-     */
     public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         // define request options

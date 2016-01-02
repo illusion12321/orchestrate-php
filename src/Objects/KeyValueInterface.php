@@ -1,19 +1,15 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
  * Define the KeyValue minimum required interface.
  */
 interface KeyValueInterface extends
-\ArrayAccess,
+ObjectInterface,
 ValueInterface,
-ToJsonInterface,
-ReusableObjectInterface,
-SearchableInterface,
-ConnectionInterface
+SearchableInterface
 {
     const KIND = 'item';
 
@@ -61,11 +57,6 @@ ConnectionInterface
      * @return int
      */
     public function getReftime();
-
-    /**
-     * @return float
-     */
-    public function getDistance();
 
     /**
      * @return boolean
@@ -147,9 +138,9 @@ ConnectionInterface
     public function event($type = null, $timestamp = null, $ordinal = null);
 
     /**
-     * @return Relations
+     * @return Relationships
      */
-    public function relations($kind);
+    public function relationships($kind);
 
     /**
      * @return Relationship

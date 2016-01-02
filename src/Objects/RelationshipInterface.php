@@ -1,18 +1,13 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
-
 /**
  * Define the Relationship minimum required interface.
  */
 interface RelationshipInterface extends
-\ArrayAccess,
+ObjectInterface,
 ValueInterface,
-ToJsonInterface,
-ReusableObjectInterface,
-SearchableInterface,
-ConnectionInterface
+SearchableInterface
 {
     const KIND = 'relationship';
 
@@ -81,11 +76,6 @@ ConnectionInterface
     public function getReftime();
 
     /**
-     * @return float
-     */
-    // public function getDistance();
-
-    /**
      * Get the current relation value.
      *
      * @return boolean Success of operation.
@@ -94,27 +84,49 @@ ConnectionInterface
     public function get();
 
     /**
-     * Set the relation between the two objects.
-     * Optionally Use the third parameter, $both_ways, to set the relation both ways
-     * (2 API calls will be made).
+     * Sets the relation between the two objects. This is an one-way
+     * operation, only the relation from the source will be set,
+     * to go both ways use the 'putBoth' method.
      *
      * @param array $value
      * @param string $ref
-     * @param boolean $both_ways
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function put(array $value = null, $ref = null, $both_ways = false);
+    public function put(array $value = null, $ref = null);
 
     /**
-     * Remove the relation between the two objects.
-     * Use the $both_ways parameter to remove the relation both ways
-     * (2 API calls will be made).
+     * Sets the relation between the two objects, in both ways.
+     * Two API calls will be made in sequence, if the first one succedes then
+     * the second one is made.
+     *
+     * @param array $value
+     * @param string $ref
+     *
+     * @return boolean Success of operation, if both calls were successful.
+     * @link https://orchestrate.io/docs/apiref#graph-put
+     */
+    public function putBoth(array $value = null, $ref = null);
+
+    /**
+     * Remove the relation between the two objects. This is an one-way
+     * operation, only the relation from the source will be removed,
+     * to go both ways use the 'deleteBoth' method.
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
-    public function delete($both_ways = false);
+    public function delete();
+
+    /**
+     * Remove the relation between the two objects, in both ways.
+     * Two API calls will be made in sequence, if the first one succedes then
+     * the second one is made.
+     *
+     * @return boolean Success of operation, if both calls were successful.
+     * @link https://orchestrate.io/docs/apiref#graph-delete
+     */
+    public function deleteBoth();
 
 }

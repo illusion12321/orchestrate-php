@@ -1,8 +1,9 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-class Relations extends AbstractList
+class Relationships extends AbstractList implements RelationshipsInterface
 {
+    use Properties\CollectionTrait; // ??? what?
     use Properties\KeyTrait;
     use Properties\DepthTrait;
 
@@ -13,7 +14,7 @@ class Relations extends AbstractList
      */
     public function __construct($collection = null, $key = null, $kind = null)
     {
-        parent::__construct($collection);
+        $this->setCollection($collection);
         $this->setKey($key);
         $this->setDepth($kind);
     }
@@ -27,7 +28,7 @@ class Relations extends AbstractList
 
     /**
      * @param array $data
-     * @return Relations
+     * @return Relationships
      */
     public function init(array $data)
     {
@@ -50,7 +51,7 @@ class Relations extends AbstractList
     public function toArray()
     {
         $data = parent::toArray();
-        $data['kind'] = 'relations';
+        $data['kind'] = static::KIND;
 
         if (!empty($this->_key)) {
             $data['key'] = $this->_key;
@@ -62,13 +63,6 @@ class Relations extends AbstractList
         return $data;
     }
 
-    /**
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#graph-get
-     */
     public function get($limit = 10, $offset = 0)
     {
         // define request options
@@ -99,6 +93,7 @@ class Relations extends AbstractList
             $kind = $itemValues['path']['kind'];
 
             if ($kind === 'item') {
+                // TODO wrong!!! list Relationships objects will return Relationship itens right!!!???
                 $item = (new KeyValue())->init($itemValues);
 
                 if ($client = $this->getHttpClient()) {

@@ -1,42 +1,9 @@
 # TODO and IDEAS   
 
-ver se colocar o distance no Event e Relation? provavelmente entraria no SearchableInterface
-
-review.. but probably add getKind to all objects (returning the static value) to lock down the method naming
-
-rever o timestamp no Relationship
-
-rever a classe Relations .. para fornecer o list -- renomear Relationship
-
-change putRelation to putRelationship on client?
-
-ver o getRelationshipClass setRelationshipClass
-
-- Upgrade Relation class with value support. As well as RelationInterface and Collection setRelationClass. Probably rename to Relationship to match Orchestrate.
-
-- Review the deprecation of Events and Relations?
-
-- Implement Bulk operations support 
-
 - Maybe add an 'newInstance' (or clone) method to each Object, to make it easier to create a empty instance to work on. Probably it should come pre-set with the same name/collection.
 
-- On Application object, add method to setCollectionClass, and allow to set many, by collection name.
-
-- getReftime could automatically load the reftime if not provided?
-
-- Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
-
-- Maybe change 'patchMerge' on KeyValue to just 'merge'
-
-- Study the removal of the 'value' parameter from put and post, to favor the object syntax. Review the use cases, considering a ODM that would use a 'save' method
-
 - Study the removal of the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
-
-- Maybe move the Properties to the Common folder, to better organize, maybe go ahead and do that on some interfaces too
-
-- Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
-- Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
-
+§
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder)) or better, use collection->search('query*', $options), where $options = (new Orchestrate/Query/SearchOptions())->limit(10)->sort('title')
 ---Do not use the object itself to build the query chain, it's confusing---
 
@@ -47,6 +14,23 @@ ver o getRelationshipClass setRelationshipClass
 . application->collection('my_collection')->item('my_item')
 . application->item('my_collection', 'my_item')
 . Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
+
+- Implement Bulk operations support 
+
+- On Application object, add method to setCollectionClass, and allow to set many, by collection name.
+
+- getReftime could automatically load the reftime if not provided? only if required, to not make API calls without the user knowing
+
+- Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
+
+- Maybe change 'patchMerge' on KeyValue to just 'merge'
+
+- Study the removal of the 'value' parameter from put and post, to favor the object syntax. Review the use cases, considering a ODM that would use a 'save' method
+
+- Maybe move the Properties to the Common folder, to better organize, maybe go ahead and do that on some interfaces too
+
+- Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
+- Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
 
 - Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
 

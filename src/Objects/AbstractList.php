@@ -2,21 +2,15 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
 use GuzzleHttp\ClientInterface;
 use JmesPath\Env as JmesPath;
 
-abstract class AbstractList extends AbstractResponse implements
-\ArrayAccess,
-\IteratorAggregate,
-\Countable,
-\Serializable,
+abstract class AbstractList extends AbstractConnection implements
 ListInterface,
-ToJsonInterface,
-ReusableObjectInterface
+ObjectInterface
 {
-    use Properties\CollectionTrait;
+    use Properties\KindTrait;
     use ToJsonTrait;
 
     /**
@@ -39,13 +33,7 @@ ReusableObjectInterface
      */
     protected $_prevUrl = '';
 
-    /**
-     * @param string $collection
-     */
-    public function __construct($collection = null)
-    {
-        $this->setCollection($collection);
-    }
+    public function __construct() {}
 
     /**
      * Set the client which this object, and all of its children,

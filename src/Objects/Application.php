@@ -8,7 +8,7 @@ use andrefelipe\Orchestrate\Common\ObjectArray;
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Application extends AbstractList
+class Application extends AbstractList implements ApplicationInterface
 {
     use Properties\AggregatesTrait;
 
@@ -29,10 +29,6 @@ class Application extends AbstractList
         }
     }
 
-    /**
-     * @return boolean
-     * @link https://orchestrate.io/docs/apiref#authentication-ping
-     */
     public function ping()
     {
         return $this->getHttpClient()->request('HEAD')->getStatusCode() === 200;
@@ -50,9 +46,6 @@ class Application extends AbstractList
             ->setHttpClient($this->getHttpClient());
     }
 
-    /**
-     * @return Collection
-     */
     public function collection($name)
     {
         return (new Collection())
@@ -82,7 +75,7 @@ class Application extends AbstractList
     public function toArray()
     {
         $data = parent::toArray();
-        $data['kind'] = 'application';
+        $data['kind'] = static::KIND;
 
         if ($this->_aggregates) {
             $data['aggregates'] = $this->_aggregates->toArray();
@@ -91,28 +84,6 @@ class Application extends AbstractList
         return $data;
     }
 
-    /**
-     * Deletes a collection. Warning this will permanently erase all data within
-     * this collection and cannot be reversed!
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#collections-delete
-     */
-    public function deleteCollection($collection)
-    {
-        return $this->collection($name)->delete($name);
-    }
-
-    /**
-     * @param string $query
-     * @param string|array $sort
-     * @param string|array $aggregate
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#search-root
-     */
     public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         // define request options

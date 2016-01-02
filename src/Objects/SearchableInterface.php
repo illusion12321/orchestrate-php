@@ -2,7 +2,7 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 /**
- * Defines an object as being searchable. Object acn be part of search results.
+ * Defines an object as being searchable. Object can be part of search results.
  */
 interface SearchableInterface
 {
@@ -10,4 +10,9 @@ interface SearchableInterface
      * @return float
      */
     public function getScore();
+
+    /**
+     * @return float
+     */
+    public function getDistance();
 }

@@ -92,9 +92,9 @@ class Relationship extends AbstractItem implements RelationshipInterface
     public function toArray()
     {
         $data = [
-            'kind' => self::KIND,
+            'kind' => static::KIND,
             'path' => [
-                'kind' => self::KIND,
+                'kind' => static::KIND,
                 'source' => null,
                 'destination' => null,
                 'relation' => $this->getRelation(),
@@ -162,7 +162,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
         return $this->isSuccess();
     }
 
-    public function put(array $value = null, $ref = null, $both_ways = false)
+    public function put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
 
@@ -188,34 +188,38 @@ class Relationship extends AbstractItem implements RelationshipInterface
         // request
         $this->request('PUT', $path, $options);
 
+        // set values
         if ($this->isSuccess()) {
-
-            // set values
             $this->setRefFromETag();
 
             if ($value !== null) {
                 $this->resetValue();
                 $this->setValue($newValue);
             }
-
-            // put both ways
-            if ($both_ways) {
-                $path = $this->formRelationPath(false, true);
-                $this->request('PUT', $path, $options);
-            }
         }
         return $this->isSuccess();
     }
 
-    public function delete($both_ways = false)
+    public function putBoth(array $value = null, $ref = null)
+    {
+        $success = $this->put($value, $ref);
+
+        if ($success) {
+            $path = $this->formRelationPath(false, true);
+            $value = parent::toArray();
+            $options = ['json' => empty($value) ? null : $value];
+
+            $this->request('PUT', $path, $options);
+        }
+
+        return $this->isSuccess();
+    }
+
+    public function delete()
     {
         $options = ['query' => ['purge' => 'true']];
 
         $this->request('DELETE', $this->formRelationPath(), $options);
-
-        if ($both_ways && $this->isSuccess()) {
-            $this->request('DELETE', $this->formRelationPath(false, true), $options);
-        }
 
         if ($this->isSuccess()) {
             $this->_score = null;
@@ -223,6 +227,19 @@ class Relationship extends AbstractItem implements RelationshipInterface
             $this->_ref = null;
             $this->_reftime = null;
             $this->resetValue();
+        }
+
+        return $this->isSuccess();
+    }
+
+    public function deleteBoth()
+    {
+        $success = $this->delete();
+
+        if ($success) {
+            $path = $this->formRelationPath(false, true);
+            $options = ['query' => ['purge' => 'true']];
+            $this->request('DELETE', $path, $options);
         }
 
         return $this->isSuccess();

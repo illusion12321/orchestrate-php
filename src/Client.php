@@ -1,25 +1,25 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\AbstractConnection;
 use andrefelipe\Orchestrate\Objects\Application;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\KeyValue;
 use andrefelipe\Orchestrate\Objects\Refs;
-use andrefelipe\Orchestrate\Objects\Relations;
 use andrefelipe\Orchestrate\Objects\Relationship;
+use andrefelipe\Orchestrate\Objects\Relationships;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
+use GuzzleHttp\ClientInterface;
 
 /**
  * Client interface for Orchestrate API.
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Client extends AbstractConnection
+class Client
 {
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
@@ -36,6 +36,27 @@ class Client extends AbstractConnection
             $client = default_http_client($apiKey, $host, $version);
             $this->setHttpClient($client);
         }
+    }
+
+    /**
+     * @var ClientInterface
+     */
+    private $_httpClient;
+
+    public function getHttpClient()
+    {
+        if (!$this->_httpClient) {
+            $this->_httpClient = default_http_client();
+        }
+
+        return $this->_httpClient;
+    }
+
+    public function setHttpClient(ClientInterface $httpClient)
+    {
+        $this->_httpClient = $httpClient;
+
+        return $this;
     }
 
     /**
@@ -521,7 +542,7 @@ class Client extends AbstractConnection
      * @param int $limit
      * @param int $offset
      *
-     * @return Relations
+     * @return Relationships
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
     public function listRelations(
@@ -531,7 +552,7 @@ class Client extends AbstractConnection
         $limit = 10,
         $offset = 0
     ) {
-        $list = (new Relations($collection, $key, $kind))
+        $list = (new Relationships($collection, $key, $kind))
             ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $offset);

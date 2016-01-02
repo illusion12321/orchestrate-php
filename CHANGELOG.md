@@ -1,8 +1,13 @@
 # CHANGELOG
 
 ## HEAD
+- Upgraded our Relationship class with full support for Value body.
+- Renamed 'Relation(s)' classes to 'Relationship(s)' to match Orchestrate.
+- Two-way relations are made through proper 'putBoth' and 'deleteBoth' methods.
+- Removed 'purge' method from Event to simplify, please use 'delete' instead.
 - Added 'default_http_client' function to simplify the Guzzle client instantiation.
-- Internal improvements.
+- Removed getResponseDate() method.
+- Several internal improvements.
 
 ## 0.15.0 - 2015-12-19
 - Introduced the Application object to provide Root Search.
