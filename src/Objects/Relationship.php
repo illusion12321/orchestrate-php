@@ -7,8 +7,9 @@ class Relationship extends AbstractItem implements RelationshipInterface
     use Properties\RelationshipTrait;
     use Properties\RefTrait;
     use Properties\ReftimeTrait;
-    use Properties\TimestampTrait; // TODO why? again?
     use Properties\ScoreTrait;
+    use Properties\DistanceTrait;
+    use Properties\ItemClassTrait;
 
     /**
      * @param KeyValueInterface $source
@@ -39,8 +40,8 @@ class Relationship extends AbstractItem implements RelationshipInterface
         $this->_destination = null;
         $this->_ref = null;
         $this->_reftime = null;
-        $this->_timestamp = null;
         $this->_score = null;
+        $this->_distance = null;
         $this->resetValue();
     }
 
@@ -53,11 +54,20 @@ class Relationship extends AbstractItem implements RelationshipInterface
             }
 
             foreach ($data as $key => $value) {
-
                 if ($key === 'source') {
-                    $this->setSource((new KeyValue())->init($value));
+                    if (is_array($value)) {
+                        $item = $this->getItemClass()->newInstance()->init($value);
+                        $this->setSource($item);
+                    } elseif ($value instanceof KeyValueInterface) {
+                        $this->setSource($value);
+                    }
                 } elseif ($key === 'destination') {
-                    $this->setDestination((new KeyValue())->init($value));
+                    if (is_array($value)) {
+                        $item = $this->getItemClass()->newInstance()->init($value);
+                        $this->setDestination($item);
+                    } elseif ($value instanceof KeyValueInterface) {
+                        $this->setDestination($value);
+                    }
                 } elseif ($key === 'relation') {
                     $this->setRelation($value);
                 } elseif ($key === 'value') {
@@ -66,10 +76,10 @@ class Relationship extends AbstractItem implements RelationshipInterface
                     $this->setRef($value);
                 } elseif ($key === 'reftime') {
                     $this->setReftime($value);
-                } elseif ($key === 'timestamp') {
-                    $this->setTimestamp($value);
                 } elseif ($key === 'score') {
                     $this->setScore($value);
+                } elseif ($key === 'distance') {
+                    $this->setDistance($value);
                 }
             }
         }
@@ -82,7 +92,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
     public function toArray()
     {
         $data = [
-
+            'kind' => self::KIND,
             'path' => [
                 'kind' => self::KIND,
                 'source' => null,
@@ -90,9 +100,12 @@ class Relationship extends AbstractItem implements RelationshipInterface
                 'relation' => $this->getRelation(),
                 'ref' => $this->getRef(),
             ],
-            'kind' => self::KIND,
-            // 'timestamp' => $this->getTimestamp(), //TODO Why again?
         ];
+
+        $reftime = $this->getReftime();
+        if (!empty($reftime)) {
+            $data['path']['reftime'] = $reftime;
+        }
 
         $source = $this->getSource();
         if ($source) {
@@ -117,14 +130,12 @@ class Relationship extends AbstractItem implements RelationshipInterface
             $data['value'] = $value;
         }
 
+        // search properties
         if ($this->_score !== null) {
             $data['score'] = $this->_score;
         }
-
-        $reftime = $this->getReftime();
-        if (!empty($reftime)) {
-            $data['path']['reftime'] = $reftime;
-            $data['reftime'] = $reftime;
+        if ($this->_distance !== null) {
+            $data['distance'] = $this->_distance;
         }
 
         return $data;
@@ -208,7 +219,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
 
         if ($this->isSuccess()) {
             $this->_score = null;
-            // $this->_distance = null;
+            $this->_distance = null;
             $this->_ref = null;
             $this->_reftime = null;
             $this->resetValue();

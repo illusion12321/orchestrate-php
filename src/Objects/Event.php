@@ -5,12 +5,13 @@ class Event extends AbstractItem implements EventInterface
 {
     use Properties\CollectionTrait;
     use Properties\KeyTrait;
-    use Properties\ReftimeTrait;
     use Properties\RefTrait;
-    use Properties\TimestampTrait;
+    use Properties\ReftimeTrait;
     use Properties\TypeTrait;
-    use Properties\ScoreTrait;
+    use Properties\TimestampTrait;
     use Properties\OrdinalTrait;
+    use Properties\ScoreTrait;
+    use Properties\DistanceTrait;
 
     /**
      * @param string $collection
@@ -45,6 +46,7 @@ class Event extends AbstractItem implements EventInterface
         $this->_ref = null;
         $this->_reftime = null;
         $this->_score = null;
+        $this->_distance = null;
         $this->resetValue();
     }
 
@@ -74,10 +76,12 @@ class Event extends AbstractItem implements EventInterface
                     $this->setReftime($value);
                 } elseif ($key === 'ordinal_str') {
                     $this->setOrdinalStr($value);
-                } elseif ($key === 'score') {
-                    $this->setScore($value);
                 } elseif ($key === 'value') {
                     $this->setValue((array) $value);
+                } elseif ($key === 'score') {
+                    $this->setScore($value);
+                } elseif ($key === 'distance') {
+                    $this->setDistance($value);
                 }
             }
         }
@@ -105,8 +109,12 @@ class Event extends AbstractItem implements EventInterface
             'reftime' => $this->getReftime(),
         ];
 
+        // search properties
         if ($this->_score !== null) {
             $data['score'] = $this->_score;
+        }
+        if ($this->_distance !== null) {
+            $data['distance'] = $this->_distance;
         }
 
         return $data;
@@ -225,6 +233,7 @@ class Event extends AbstractItem implements EventInterface
             $this->_reftime = null;
             $this->_ordinalStr = null;
             $this->_score = null;
+            $this->_distance = null;
             $this->resetValue();
         }
         return $this->isSuccess();
@@ -249,6 +258,7 @@ class Event extends AbstractItem implements EventInterface
             $this->_reftime = null;
             $this->_ordinalStr = null;
             $this->_score = null;
+            $this->_distance = null;
             $this->resetValue();
         }
         return $this->isSuccess();

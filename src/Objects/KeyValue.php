@@ -7,8 +7,8 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 {
     use Properties\CollectionTrait;
     use Properties\KeyTrait;
-    use Properties\ReftimeTrait;
     use Properties\RefTrait;
+    use Properties\ReftimeTrait;
     use Properties\ScoreTrait;
     use Properties\DistanceTrait;
 
@@ -62,14 +62,14 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                     $this->setKey($value);
                 } elseif ($key === 'ref') {
                     $this->setRef($value);
+                } elseif ($key === 'reftime') {
+                    $this->setReftime($value);
                 } elseif ($key === 'value') {
                     $this->setValue((array) $value);
                 } elseif ($key === 'score') {
                     $this->setScore($value);
                 } elseif ($key === 'distance') {
                     $this->setDistance($value);
-                } elseif ($key === 'reftime') {
-                    $this->setReftime($value);
                 } elseif ($key === 'tombstone') {
                     $this->_tombstone = (boolean) $value;
                 }
@@ -99,10 +99,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             $data['path']['tombstone'] = $this->_tombstone;
         }
 
+        // search properties
         if ($this->_score !== null) {
             $data['score'] = $this->_score;
         }
-
         if ($this->_distance !== null) {
             $data['distance'] = $this->_distance;
         }
