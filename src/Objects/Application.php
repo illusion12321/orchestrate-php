@@ -2,7 +2,6 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate as Orchestrate;
-use andrefelipe\Orchestrate\Common\ObjectArray;
 
 /**
  *
@@ -10,8 +9,6 @@ use andrefelipe\Orchestrate\Common\ObjectArray;
  */
 class Application extends AbstractList implements ApplicationInterface
 {
-    use Properties\AggregatesTrait;
-
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
      * Otherwise it will create one when required.
@@ -53,33 +50,10 @@ class Application extends AbstractList implements ApplicationInterface
             ->setHttpClient($this->getHttpClient());
     }
 
-    public function reset()
-    {
-        parent::reset();
-        $this->_aggregates = null;
-    }
-
-    public function init(array $data)
-    {
-        if (!empty($data)) {
-
-            if (!empty($data['aggregates'])) {
-                $this->_aggregates = new ObjectArray($data['aggregates']);
-            }
-
-            parent::init($data);
-        }
-        return $this;
-    }
-
     public function toArray()
     {
         $data = parent::toArray();
         $data['kind'] = static::KIND;
-
-        if ($this->_aggregates) {
-            $data['aggregates'] = $this->_aggregates->toArray();
-        }
 
         return $data;
     }
@@ -111,23 +85,6 @@ class Application extends AbstractList implements ApplicationInterface
     }
 
     /**
-     * Adds aggregates support.
-     */
-    protected function setResponseValues()
-    {
-        parent::setResponseValues();
-
-        if ($this->isSuccess()) {
-            $body = $this->getBody();
-            if (!empty($body['aggregates'])) {
-                $this->_aggregates = new ObjectArray($body['aggregates']);
-            } else {
-                $this->_aggregates = null;
-            }
-        }
-    }
-
-    /**
      * @param array $itemValues
      */
     protected function createInstance(array $itemValues)
@@ -135,13 +92,13 @@ class Application extends AbstractList implements ApplicationInterface
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === 'item') {
+            if ($kind === KeyValue::KIND) {
                 $item = (new KeyValue())->init($itemValues);
 
-            } elseif ($kind === 'event') {
+            } elseif ($kind === Event::KIND) {
                 $item = (new Event())->init($itemValues);
 
-            } elseif ($kind === 'relationship') {
+            } elseif ($kind === Relationship::KIND) {
                 $item = (new Relationship())->init($itemValues);
 
             } else {

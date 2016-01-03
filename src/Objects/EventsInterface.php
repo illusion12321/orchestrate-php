@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
+
 /**
  * Define the Events minimum required interface.
  */

@@ -1,15 +1,13 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 
-class Events extends AbstractList implements EventsInterface
+class Events extends AbstractSearchList implements EventsInterface
 {
     use Properties\CollectionTrait;
     use Properties\KeyTrait;
     use Properties\TypeTrait;
-    use Properties\AggregatesTrait;
     use Properties\EventClassTrait;
 
     /**
@@ -30,7 +28,6 @@ class Events extends AbstractList implements EventsInterface
         $this->_collection = null;
         $this->_key = null;
         $this->_type = null;
-        $this->_aggregates = null;
     }
 
     public function init(array $data)
@@ -49,9 +46,6 @@ class Events extends AbstractList implements EventsInterface
             if (isset($data['type'])) {
                 $this->setType($data['type']);
             }
-            if (!empty($data['aggregates'])) {
-                $this->_aggregates = new ObjectArray($data['aggregates']);
-            }
 
             parent::init($data);
         }
@@ -68,9 +62,6 @@ class Events extends AbstractList implements EventsInterface
 
         if ($this->getEventClass()->name !== self::$defaultEventClassName) {
             $data['eventClass'] = $this->getEventClass()->name;
-        }
-        if ($this->_aggregates) {
-            $data['aggregates'] = $this->_aggregates->toArray();
         }
 
         return $data;
@@ -133,23 +124,6 @@ class Events extends AbstractList implements EventsInterface
     }
 
     /**
-     * Adds aggregates support.
-     */
-    protected function setResponseValues()
-    {
-        parent::setResponseValues();
-
-        if ($this->isSuccess()) {
-            $body = $this->getBody();
-            if (!empty($body['aggregates'])) {
-                $this->_aggregates = new ObjectArray($body['aggregates']);
-            } else {
-                $this->_aggregates = null;
-            }
-        }
-    }
-
-    /**
      * @param array $itemValues
      */
     protected function createInstance(array $itemValues)
@@ -157,7 +131,7 @@ class Events extends AbstractList implements EventsInterface
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === 'event') {
+            if ($kind === Event::KIND) {
                 $class = $this->getEventClass();
 
             } else {

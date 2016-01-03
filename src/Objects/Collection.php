@@ -1,19 +1,18 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 
 /**
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Collection extends AbstractList implements CollectionInterface
+class Collection extends AbstractSearchList implements CollectionInterface
 {
     use Properties\CollectionTrait;
-    use Properties\AggregatesTrait;
-    use Properties\EventClassTrait;
     use Properties\ItemClassTrait;
+    use Properties\EventClassTrait;
+    use Properties\RelationshipClassTrait;
 
     /**
      * @param string $collection
@@ -99,7 +98,6 @@ class Collection extends AbstractList implements CollectionInterface
     {
         parent::reset();
         $this->_collection = null;
-        $this->_aggregates = null;
     }
 
     public function init(array $data)
@@ -112,11 +110,11 @@ class Collection extends AbstractList implements CollectionInterface
             if (isset($data['eventClass'])) {
                 $this->setEventClass($data['eventClass']);
             }
+            if (isset($data['relationshipClass'])) {
+                $this->setRelationshipClass($data['relationshipClass']);
+            }
             if (isset($data['collection'])) {
                 $this->setCollection($data['collection']);
-            }
-            if (!empty($data['aggregates'])) {
-                $this->_aggregates = new ObjectArray($data['aggregates']);
             }
 
             parent::init($data);
@@ -136,8 +134,8 @@ class Collection extends AbstractList implements CollectionInterface
         if ($this->getEventClass()->name !== self::$defaultEventClassName) {
             $data['eventClass'] = $this->getEventClass()->name;
         }
-        if ($this->_aggregates) {
-            $data['aggregates'] = $this->_aggregates->toArray();
+        if ($this->getRelationshipClass()->name !== self::$defaultRelationshipClassName) {
+            $data['relationshipClass'] = $this->getRelationshipClass()->name;
         }
 
         return $data;
@@ -200,23 +198,6 @@ class Collection extends AbstractList implements CollectionInterface
     }
 
     /**
-     * Adds aggregates support.
-     */
-    protected function setResponseValues()
-    {
-        parent::setResponseValues();
-
-        if ($this->isSuccess()) {
-            $body = $this->getBody();
-            if (!empty($body['aggregates'])) {
-                $this->_aggregates = new ObjectArray($body['aggregates']);
-            } else {
-                $this->_aggregates = null;
-            }
-        }
-    }
-
-    /**
      * @param array $itemValues
      */
     protected function createInstance(array $itemValues)
@@ -224,20 +205,20 @@ class Collection extends AbstractList implements CollectionInterface
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === 'item') {
+            if ($kind === KeyValue::KIND) {
                 $class = $this->getItemClass();
-                $item = $class->newInstance()->init($itemValues);
 
-            } elseif ($kind === 'event') {
+            } elseif ($kind === Event::KIND) {
                 $class = $this->getEventClass();
-                $item = $class->newInstance()->init($itemValues);
 
-            } elseif ($kind === 'relationship') {
-                $item = (new Relationship())->init($itemValues);
+            } elseif ($kind === Relationship::KIND) {
+                $class = $this->getRelationshipClass();
 
             } else {
                 return null;
             }
+
+            $item = $class->newInstance()->init($itemValues);
 
             if ($client = $this->getHttpClient()) {
                 $item->setHttpClient($client);

@@ -81,7 +81,7 @@ class Refs extends AbstractList implements RefsInterface
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === 'item') {
+            if ($kind === KeyValue::KIND) {
                 $class = $this->getItemClass();
 
             } else {
