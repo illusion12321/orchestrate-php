@@ -121,6 +121,8 @@ class Application extends AbstractList implements ApplicationInterface
             $body = $this->getBody();
             if (!empty($body['aggregates'])) {
                 $this->_aggregates = new ObjectArray($body['aggregates']);
+            } else {
+                $this->_aggregates = null;
             }
         }
     }

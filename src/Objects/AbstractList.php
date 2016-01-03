@@ -105,7 +105,6 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
     public function reset()
     {
         parent::reset();
-        $this->_collection = null;
         $this->_totalCount = null;
         $this->_nextUrl = '';
         $this->_prevUrl = '';
@@ -131,13 +130,6 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
                         [$this, 'createInstance'],
                         $value
                     ));
-
-                    // set Collection name if not already
-                    if (!$this->_collection && isset($this->_results[0])
-                        && method_exists($this->_results[0], 'getCollection')
-                    ) {
-                        $this->setCollection($this->_results[0]->getCollection());
-                    }
                 }
             }
         }

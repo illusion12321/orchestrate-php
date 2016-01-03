@@ -4,8 +4,8 @@ namespace andrefelipe\Orchestrate\Objects;
 class Refs extends AbstractList implements RefsInterface
 {
     use Properties\CollectionTrait;
-    use Properties\ItemClassTrait;
     use Properties\KeyTrait;
+    use Properties\ItemClassTrait;
 
     public function __construct($collection = null, $key = null)
     {
@@ -16,17 +16,25 @@ class Refs extends AbstractList implements RefsInterface
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_key = null;
     }
 
     public function init(array $data)
     {
         if (!empty($data)) {
-            parent::init($data);
 
+            if (isset($data['itemClass'])) {
+                $this->setItemClass($data['itemClass']);
+            }
+            if (isset($data['collection'])) {
+                $this->setCollection($data['collection']);
+            }
             if (isset($data['key'])) {
                 $this->setKey($data['key']);
             }
+
+            parent::init($data);
         }
         return $this;
     }
@@ -35,10 +43,8 @@ class Refs extends AbstractList implements RefsInterface
     {
         $data = parent::toArray();
         $data['kind'] = static::KIND;
-
-        if (!empty($this->_key)) {
-            $data['key'] = $this->_key;
-        }
+        $data['collection'] = $this->_collection;
+        $data['key'] = $this->_key;
 
         return $data;
     }

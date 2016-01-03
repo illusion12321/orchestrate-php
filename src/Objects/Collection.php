@@ -11,9 +11,9 @@ use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 class Collection extends AbstractList implements CollectionInterface
 {
     use Properties\CollectionTrait;
+    use Properties\AggregatesTrait;
     use Properties\EventClassTrait;
     use Properties\ItemClassTrait;
-    use Properties\AggregatesTrait;
 
     /**
      * @param string $collection
@@ -98,6 +98,7 @@ class Collection extends AbstractList implements CollectionInterface
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_aggregates = null;
     }
 
@@ -105,11 +106,14 @@ class Collection extends AbstractList implements CollectionInterface
     {
         if (!empty($data)) {
 
-            if (!empty($data['itemClass'])) {
+            if (isset($data['itemClass'])) {
                 $this->setItemClass($data['itemClass']);
             }
-            if (!empty($data['eventClass'])) {
+            if (isset($data['eventClass'])) {
                 $this->setEventClass($data['eventClass']);
+            }
+            if (isset($data['collection'])) {
+                $this->setCollection($data['collection']);
             }
             if (!empty($data['aggregates'])) {
                 $this->_aggregates = new ObjectArray($data['aggregates']);
@@ -124,6 +128,7 @@ class Collection extends AbstractList implements CollectionInterface
     {
         $data = parent::toArray();
         $data['kind'] = static::KIND;
+        $data['collection'] = $this->_collection;
 
         if ($this->getItemClass()->name !== self::$defaultItemClassName) {
             $data['itemClass'] = $this->getItemClass()->name;
@@ -205,6 +210,8 @@ class Collection extends AbstractList implements CollectionInterface
             $body = $this->getBody();
             if (!empty($body['aggregates'])) {
                 $this->_aggregates = new ObjectArray($body['aggregates']);
+            } else {
+                $this->_aggregates = null;
             }
         }
     }

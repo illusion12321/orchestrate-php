@@ -7,10 +7,10 @@ use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
 class Events extends AbstractList implements EventsInterface
 {
     use Properties\CollectionTrait;
-    use Properties\EventClassTrait;
     use Properties\KeyTrait;
     use Properties\TypeTrait;
     use Properties\AggregatesTrait;
+    use Properties\EventClassTrait;
 
     /**
      * @param string $collection
@@ -27,6 +27,7 @@ class Events extends AbstractList implements EventsInterface
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_key = null;
         $this->_type = null;
         $this->_aggregates = null;
@@ -36,8 +37,11 @@ class Events extends AbstractList implements EventsInterface
     {
         if (!empty($data)) {
 
-            if (!empty($data['eventClass'])) {
+            if (isset($data['eventClass'])) {
                 $this->setEventClass($data['eventClass']);
+            }
+            if (isset($data['collection'])) {
+                $this->setCollection($data['collection']);
             }
             if (isset($data['key'])) {
                 $this->setKey($data['key']);
@@ -58,15 +62,12 @@ class Events extends AbstractList implements EventsInterface
     {
         $data = parent::toArray();
         $data['kind'] = static::KIND;
+        $data['collection'] = $this->_collection;
+        $data['key'] = $this->_key;
+        $data['type'] = $this->_type;
 
         if ($this->getEventClass()->name !== self::$defaultEventClassName) {
             $data['eventClass'] = $this->getEventClass()->name;
-        }
-        if (!empty($this->_key)) {
-            $data['key'] = $this->_key;
-        }
-        if (!empty($this->_type)) {
-            $data['type'] = $this->_type;
         }
         if ($this->_aggregates) {
             $data['aggregates'] = $this->_aggregates->toArray();
@@ -142,6 +143,8 @@ class Events extends AbstractList implements EventsInterface
             $body = $this->getBody();
             if (!empty($body['aggregates'])) {
                 $this->_aggregates = new ObjectArray($body['aggregates']);
+            } else {
+                $this->_aggregates = null;
             }
         }
     }
