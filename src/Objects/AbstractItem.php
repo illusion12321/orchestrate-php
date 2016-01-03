@@ -5,10 +5,7 @@ use andrefelipe\Orchestrate\Common\ObjectArray;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
 use JmesPath\Env as JmesPath;
 
-abstract class AbstractItem extends AbstractConnection implements
-ObjectInterface,
-ValueInterface,
-SearchableInterface
+abstract class AbstractItem extends AbstractConnection implements ItemInterface
 {
     use Properties\KindTrait;
     use ToJsonTrait;
@@ -137,36 +134,22 @@ SearchableInterface
         return isset($this->{$offset});
     }
 
-    /**
-     * @return ObjectArray
-     */
     public function getValue()
     {
         return (new ObjectArray($this->getMappedValues()))->merge($this);
     }
 
-    /**
-     * @return array
-     */
     public function toArray()
     {
         return array_merge($this->getMappedValues(true), ObjectArray::objectToArray($this));
     }
 
-    /**
-     * @param string $expression
-     * @return ObjectArray|mixed|null
-     */
     public function extract($expression)
     {
         $result = JmesPath::search($expression, $this->toArray());
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 
-    /**
-     * @param string $expression
-     * @return ObjectArray|mixed|null
-     */
     public function extractValue($expression)
     {
         $valueArray = array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
@@ -174,10 +157,6 @@ SearchableInterface
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 
-    /**
-     * @param array $values
-     * @return AbstractItem
-     */
     public function setValue(array $values)
     {
         if (!empty($values)) {
@@ -188,19 +167,12 @@ SearchableInterface
         return $this;
     }
 
-    /**
-     * @param ValueInterface $item
-     * @return AbstractItem
-     */
-    public function mergeValue(ValueInterface $item)
+    public function mergeValue(ItemInterface $item)
     {
         ObjectArray::mergeObject($item->getValue(), $this);
         return $this;
     }
 
-    /**
-     * @return AbstractItem
-     */
     public function resetValue()
     {
         foreach (ObjectArray::getPublicProperties($this) as $key) {

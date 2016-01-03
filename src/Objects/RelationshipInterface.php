@@ -4,10 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  * Define the Relationship minimum required interface.
  */
-interface RelationshipInterface extends
-ObjectInterface,
-ValueInterface,
-SearchableInterface
+interface RelationshipInterface extends ItemInterface
 {
     const KIND = 'relationship';
 

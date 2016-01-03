@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  * Define the Relationship list minimum required interface.
  */
-interface RelationshipsInterface extends ListInterface, ObjectInterface
+interface RelationshipsInterface extends ListInterface
 {
     const KIND = 'relationships';
 

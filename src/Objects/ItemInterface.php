@@ -2,9 +2,14 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 /**
+ * Defines the basis for all the singular items (KeyValue, Event and Relationship):
+ * - Value storage: They have a value body to store any ammount of properties.
+ * - Accessible: Value can be easily be managed with get/set/merge/resetValue,
+ * and through JMESPath with extractValue.
+ * - Searchable: They can be part of search results.
  *
  */
-interface ValueInterface
+interface ItemInterface extends ObjectInterface
 {
     /**
      * Get item Value.
@@ -23,9 +28,9 @@ interface ValueInterface
     /**
      * Recursively merge one item Value into another.
      *
-     * @param ValueInterface $object
+     * @param ItemInterface $object
      */
-    public function mergeValue(ValueInterface $object);
+    public function mergeValue(ItemInterface $object);
 
     /**
      * Sets all public properties to null.
@@ -39,4 +44,14 @@ interface ValueInterface
      * @return ObjectArray|mixed|null
      */
     public function extractValue($expression);
+
+    /**
+     * @return float
+     */
+    public function getScore();
+
+    /**
+     * @return float
+     */
+    public function getDistance();
 }

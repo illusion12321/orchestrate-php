@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  * Define the Refs minimum required interface.
  */
-interface RefsInterface extends ListInterface, ObjectInterface
+interface RefsInterface extends ListInterface
 {
     const KIND = 'refs';
 

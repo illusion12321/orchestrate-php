@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  * Define the Application minimum required interface.
  */
-interface ApplicationInterface extends ListInterface, ObjectInterface
+interface ApplicationInterface extends ListInterface
 {
     const KIND = 'application';
 

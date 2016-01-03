@@ -9,15 +9,11 @@
 
 - Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder! I.E. collection->search('query*', ['limit' => 10, 'sort' => 'title'])
 
-- MAYBE go ahead and add the collection->my_item map.. that loads the item with get already? OK, but should implement an internal cache right?
-. application->my_collection->my_item
-. application->collection('my_collection')->item('my_item')
-. application->item('my_collection', 'my_item')
-. Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
+- Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
 
 - Implement Bulk operations support 
 
-- On Application object, add method to setCollectionClass, and allow to set many, by collection name.
+- On Application object, add method to setCollectionClass, and allow to set many, by collection name?
 
 - getReftime could automatically load the reftime if not provided? only if required, to not make API calls without the user knowing
 
@@ -25,20 +21,13 @@
 
 - Maybe change 'patchMerge' on KeyValue to just 'merge'
 
-- Study the removal of the 'value' parameter from put and post, to favor the object syntax. Review the use cases, considering a ODM that would use a 'save' method
-
-- Maybe move the Properties to the Common folder, to better organize, maybe go ahead and do that on some interfaces too
-
 - Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
-- Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
 
 - Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
 
 - Consider BLOB storage support?
 
-- Implement more common interfaces, and general organization of the classes / folders (create an AbstractCollection, to gather all common parts of searchable lists: collection/events)
-
-- could have find/search/findFirst method on KeyValue to search the collection and load the first match.
+- could have find/search/findFirst method on KeyValue to search the collection and load the first match?
 
 - Collection could follow too? findFirst?
 

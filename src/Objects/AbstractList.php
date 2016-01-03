@@ -6,9 +6,7 @@ use andrefelipe\Orchestrate\Common\ToJsonTrait;
 use GuzzleHttp\ClientInterface;
 use JmesPath\Env as JmesPath;
 
-abstract class AbstractList extends AbstractConnection implements
-ListInterface,
-ObjectInterface
+abstract class AbstractList extends AbstractConnection implements ListInterface
 {
     use Properties\KindTrait;
     use ToJsonTrait;
@@ -114,10 +112,6 @@ ObjectInterface
         $this->_results = null;
     }
 
-    /**
-     * @param array $data
-     * @return AbstractList
-     */
     public function init(array $data)
     {
         if (!empty($data)) {
@@ -150,9 +144,6 @@ ObjectInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function toArray()
     {
         $data = [
@@ -186,9 +177,6 @@ ObjectInterface
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 
-    /**
-     * @return ObjectArray
-     */
     public function getValues()
     {
         $values = [];
@@ -200,9 +188,6 @@ ObjectInterface
         return new ObjectArray($values);
     }
 
-    /**
-     * @return ObjectArray
-     */
     public function getResults()
     {
         if (!$this->_results) {
@@ -211,15 +196,15 @@ ObjectInterface
         return $this->_results;
     }
 
-    /**
-     * @return self
-     */
     public function mergeResults(ListInterface $list)
     {
         $this->getResults()->merge($list->getResults());
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         return serialize($this->toArray());
@@ -245,33 +230,21 @@ ObjectInterface
         throw new \InvalidArgumentException('Invalid serialized data type.');
     }
 
-    /**
-     * @return int
-     */
     public function getTotalCount()
     {
         return $this->_totalCount;
     }
 
-    /**
-     * @return string
-     */
     public function getNextUrl()
     {
         return $this->_nextUrl;
     }
 
-    /**
-     * @return string
-     */
     public function getPrevUrl()
     {
         return $this->_prevUrl;
     }
 
-    /**
-     * @return boolean Success of operation.
-     */
     public function nextPage()
     {
         if ($this->_nextUrl) {
@@ -285,9 +258,6 @@ ObjectInterface
         return false;
     }
 
-    /**
-     * @return boolean Success of operation.
-     */
     public function prevPage()
     {
         if ($this->_prevUrl) {

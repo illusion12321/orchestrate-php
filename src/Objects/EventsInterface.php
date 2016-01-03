@@ -4,7 +4,7 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  * Define the Events minimum required interface.
  */
-interface EventsInterface extends ListInterface, ObjectInterface
+interface EventsInterface extends ListInterface
 {
     const KIND = 'events';
 

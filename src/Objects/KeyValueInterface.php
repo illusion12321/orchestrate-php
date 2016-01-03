@@ -6,10 +6,7 @@ use andrefelipe\Orchestrate\Query\PatchBuilder;
 /**
  * Define the KeyValue minimum required interface.
  */
-interface KeyValueInterface extends
-ObjectInterface,
-ValueInterface,
-SearchableInterface
+interface KeyValueInterface extends ItemInterface
 {
     const KIND = 'item';
 

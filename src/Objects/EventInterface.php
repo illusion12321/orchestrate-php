@@ -1,14 +1,10 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-
 /**
  * Define the Event minimum required interface.
  */
-interface EventInterface extends
-ObjectInterface,
-ValueInterface,
-SearchableInterface
+interface EventInterface extends ItemInterface
 {
     const KIND = 'event';
 

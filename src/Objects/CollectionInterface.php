@@ -6,7 +6,7 @@ use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 /**
  * Define the Collection minimum required interface.
  */
-interface CollectionInterface extends ListInterface, ObjectInterface
+interface CollectionInterface extends ListInterface
 {
     const KIND = 'collection';
 

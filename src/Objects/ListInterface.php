@@ -4,7 +4,10 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  *
  */
-interface ListInterface extends \IteratorAggregate, \Countable
+interface ListInterface extends
+\IteratorAggregate,
+\Countable,
+ObjectInterface
 {
     /**
      * Get the results of the list operation.

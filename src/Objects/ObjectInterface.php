@@ -5,15 +5,17 @@ use andrefelipe\Orchestrate\Common\ToArrayInterface;
 use andrefelipe\Orchestrate\Common\ToJsonInterface;
 
 /**
- * Defines the basis for all our objects. They should:
- * - Accessible
+ * Defines the basis for all our objects. They should be:
+ * - Accessible: Data can be acessed via object or array syntax, and easily
+ * output via toArray and toJson and extracted with JmesPath.
+ * - Serializable: Via PHP's or JSON formats.
  * - Reusable: We can reset and init the object without creating a new instance.
  */
 interface ObjectInterface extends
 \ArrayAccess,
 \Serializable,
 \JsonSerializable,
-ToArrayInterface, 
+ToArrayInterface,
 ToJsonInterface,
 ConnectionInterface
 {
@@ -22,8 +24,8 @@ ConnectionInterface
      * <code>
      * echo $my_object::KIND;
      * </code>
-     * 
-     * This value matches the Orchestrate kind property for singular items 
+     *
+     * This value matches the Orchestrate kind property for singular items
      * (KeyValue, Event and Relationship) and adds our list classes for internal
      * control (Application, Collection, Refs, Events and Relationships).
      *
@@ -41,6 +43,17 @@ ConnectionInterface
      * Should be compatible with the toArray output.
      *
      * @param array $data
+     *
+     * @return self
      */
     public function init(array $data);
+
+    /**
+     * Use a JMESPath expression to model the data you need.
+     *
+     * @param string $expression
+     *
+     * @return ObjectArray|mixed|null
+     */
+    public function extract($expression);
 }
