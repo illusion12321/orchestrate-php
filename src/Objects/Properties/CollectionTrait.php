@@ -18,7 +18,7 @@ trait CollectionTrait
      *
      * @param boolean $required
      *
-     * @return string
+     * @return null|string
      * @throws \BadMethodCallException if 'collection' is required but not set yet.
      */
     public function getCollection($required = false)
@@ -33,13 +33,13 @@ trait CollectionTrait
     /**
      * Set collection name.
      *
-     * @param string $collection
+     * @param null|string $collection
      *
      * @return self
      */
     public function setCollection($collection)
     {
-        $this->_collection = (string) $collection;
+        $this->_collection = $collection ? (string) $collection : null;
 
         return $this;
     }

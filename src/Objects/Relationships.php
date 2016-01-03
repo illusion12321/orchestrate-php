@@ -1,11 +1,12 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-class Relationships extends AbstractList implements RelationshipsInterface
+class Relationships extends AbstractSearchList implements RelationshipsInterface
 {
-    use Properties\CollectionTrait; // ??? what?
+    use Properties\CollectionTrait;
     use Properties\KeyTrait;
     use Properties\DepthTrait;
+    use Properties\RelationshipClassTrait;
 
     /**
      * @param string $collection
@@ -22,43 +23,40 @@ class Relationships extends AbstractList implements RelationshipsInterface
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_key = null;
         $this->_depth = null;
     }
 
-    /**
-     * @param array $data
-     * @return Relationships
-     */
     public function init(array $data)
     {
         if (!empty($data)) {
-            parent::init($data);
 
+            if (isset($data['relationshipClass'])) {
+                $this->setRelationshipClass($data['relationshipClass']);
+            }
+            if (isset($data['collection'])) {
+                $this->setCollection($data['collection']);
+            }
             if (isset($data['key'])) {
                 $this->setKey($data['key']);
             }
             if (isset($data['depth'])) {
                 $this->setDepth($data['depth']);
             }
+
+            parent::init($data);
         }
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function toArray()
     {
         $data = parent::toArray();
         $data['kind'] = static::KIND;
-
-        if (!empty($this->_key)) {
-            $data['key'] = $this->_key;
-        }
-        if (!empty($this->_depth)) {
-            $data['depth'] = $this->_depth;
-        }
+        $data['collection'] = $this->_collection;
+        $data['key'] = $this->_key;
+        $data['depth'] = $this->_depth;
 
         return $data;
     }
@@ -84,6 +82,43 @@ class Relationships extends AbstractList implements RelationshipsInterface
         return $this->isSuccess();
     }
 
+    public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
+    {
+        // define request options
+        $queryParts = ['@path.kind:'.Relationship::KIND];
+        if (!empty($this->_key)) {
+            $queryParts[] = '@path.key:'.$this->_key;
+        }
+        if (!empty($this->_depth)) {
+            $queryParts[] = '@path.relation:'.implode('/', $this->_depth);
+        }
+        if ($query) {
+            $queryParts[] = $query;
+        }
+
+        $parameters = [
+            'query' => implode(' AND ', $queryParts),
+            'limit' => $limit,
+        ];
+        if (!empty($sort)) {
+            $parameters['sort'] = implode(',', (array) $sort);
+        }
+        if (!empty($aggregate)) {
+            $parameters['aggregate'] = implode(',', (array) $aggregate);
+        }
+        if ($offset) {
+            $parameters['offset'] = $offset;
+        }
+
+        // request
+        $this->request('GET', $this->_collection, ['query' => $parameters]);
+
+        if ($this->isSuccess()) {
+            $this->setResponseValues();
+        }
+        return $this->isSuccess();
+    }
+
     /**
      * @param array $itemValues
      */
@@ -92,15 +127,19 @@ class Relationships extends AbstractList implements RelationshipsInterface
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === 'item') {
-                // TODO wrong!!! list Relationships objects will return Relationship itens right!!!???
-                $item = (new KeyValue())->init($itemValues);
+            if ($kind === Relationship::KIND) {
+                $class = $this->getRelationshipClass();
 
-                if ($client = $this->getHttpClient()) {
-                    $item->setHttpClient($client);
-                }
-                return $item;
+            } else {
+                return null;
             }
+
+            $item = $class->newInstance()->init($itemValues);
+
+            if ($client = $this->getHttpClient()) {
+                $item->setHttpClient($client);
+            }
+            return $item;
         }
         return null;
     }

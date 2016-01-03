@@ -13,7 +13,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 
 Add helpful features which Orchestrate API doesn't support (yet):
 - [Bi-directional relation](#graph-put).
-- [Get total item and event count](#collection-info) of a Collection.
+- [Get total item, event or relationship count](#collection-info) of a Collection or entire Application.
 - [Load resulting value](#keyvalue-patch-partial-update---operations) of an item after Patching.
 
 Sample integrations:
@@ -383,11 +383,13 @@ $result = $item->extractValue('{name: name, thumb: thumbs[0]}');
 
 
 
-## Models
+## Models / ODM
 
-There's one major decision on our library: **KeyValue and Event's values are stored in the object itself**. So when you get a property with $item->myProp you are accessing it directly. 
+There's one major decision on our library: **KeyValue and Event's values are stored in the object itself**. So when you get a property with $item->myProp you are accessing it directly. — That won't differ much from an Array memory-wise, because we are storing data as dynamic vars. But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
 
-That won't differ much from an Array memory-wise, because we are storing data as dynamic vars. But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
+That provides the basis for an ODM. Our objects (KeyValue, Event and Relationship) map directly to the items in your Orchestrate database, so by extending them, you can define your properties, validation, default values, etc.
+
+For example, let's start with a very simple KeyValue, made to reflect a 'Member' of our project:
 
 ```php
 // Member.php
@@ -503,7 +505,7 @@ class Members extends Collection
         $this->setItemClass('MyProject\Models\Member');
 
         // could set the Event class too if desired
-        // $this->setEventClass('MyProject\Models\MemberActivity');        
+        // $this->setEventClass('MyProject\Models\MemberActivity');
     }
 }
 
@@ -550,7 +552,7 @@ Objects can be serialized and stored in your prefered cache for later re-use.
 It is valuable to cache in JSON format, because any part of your application, in any language, could take advantage of that cache. But if your use case is strictly PHP you can have the best performance. In my ultra simple test, serialization is 3 times faster than JSON decoding and instantiation.
 
 ```php
-// serialize single item
+// serialize in PHP's format
 $item = $collection->item('john');
 if ($item->get()) {
     file_put_contents('your-cache-path', serialize($item));
@@ -570,9 +572,7 @@ $collection = unserialize($data);
 
 
 
-// you can't recreate your custom classes with JSON
-// but you can work in a similar way
-
+// serialize in JSON
 $item = $collection->item('john');
 if ($item->get()) {
     file_put_contents('your-cache-path', json_encode($item));
@@ -584,6 +584,8 @@ if ($collection->search('*', 'value.created_date:desc', null, 100)) {
 }
 
 // instantiation
+// you can't recreate your custom classes with JSON
+// but you can work in a similar way
 $data = file_get_contents('your-cache-path');
 $item = (new KeyValue())->init(json_decode($data, true));
 
@@ -623,11 +625,23 @@ if ($application->ping()) {
 ### Collection Info:
 
 ```php
-// get total item count of the collection
+// get total item count of the Collection
 echo $collection->getTotalItems();
 
-// get total event count of the collection
+// get total event count of the Collection
 echo $collection->getTotalEvents();
+echo $collection->getTotalEvents('type'); // specific event type
+
+// get total relationship count of the Collection
+echo $collection->getTotalRelationships();
+echo $collection->getTotalRelationships('type'); // specific relation type
+
+// same goes for the entire Application
+echo $application->getTotalItems();
+echo $application->getTotalEvents();
+echo $application->getTotalEvents('type');
+echo $application->getTotalRelationships();
+echo $application->getTotalRelationships('type');
 ```
 
 
@@ -942,8 +956,8 @@ Get the specified version of a value.
 $refs = $client->listRefs('collection', 'key');
 
 // Approach 2 - Object
-$item = $collection->item('key');
-$refs = $item->refs();
+$refs = $collection->refs('key');
+// or $refs = $item->refs();
 $refs->get(100);
 
 // now get array of the results
@@ -1249,9 +1263,7 @@ $events->prevPage(); // loads previous set of results
 
 ```php
 // Approach 1 - Client
-$collection = $client->searchEvents('collection', 'key', 'type', 'title:"The Title*"');
-// if you don't need key or type, pass null
-$collection = $client->searchEvents('collection', null, 'type', 'title:"The Title*"');
+$collection = $client->search('collection', '@path.kind:event AND title:"The Title*"');
 
 
 // Approach 2 - Object
@@ -1315,17 +1327,17 @@ $events->search(
 
 
 
-### Graph Get (List):
+### Graph List:
 
-Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
+Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk.
 
 ```php
 // Approach 1 - Client
-$relations = $client->listRelations('collection', 'key', 'kind');
+$relations = $client->listRelationships('collection', 'key', 'kind');
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$relations = $item->relations('kind');
+$relations = $item->relationships('kind');
 $relations->get(100);
 
 // Kind param can be array too, to indicate the depth to walk
@@ -1355,13 +1367,13 @@ $relations->prevPage(); // loads previous set of results
 
 ```php
 // Approach 1 - Client
-$item = $client->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+$item = $client->putRelationship('collection', 'key', 'kind', 'toCollection', 'toKey');
 
 // Approach 2 - Object
 $item = $collection->item('key');
 $anotherItem = $collection->item('another-key');
 
-if ($item->relation('kind', $anotherItem)->put()) {
+if ($item->relationship('kind', $anotherItem)->put()) {
     // success
 }
 
@@ -1372,7 +1384,7 @@ if ($item->relation('kind', $anotherItem)->put()) {
 // and destination items relates to each other.
 // Just pass 'true' as parameter.
 
-if ($item->relation('kind', $anotherItem)->put(true)) {
+if ($item->relationship('kind', $anotherItem)->put(true)) {
     // success, now both items are related to each other
 
     // Note that 2 API calls are made in this operation,
@@ -1389,18 +1401,18 @@ Deletes a relationship between two objects. Relations don't have a history, so t
 
 ```php
 // Approach 1 - Client
-$item = $client->deleteRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+$item = $client->deleteRelationship('collection', 'key', 'kind', 'toCollection', 'toKey');
 
 // Approach 2 - Object
 $item = $collection->item('key');
 $anotherItem = $collection->item('another-key');
 
-if ($item->relation('kind', $anotherItem)->delete()) {
+if ($item->relationship('kind', $anotherItem)->delete()) {
     // success
 }
 
 // Same two-way operation can be made here too:
-if ($item->relation('kind', $anotherItem)->delete(true)) {
+if ($item->relationship('kind', $anotherItem)->delete(true)) {
     // success, now both items are not related to each other anymore
 }
 

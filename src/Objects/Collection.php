@@ -31,6 +31,15 @@ class Collection extends AbstractSearchList implements CollectionInterface
             ->setHttpClient($this->getHttpClient());
     }
 
+    public function refs($key = null)
+    {
+        return (new Refs())
+            ->setCollection($this->getCollection(true))
+            ->setKey($key)
+            ->setHttpClient($this->getHttpClient())
+            ->setItemClass($this->getItemClass());
+    }
+
     public function event($key = null, $type = null, $timestamp = null, $ordinal = null)
     {
         return $this->getEventClass()->newInstance()

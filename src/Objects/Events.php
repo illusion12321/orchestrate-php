@@ -115,7 +115,7 @@ class Events extends AbstractSearchList implements EventsInterface
         }
 
         // request
-        $this->request('GET', $this->getCollection(true), ['query' => $parameters]);
+        $this->request('GET', $this->_collection, ['query' => $parameters]);
 
         if ($this->isSuccess()) {
             $this->setResponseValues();

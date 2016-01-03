@@ -56,6 +56,11 @@ interface RelationshipsInterface extends ListInterface
     // public function setRelation($kind);
 
     /**
+     * @return ObjectArray
+     */
+    public function getAggregates();
+    
+    /**
      * @param int $limit
      * @param int $offset
      *

@@ -3,8 +3,13 @@
 - Maybe add an 'newInstance' (or clone) method to each Object, to make it easier to create a empty instance to work on. Probably it should come pre-set with the same name/collection.
 
 - Study the removal of the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
-§
+
+- Add relationships(), relationship() methods to Collection (and probably Application)
+
 - Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder)) or better, use collection->search('query*', $options), where $options = (new Orchestrate/Query/SearchOptions())->limit(10)->sort('title')
+- scheme: app->query(‘*')->sort(’title:asc')->get(20) — ou ->find() ou ->send() ou ->search()
+- scheme: app->search(‘*’, [’sort’ => ’title:asc’, ‘limit’ => 20]]);
+- scheme: listItems()->range()->limit()->get() (maybe always end in 'get')
 ---Do not use the object itself to build the query chain, it's confusing---
 
 - Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder! I.E. collection->search('query*', ['limit' => 10, 'sort' => 'title'])

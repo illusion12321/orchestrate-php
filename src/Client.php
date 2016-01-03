@@ -450,35 +450,6 @@ class Client
         return $events;
     }
 
-    /**
-     * @param string $collection
-     * @param string $type
-     * @param string $query
-     * @param string|array $sort
-     * @param string|array $aggregate
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return Events
-     * @link https://orchestrate.io/docs/apiref#search-events
-     */
-    public function searchEvents(
-        $collection,
-        $type,
-        $query,
-        $sort = null,
-        $aggregate = null,
-        $limit = 10,
-        $offset = 0
-    ) {
-        $events = (new Events($collection))
-            ->setType($type)
-            ->setHttpClient($this->getHttpClient());
-
-        $events->search($query, $sort, $aggregate, $limit, $offset);
-        return $events;
-    }
-
     // Graph
 
     /**
@@ -487,24 +458,23 @@ class Client
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @param boolean $bothWays
      *
-     * @return Relation
-     * @link https://orchestrate.io/docs/apiref#graph-put
+     * @return Relationship
+     * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function putRelation(
+    public function getRelationship(
         $collection,
         $key,
         $kind,
         $toCollection,
-        $toKey,
-        $bothWays = false
+        $toKey
     ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relationship($source, $kind, $destination);
-        $relation->put($bothWays);
+        $relation->get();
+
         return $relation;
     }
 
@@ -516,10 +486,10 @@ class Client
      * @param string $toKey
      * @param boolean $bothWays
      *
-     * @return Relation
-     * @link https://orchestrate.io/docs/apiref#graph-delete
+     * @return Relationship
+     * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function deleteRelation(
+    public function putRelationship(
         $collection,
         $key,
         $kind,
@@ -531,7 +501,46 @@ class Client
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relationship($source, $kind, $destination);
-        $relation->delete($bothWays);
+
+        if ($bothWays) {
+            $relation->put();
+        } else {
+            $relation->putBoth();
+        }
+
+        return $relation;
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * @param boolean $bothWays
+     *
+     * @return Relationship
+     * @link https://orchestrate.io/docs/apiref#graph-delete
+     */
+    public function deleteRelationship(
+        $collection,
+        $key,
+        $kind,
+        $toCollection,
+        $toKey,
+        $bothWays = false
+    ) {
+        $source = $this->newItem($collection, $key);
+        $destination = $this->newItem($toCollection, $toKey);
+
+        $relation = new Relationship($source, $kind, $destination);
+
+        if ($bothWays) {
+            $relation->delete();
+        } else {
+            $relation->deleteBoth();
+        }
+
         return $relation;
     }
 
@@ -545,7 +554,7 @@ class Client
      * @return Relationships
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function listRelations(
+    public function listRelationships(
         $collection,
         $key,
         $kind,
