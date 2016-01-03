@@ -7,7 +7,7 @@ use andrefelipe\Orchestrate as Orchestrate;
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Application extends AbstractList implements ApplicationInterface
+class Application extends AbstractSearchList implements ApplicationInterface
 {
     /**
      * If you provide any parameters if will instantiate a HTTP client on construction.
@@ -48,6 +48,26 @@ class Application extends AbstractList implements ApplicationInterface
         return (new Collection())
             ->setCollection($name)
             ->setHttpClient($this->getHttpClient());
+    }
+
+    public function getTotalItems()
+    {
+        return $this->getItemCount(null, KeyValue::KIND);
+    }
+
+    public function getTotalEvents($type = null)
+    {
+        return $this->getItemCount(null, Event::KIND, $type);
+    }
+
+    public function getTotalRelationships($type = null)
+    {
+        return $this->getItemCount(
+            null,
+            Relationship::KIND,
+            null,
+            $type
+        );
     }
 
     public function toArray()

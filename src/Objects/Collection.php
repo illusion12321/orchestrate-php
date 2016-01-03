@@ -53,45 +53,22 @@ class Collection extends AbstractSearchList implements CollectionInterface
 
     public function getTotalItems()
     {
-        // makes a straight Search query for no results
-        $path = $this->getCollection(true);
-        $parameters = [
-            'query' => '@path.kind:item',
-            'limit' => 0,
-        ];
-        parent::request('GET', $path, ['query' => $parameters]);
-
-        if ($this->isSuccess()) {
-            $body = $this->getBody();
-            if (isset($body['total_count'])) {
-                return (int) $body['total_count'];
-            }
-        }
-        return null;
+        return $this->getItemCount($this->getCollection(true), KeyValue::KIND);
     }
 
     public function getTotalEvents($type = null)
     {
-        // makes a straight Search query for no results
-        $path = $this->getCollection(true);
-        $parameters = [
-            'query' => '@path.kind:event',
-            'limit' => 0,
-        ];
+        return $this->getItemCount($this->getCollection(true), Event::KIND, $type);
+    }
 
-        if ($type) {
-            $parameters['query'] .= ' AND @path.type:'.$type;
-        }
-
-        parent::request('GET', $path, ['query' => $parameters]);
-
-        if ($this->isSuccess()) {
-            $body = $this->getBody();
-            if (isset($body['total_count'])) {
-                return (int) $body['total_count'];
-            }
-        }
-        return null;
+    public function getTotalRelationships($type = null)
+    {
+        return $this->getItemCount(
+            $this->getCollection(true),
+            Relationship::KIND,
+            null,
+            $type
+        );
     }
 
     public function reset()

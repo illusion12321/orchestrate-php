@@ -22,6 +22,31 @@ interface ApplicationInterface extends ListInterface
     public function collection($name);
 
     /**
+     * Gets total item count of the entire Application.
+     *
+     * @return int|null Null on failure, item count on success.
+     */
+    public function getTotalItems();
+
+    /**
+     * Gets total event count of the entire Application.
+     *
+     * @param string $type Event type.
+     *
+     * @return int|null Null on failure, event count on success.
+     */
+    public function getTotalEvents($type = null);
+
+    /**
+     * Gets total relationship count of the entire Application.
+     *
+     * @param string $type Relation type.
+     *
+     * @return int|null Null on failure, item count on success.
+     */
+    public function getTotalRelationships($type = null);
+
+    /**
      * Search!
      *
      * @param string $query

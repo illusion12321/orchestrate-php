@@ -54,4 +54,44 @@ abstract class AbstractSearchList extends AbstractList
             }
         }
     }
+
+    /**
+     * Helper method to get item count from Orchestrate,
+     *
+     * @param string $path Base path, either null or collection name.
+     * @param string $kind Item kind.
+     * @param string $type Event type.
+     * @param string $relation Relation type.
+     *
+     * @return null|int Null on failure, item count on success.
+     */
+    protected function getItemCount($path, $kind, $type = null, $relation = null)
+    {
+        // makes a straight Search query for no results
+        $query = '@path.kind:'.$kind;
+        if ($type) {
+            $query .= ' AND @path.type:'.$type;
+        }
+        if ($relation) {
+            $query .= ' AND @path.relation:'.$relation;
+        }
+
+        $parameters = [
+            'query' => $query,
+            'limit' => 0,
+        ];
+        $http_query = http_build_query($parameters, null, '&', PHP_QUERY_RFC3986);
+
+        $response = $this->getHttpClient()
+            ->request('GET', $path, ['query' => $http_query]);
+
+        $body = json_decode($response->getBody(), true);
+
+        // return value if successful
+        if (isset($body['total_count'])) {
+            return (int) $body['total_count'];
+        }
+
+        return null;
+    }
 }

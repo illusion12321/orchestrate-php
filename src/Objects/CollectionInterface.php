@@ -62,24 +62,27 @@ interface CollectionInterface extends ListInterface
     /**
      * Gets total item count of the Collection.
      *
-     * May return zero if request was unsuccesful, in which case you can check
-     * the response with "getResponse" or the aliases "getStatusCode/getStatus".
-     *
-     * @return int|null Item count or null on request failure.
+     * @return int|null Null on failure, item count on success.
      */
     public function getTotalItems();
 
     /**
      * Gets total event count of the Collection.
      *
-     * May return zero if request was unsuccesful, in which case you can check
-     * the response with "getResponse" or the aliases "getStatusCode/getStatus".
+     * @param string $type Event type.
      *
-     * @param string $type Optionally restrict to a specific event type.
-     *
-     * @return int|null Event count, or null on request failure.
+     * @return int|null Null on failure, event count on success.
      */
     public function getTotalEvents($type = null);
+
+    /**
+     * Gets total relationship count of the Collection.
+     *
+     * @param string $type Relation type.
+     *
+     * @return int|null Null on failure, item count on success.
+     */
+    public function getTotalRelationships($type = null);
 
     /**
      * Deletes a collection. Warning this will permanently erase all data within

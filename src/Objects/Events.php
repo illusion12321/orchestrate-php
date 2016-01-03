@@ -89,7 +89,7 @@ class Events extends AbstractSearchList implements EventsInterface
     public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         // define request options
-        $queryParts = ['@path.kind:event'];
+        $queryParts = ['@path.kind:'.Event::KIND];
         if (!empty($this->_key)) {
             $queryParts[] = '@path.key:'.$this->_key;
         }
