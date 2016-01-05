@@ -70,12 +70,28 @@ interface KeyValueInterface extends ItemInterface
 
     /**
      * @param array $value
-     * @param string $ref
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
-    public function put(array $value = null, $ref = null);
+    public function put(array $value = null);
+
+    /**
+     * @param string $ref
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put
+     */
+    public function putIf($ref = true, array $value = null);
+
+    /**
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put
+     */
+    public function putIfNone(array $value = null);
 
     /**
      * @param array $value
@@ -87,31 +103,58 @@ interface KeyValueInterface extends ItemInterface
 
     /**
      * @param PatchBuilder $operations
-     * @param string $ref
      * @param boolean $reload
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
-    public function patch(PatchBuilder $operations, $ref = null, $reload = false);
+    public function patch(PatchBuilder $operations, $reload = false);
+
+    /**
+     * @param string $ref
+     * @param PatchBuilder $operations
+     * @param boolean $reload
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch
+     */
+    public function patchIf($ref, PatchBuilder $operations, $reload = false);
 
     /**
      * @param array $value
-     * @param string $ref
      * @param boolean $reload
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge(array $value, $ref = null, $reload = false);
+    public function patchMerge(array $value, $reload = false);
 
     /**
+     *
      * @param string $ref
+     * @param array $value
+     * @param boolean $reload
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
+     */
+    public function patchMergeIf($ref = true, array $value, $reload = false);
+
+    /**
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
-    public function delete($ref = null);
+    public function delete();
+
+    /**
+     * @param string $ref The specific ref to delete.
+     * Pass true to read the ref value from the current object, via $item->getRef().
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
+     */
+    public function deleteIf($ref = true);
 
     /**
      * @return boolean Success of operation.

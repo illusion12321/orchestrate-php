@@ -189,7 +189,14 @@ class Client
     {
         $item = $this->newItem($collection, $key);
 
-        $item->put($value, $ref);
+        if ($ref) {
+            $item->putIf($ref, $value);
+        } elseif ($ref === false) {
+            $item->putIfNone($value);
+        } else {
+            $item->put($value);
+        }
+
         return $item;
     }
 
@@ -212,7 +219,12 @@ class Client
     ) {
         $item = $this->newItem($collection, $key);
 
-        $item->patch($operations, $ref, $reload);
+        if ($ref) {
+            $item->patchIf($ref, $operations, $reload);
+        } else {
+            $item->patch($operations, $reload);
+        }
+
         return $item;
     }
 
@@ -235,7 +247,12 @@ class Client
     ) {
         $item = $this->newItem($collection, $key);
 
-        $item->patchMerge($value, $ref, $reload);
+        if ($ref) {
+            $item->patchMergeIf($ref, $value, $reload);
+        } else {
+            $item->patchMerge($value, $reload);
+        }
+
         return $item;
     }
 
@@ -266,7 +283,12 @@ class Client
     {
         $item = $this->newItem($collection, $key);
 
-        $item->delete($ref);
+        if ($ref) {
+            $item->deleteIf($ref);
+        } else {
+            $item->delete();
+        }
+
         return $item;
     }
 

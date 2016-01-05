@@ -130,7 +130,29 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         return $this->isSuccess();
     }
 
-    public function put(array $value = null, $ref = null)
+    public function put(array $value = null)
+    {
+        return $this->_put($value);
+    }
+
+    public function putIf($ref = true, array $value = null)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_put($value, $ref);
+    }
+
+    public function putIfNone(array $value = null)
+    {
+        return $this->_put($value, false);
+    }
+
+    private function _put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
 
@@ -139,17 +161,8 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         $options = ['json' => $newValue];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
-
         } elseif ($ref === false) {
-
-            // set If-None-Match
             $options['headers'] = ['If-None-Match' => '"*"'];
         }
 
@@ -187,19 +200,30 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         return $this->isSuccess();
     }
 
-    public function patch(PatchBuilder $operations, $ref = null, $reload = false)
+    public function patch(PatchBuilder $operations, $reload = false)
+    {
+        return $this->_patch($operations, null, $reload);
+    }
+
+    public function patchIf($ref = true, PatchBuilder $operations, $reload = false)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_patch($operations, $ref, $reload);
+    }
+
+    private function _patch(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
@@ -218,19 +242,30 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         return $this->isSuccess();
     }
 
-    public function patchMerge(array $value, $ref = null, $reload = false)
+    public function patchMerge(array $value, $reload = false)
+    {
+        return $this->_patchMerge($value, $reload);
+    }
+
+    public function patchMergeIf($ref = true, array $value, $reload = false)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_patchMerge($value, $ref, $reload);
+    }
+
+    private function _patchMerge(array $value, $ref = null, $reload = false)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = ['json' => $value];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
@@ -249,19 +284,30 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         return $this->isSuccess();
     }
 
-    public function delete($ref = null)
+    public function delete()
+    {
+        return $this->_delete();
+    }
+
+    public function deleteIf($ref = true)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_delete($ref);
+    }
+
+    private function _delete($ref = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true);
         $options = [];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
