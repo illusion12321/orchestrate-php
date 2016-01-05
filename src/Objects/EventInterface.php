@@ -114,7 +114,16 @@ interface EventInterface extends ItemInterface
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-put
      */
-    public function put(array $value = null, $ref = null);
+    public function put(array $value = null);
+
+    /**
+     * @param string $ref
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#events-put-conditional
+     */
+    public function putIf($ref = true, array $value = null);
 
     /**
      * @param array $value
@@ -126,10 +135,17 @@ interface EventInterface extends ItemInterface
     public function post(array $value = null, $timestamp = null);
 
     /**
-     * @param string $ref
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-delete
      */
-    public function delete($ref = null);
+    public function delete();
+
+    /**
+     * @param string $ref
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#events-delete-conditional
+     */
+    public function deleteIf($ref = true);
 }

@@ -1,6 +1,8 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
+use andrefelipe\Orchestrate\Common\ObjectArray;
+
 /**
  * Adds the aggregate support to List objects that provides search support.
  */

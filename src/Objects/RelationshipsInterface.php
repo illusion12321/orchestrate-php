@@ -8,58 +8,63 @@ interface RelationshipsInterface extends ListInterface
 {
     const KIND = 'relationships';
 
-    // /**
-    //  * @param boolean $required
-    //  *
-    //  * @return KeyValueInterface
-    //  */
-    // public function getSource($required = false);
+    /**
+     * @param boolean $required
+     *
+     * @return string
+     */
+    public function getCollection($required = false);
 
-    // /**
-    //  * @param KeyValueInterface $item
-    //  *
-    //  * @return self
-    //  */
-    // public function setSource(KeyValueInterface $item);
+    /**
+     * @param string $collection
+     *
+     * @return self
+     */
+    public function setCollection($collection);
 
-    // /**
-    //  * @param boolean $required
-    //  *
-    //  * @return KeyValueInterface
-    //  * @throws \BadMethodCallException if 'destination' is required but not set yet.
-    //  */
-    // public function getDestination($required = false);
+    /**
+     * @param boolean $required
+     *
+     * @return string
+     */
+    public function getKey($required = false);
 
-    // /**
-    //  * @param KeyValueInterface $item
-    //  *
-    //  * @return self
-    //  */
-    // public function setDestination(KeyValueInterface $item);
+    /**
+     * @param string $key
+     *
+     * @return self
+     */
+    public function setKey($key);
 
-    // /**
-    //  * Get the relation kind between the objects.
-    //  *
-    //  * @param boolean $required
-    //  *
-    //  * @return string
-    //  * @throws \BadMethodCallException if 'relation' is required but not set yet.
-    //  */
-    // public function getRelation($required = false);
+    /**
+     * @param boolean $required
+     *
+     * @return array
+     * @throws \BadMethodCallException if 'relation depth' is required but not set yet.
+     */
+    public function getDepth($required = false);
 
-    // /**
-    //  * @param string $kind
-    //  *
-    //  * @return Relation self
-    //  * @throws \InvalidArgumentException if 'kind' is array. Only one relation can be handled per time.
-    //  */
-    // public function setRelation($kind);
+    /**
+     * @param string|array $kind
+     *
+     * @return self
+     */
+    public function setDepth($kind);
+
+    /**
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#graph-get
+     */
+    public function get($limit = 10, $offset = 0)
 
     /**
      * @return ObjectArray
      */
     public function getAggregates();
-    
+
     /**
      * @param int $limit
      * @param int $offset
@@ -68,4 +73,22 @@ interface RelationshipsInterface extends ListInterface
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
     public function get($limit = 10, $offset = 0);
+
+    /**
+     * Search relationships. IMPORTANT this search is limited to relationships
+     * only, even if you manage to inject other item kinds with the init method,
+     * still this class will skip all items expect 'relationship'. Also the
+     * current 'key' and 'relation' paths will be added to the query clause
+     * as well, if they are set.
+     *
+     * @param string $query
+     * @param string|array $sort
+     * @param string|array $aggregate
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#search-events
+     */
+    public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0);
 }

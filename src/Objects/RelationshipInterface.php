@@ -86,12 +86,39 @@ interface RelationshipInterface extends ItemInterface
      * to go both ways use the 'putBoth' method.
      *
      * @param array $value
-     * @param string $ref
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function put(array $value = null, $ref = null);
+    public function put(array $value = null);
+
+    /**
+     * Sets the relation between the two objects if the current relationship on
+     * Orchestrate matches this specific ref. This is an one-way
+     * operation, only the relation from the source will be set,
+     * to go both ways use the 'putBothIf' method.
+     *
+     * @param string $ref
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#graph-put-conditional
+     */
+    public function putIf($ref = true, array $value = null);
+
+    /**
+     * Sets the relation between the two objects if there is no relationship
+     * set yet. Mind that the check if the relation exist is made on this
+     * current (source) object only. This is an one-way operation, only the
+     * relation from the source will be set, to go both ways use the
+     * 'putBothIfNone' method.
+     *
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#graph-put-conditional
+     */
+    public function putIfNone(array $value = null);
 
     /**
      * Sets the relation between the two objects, in both ways.
@@ -104,7 +131,34 @@ interface RelationshipInterface extends ItemInterface
      * @return boolean Success of operation, if both calls were successful.
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
-    public function putBoth(array $value = null, $ref = null);
+    public function putBoth(array $value = null);
+
+    /**
+     * Sets the relation between the two objects, in both ways.
+     * Two API calls will be made in sequence, if the first one succedes then
+     * the second one is made.
+     * Uses the If-Match check, please read doc of 'putIf' method.
+     *
+     * @param string $ref
+     * @param array $value
+     *
+     * @return boolean Success of operation, if both calls were successful.
+     * @link https://orchestrate.io/docs/apiref#graph-put-conditional
+     */
+    public function putBothIf($ref = true, array $value = null);
+
+    /**
+     * Sets the relation between the two objects, in both ways.
+     * Two API calls will be made in sequence, if the first one succedes then
+     * the second one is made.
+     * Uses the If-None-Match check, please read doc of 'putIfNone' method.
+     *
+     * @param array $value
+     *
+     * @return boolean Success of operation, if both calls were successful.
+     * @link https://orchestrate.io/docs/apiref#graph-put-conditional
+     */
+    public function putBothIfNone(array $value = null);
 
     /**
      * Remove the relation between the two objects. This is an one-way

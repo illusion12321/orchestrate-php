@@ -1,5 +1,7 @@
 # TODO and IDEAS   
 
+- Docs on Graph Get and Graph conditionals, check for client api change as well.
+
 - Maybe add an 'newInstance' (or clone) method to each Object, to make it easier to create a empty instance to work on. Probably it should come pre-set with the same name/collection.
 
 - Study the removal of the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
@@ -12,6 +14,8 @@
 - scheme: listItems()->range()->limit()->get() (maybe always end in 'get')
 ---Do not use the object itself to build the query chain, it's confusing---
 
+- Study the removal of several functions parameters
+
 - Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder! I.E. collection->search('query*', ['limit' => 10, 'sort' => 'title'])
 
 - Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
@@ -21,8 +25,6 @@
 - On Application object, add method to setCollectionClass, and allow to set many, by collection name?
 
 - getReftime could automatically load the reftime if not provided? only if required, to not make API calls without the user knowing
-
-- Study the removal of several functions parameters: Conditionals would turn to method names like "putIf()", "putIfNone"
 
 - Maybe change 'patchMerge' on KeyValue to just 'merge'
 

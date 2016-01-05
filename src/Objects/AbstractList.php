@@ -173,7 +173,7 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
     {
         $values = [];
         foreach ($this->getResults() as $item) {
-            if ($item instanceof ValueInterface) {
+            if ($item instanceof ItemInterface) {
                 $values[] = $item->getValue();
             }
         }

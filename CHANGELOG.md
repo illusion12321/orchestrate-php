@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 0.16.1 - 2016-01-05
+- BC: Split methods for If-Match/If-None-Match conditionals for a much more comprehensive usage:
+- Use 'putIf('myref', [value...])' instead of 'put([value...], 'myref')';
+- Use 'putIf()' instead of 'put(null, true)';
+- Use 'putIfNone([value...])' instead of 'put([value...], false)';
+- Use 'putIfNone()' instead of 'put(null, false)';
+- Use 'deleteIf('myref')' instead of 'delete('myref')';
+- Same goes for all other methods, 'patchIf', 'patchMergeIf', relationship's 'putIf', 'putBothIf', 'putIfNone', 'putBothIfNone';
+- Client API remains the same, and will map correctly to corresponding method.
+- Added value support for relationship at the Client class.
+- Fixed a few errors.
+
 ## 0.16.0 - 2016-01-03
 - Upgraded our Relationship class with full support for Value body.
 - Renamed 'Relation(s)' classes to 'Relationship(s)' to match Orchestrate.

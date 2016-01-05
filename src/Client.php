@@ -376,7 +376,12 @@ class Client
     ) {
         $item = newEvent($collection, $key, $type, $timestamp, $ordinal);
 
-        $item->put($value, $ref);
+        if ($ref) {
+            $item->putIf($ref, $value);
+        } else {
+            $item->put($value);
+        }
+
         return $item;
     }
 
@@ -424,7 +429,12 @@ class Client
     ) {
         $item = newEvent($collection, $key, $type, $timestamp, $ordinal);
 
-        $item->delete($ref);
+        if ($ref) {
+            $item->deleteIf($ref, $value);
+        } else {
+            $item->delete($value);
+        }
+
         return $item;
     }
 
@@ -506,31 +516,49 @@ class Client
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @param boolean $bothWays
+     * @param array $value
+     * @param string $ref
+     * @param boolean $both_ways
      *
      * @return Relationship
      * @link https://orchestrate.io/docs/apiref#graph-put
      */
     public function putRelationship(
-        $collection,
-        $key,
-        $kind,
-        $toCollection,
-        $toKey,
-        $bothWays = false
+              $collection,
+              $key,
+              $kind,
+              $toCollection,
+              $toKey,
+        array $value = null,
+              $ref = null,
+              $both_ways = false
     ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
-        $relation = new Relationship($source, $kind, $destination);
+        $item = new Relationship($source, $kind, $destination);
 
-        if ($bothWays) {
-            $relation->put();
+        if ($ref) {
+            if ($both_ways) {
+                $item->putIfBoth($value);
+            } else {
+                $item->putIf($value);
+            }
+        } elseif ($ref === false) {
+            if ($both_ways) {
+                $item->putIfNoneBoth($value);
+            } else {
+                $item->putIfNone($value);
+            }
         } else {
-            $relation->putBoth();
+            if ($both_ways) {
+                $item->putBoth($value);
+            } else {
+                $item->put($value);
+            }
         }
 
-        return $relation;
+        return $item;
     }
 
     /**
@@ -539,7 +567,7 @@ class Client
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @param boolean $bothWays
+     * @param boolean $both_ways
      *
      * @return Relationship
      * @link https://orchestrate.io/docs/apiref#graph-delete
@@ -550,17 +578,17 @@ class Client
         $kind,
         $toCollection,
         $toKey,
-        $bothWays = false
+        $both_ways = false
     ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
         $relation = new Relationship($source, $kind, $destination);
 
-        if ($bothWays) {
-            $relation->delete();
-        } else {
+        if ($both_ways) {
             $relation->deleteBoth();
+        } else {
+            $relation->delete();
         }
 
         return $relation;

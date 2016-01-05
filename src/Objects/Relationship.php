@@ -162,7 +162,29 @@ class Relationship extends AbstractItem implements RelationshipInterface
         return $this->isSuccess();
     }
 
-    public function put(array $value = null, $ref = null)
+    public function put(array $value = null)
+    {
+        return $this->_put($value);
+    }
+
+    public function putIf($ref = true, array $value = null)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_put($value, $ref);
+    }
+
+    public function putIfNone(array $value = null)
+    {
+        return $this->_put($value, false);
+    }
+
+    private function _put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
 
@@ -171,17 +193,8 @@ class Relationship extends AbstractItem implements RelationshipInterface
         $options = ['json' => empty($newValue) ? null : $newValue];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
-
         } elseif ($ref === false) {
-
-            // set If-None-Match
             $options['headers'] = ['If-None-Match' => '"*"'];
         }
 
@@ -200,9 +213,31 @@ class Relationship extends AbstractItem implements RelationshipInterface
         return $this->isSuccess();
     }
 
-    public function putBoth(array $value = null, $ref = null)
+    public function putBoth(array $value = null)
     {
-        $success = $this->put($value, $ref);
+        return $this->_putBoth($value);
+    }
+
+    public function putBothIf($ref = true, array $value = null)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_putBoth($value, $ref);
+    }
+
+    public function putBothIfNone(array $value = null)
+    {
+        return $this->_putBoth($value, false);
+    }
+
+    private function _putBoth(array $value = null, $ref = null)
+    {
+        $success = $this->_put($value, $ref);
 
         if ($success) {
             $path = $this->formRelationPath(false, true);

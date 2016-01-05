@@ -136,7 +136,24 @@ class Event extends AbstractItem implements EventInterface
         return $this->isSuccess();
     }
 
-    public function put(array $value = null, $ref = null)
+    public function put(array $value = null)
+    {
+        return $this->_put($value);
+    }
+
+    public function putIf($ref = true, array $value = null)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_put($value, $ref);
+    }
+
+    private function _put(array $value = null, $ref = null)
     {
         $newValue = $value === null ? parent::toArray() : $value;
 
@@ -147,12 +164,6 @@ class Event extends AbstractItem implements EventInterface
         $options = ['json' => $newValue];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
@@ -206,7 +217,24 @@ class Event extends AbstractItem implements EventInterface
         return $this->isSuccess();
     }
 
-    public function delete($ref = null)
+    public function delete()
+    {
+        return $this->_delete();
+    }
+
+    public function deleteIf($ref = true)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+
+        return $this->_delete($ref);
+    }
+
+    private function _delete($ref = null)
     {
         // define request options
         $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
@@ -215,12 +243,6 @@ class Event extends AbstractItem implements EventInterface
         $options = ['query' => ['purge' => 'true']]; // currently required by Orchestrate
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 

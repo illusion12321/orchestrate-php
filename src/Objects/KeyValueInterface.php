@@ -81,7 +81,7 @@ interface KeyValueInterface extends ItemInterface
      * @param array $value
      *
      * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-put
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put-conditional
      */
     public function putIf($ref = true, array $value = null);
 
@@ -89,7 +89,7 @@ interface KeyValueInterface extends ItemInterface
      * @param array $value
      *
      * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-put
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put-conditional
      */
     public function putIfNone(array $value = null);
 
@@ -116,7 +116,7 @@ interface KeyValueInterface extends ItemInterface
      * @param boolean $reload
      *
      * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-patch
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-conditional
      */
     public function patchIf($ref, PatchBuilder $operations, $reload = false);
 
@@ -136,7 +136,7 @@ interface KeyValueInterface extends ItemInterface
      * @param boolean $reload
      *
      * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge-conditional
      */
     public function patchMergeIf($ref = true, array $value, $reload = false);
 

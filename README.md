@@ -720,8 +720,13 @@ $item = $client->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->put(['title' => 'New Title'], '20c14e8965d6cbb0');
-$item->put(['title' => 'New Title'], true); // uses the current object Ref
+$item->putIf('20c14e8965d6cbb0', ['title' => 'New Title']);
+$item->putIf(true, ['title' => 'New Title']); // uses the current object Ref, if set
+
+// you can set the value direcly to the object too
+$item->get();
+$item->title = 'New Title'; // check what will be stored with toArray() or getValue()
+$item->putIf(); // will be saved only if the current ref is the same
 ```
 
 
@@ -735,7 +740,11 @@ $item = $client->put('collection', 'key', ['title' => 'New Title'], false);
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->put(['title' => 'New Title'], false);
+$item->putIfNone(['title' => 'New Title']);
+
+// you can set the value direcly to the object too
+$item->title = 'New Title'; // check what will be stored with toArray() or getValue()
+$item->putIfNone(); // will be saved only if the current ref is the same
 ```
 
 
@@ -783,9 +792,11 @@ $item = $client->patch('collection', 'key', $patch, '20c14e8965d6cbb0');
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->patch($patch, '20c14e8965d6cbb0');
-$item->patch($patch, true); // uses the current object Ref
-$item->patch($patch, true, true); // with the reload as mentioned above
+$item->patchIf('20c14e8965d6cbb0', $patch);
+$item->patchIf(true, $patch); // uses the current object Ref
+$item->patchIf(true, $patch, true); // with the reload as mentioned above
+
+
 ```
 
 
@@ -814,8 +825,8 @@ $item = $client->patchMerge('collection', 'key', ['title' => 'New Title'], '20c1
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->patchMerge(['title' => 'New Title'], '20c14e8965d6cbb0');
-$item->patchMerge(['title' => 'New Title'], true); // uses the current object Ref
+$item->patchMergeIf('20c14e8965d6cbb0', ['title' => 'New Title']);
+$item->patchMergeIf(true, ['title' => 'New Title']); // uses the current object Ref
 // also has a 'reload' parameter as mentioned above
 ```
 
@@ -862,8 +873,8 @@ $item = $collection->item('key');
 // first get the item, or set a ref:
 // $item->get();
 // or $item->setRef('20c14e8965d6cbb0');
-$item->delete(true); // delete the current ref
-$item->delete('20c14e8965d6cbb0'); // delete a specific ref
+$item->deleteIf(true); // delete the current ref
+$item->deleteIf('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
 
@@ -1132,8 +1143,8 @@ $event = $client->putEvent('collection', 'key', 'type', 1400684480732, 1, ['titl
 // Approach 2 - Object
 $item = $collection->item('key');
 $event = $item->event('type', 1400684480732, 1);
-$event->put(['title' => 'New Title'], '20c14e8965d6cbb0');
-$event->put(['title' => 'New Title'], true); // uses the current object Ref, in case you have or loaded before with ->get()
+$event->putIf('20c14e8965d6cbb0', ['title' => 'New Title']);
+$event->putIf(true, ['title' => 'New Title']); // uses the current object Ref, in case you have it, or loaded before with ->get()
 ```
 
 
@@ -1187,8 +1198,8 @@ $event = $client->deleteEvent('collection', 'key', 'type', 1400684480732, 1, '20
 // Approach 2 - Object
 $item = $collection->item('key');
 $event = $item->event('type', 1400684480732, 1);
-$event->delete(true); // delete the current ref
-$event->delete('20c14e8965d6cbb0'); // delete a specific ref
+$event->deleteIf(true); // delete the current ref
+$event->deleteIf('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
 
