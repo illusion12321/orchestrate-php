@@ -1352,6 +1352,8 @@ $relations = $item->relationships('kind');
 $relations->get(100);
 
 // Kind param can be array too, to indicate the depth to walk
+$relations = $item->relationships(['kind', 'another-kind']);
+
 
 // get array of the results (KeyValue objects)
 $relations->getResults();
@@ -1384,8 +1386,14 @@ $item = $client->putRelationship('collection', 'key', 'kind', 'toCollection', 't
 $item = $collection->item('key');
 $anotherItem = $collection->item('another-key');
 
-if ($item->relationship('kind', $anotherItem)->put()) {
+$relation = $item->relationship('kind', $anotherItem);
+
+if ($relation->put()) {
     // success
+
+} else {
+    // check error status message
+    echo $relation->getStatus();
 }
 
 // TIP: Relations are one way operations. We relate an item to another,
@@ -1393,14 +1401,38 @@ if ($item->relationship('kind', $anotherItem)->put()) {
 
 // To make life easier we implemented that two-way operation, so both source
 // and destination items relates to each other.
-// Just pass 'true' as parameter.
 
-if ($item->relationship('kind', $anotherItem)->put(true)) {
+if ($relation->putBoth()) {
     // success, now both items are related to each other
 
     // Note that 2 API calls are made in this operation,
     // and the operation success is given only if both are
     // successful.
+}
+
+```
+
+
+### Graph Put with Properties
+
+```php
+$values = ['title' => 'My Title'];
+
+// Approach 1 - Client
+$item = $client->putRelationship('collection', 'key', 'kind', 'toCollection', 'toKey', $values);
+
+// Approach 2 - Object (recommended)
+$item = $collection->item('key');
+$anotherItem = $collection->item('another-key');
+
+$relation = $item->relationship('kind', $anotherItem);
+
+if ($relation->put($values)) {
+    // success
+}
+
+if ($relation->putBoth($values)) {
+    // success
 }
 
 ```
@@ -1418,12 +1450,14 @@ $item = $client->deleteRelationship('collection', 'key', 'kind', 'toCollection',
 $item = $collection->item('key');
 $anotherItem = $collection->item('another-key');
 
-if ($item->relationship('kind', $anotherItem)->delete()) {
+$relation = $item->relationship('kind', $anotherItem);
+
+if ($relation->delete()) {
     // success
 }
 
 // Same two-way operation can be made here too:
-if ($item->relationship('kind', $anotherItem)->delete(true)) {
+if ($relation->deleteBoth()) {
     // success, now both items are not related to each other anymore
 }
 
