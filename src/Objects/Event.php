@@ -108,14 +108,7 @@ class Event extends AbstractItem implements EventInterface
 
     public function putIf($ref = true, array $value = null)
     {
-        if ($ref === true) {
-            $ref = $this->getRef();
-        }
-        if (empty($ref) || !is_string($ref)) {
-            throw new \BadMethodCallException('A valid \'ref\' value is required.');
-        }
-
-        return $this->_put($value, $ref);
+        return $this->_put($value, $this->getValidRef($ref));
     }
 
     private function _put(array $value = null, $ref = null)
@@ -189,14 +182,7 @@ class Event extends AbstractItem implements EventInterface
 
     public function deleteIf($ref = true)
     {
-        if ($ref === true) {
-            $ref = $this->getRef();
-        }
-        if (empty($ref) || !is_string($ref)) {
-            throw new \BadMethodCallException('A valid \'ref\' value is required.');
-        }
-
-        return $this->_delete($ref);
+        return $this->_delete($this->getValidRef($ref));
     }
 
     private function _delete($ref = null)

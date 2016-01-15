@@ -76,7 +76,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
     public function toArray()
     {
         $data = parent::toArray();
-        
+
         $data['path']['relation'] = $this->_relation;
 
         $source = $this->getSource();
@@ -132,14 +132,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
 
     public function putIf($ref = true, array $value = null)
     {
-        if ($ref === true) {
-            $ref = $this->getRef();
-        }
-        if (empty($ref) || !is_string($ref)) {
-            throw new \BadMethodCallException('A valid \'ref\' value is required.');
-        }
-
-        return $this->_put($value, $ref);
+        return $this->_put($value, $this->getValidRef($ref));
     }
 
     public function putIfNone(array $value = null)
@@ -183,14 +176,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
 
     public function putBothIf($ref = true, array $value = null)
     {
-        if ($ref === true) {
-            $ref = $this->getRef();
-        }
-        if (empty($ref) || !is_string($ref)) {
-            throw new \BadMethodCallException('A valid \'ref\' value is required.');
-        }
-
-        return $this->_putBoth($value, $ref);
+        return $this->_putBoth($value, $this->getValidRef($ref));
     }
 
     public function putBothIfNone(array $value = null)

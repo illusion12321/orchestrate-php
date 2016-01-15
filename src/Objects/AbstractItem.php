@@ -25,6 +25,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function __get($name)
     {
+        $this->wait();
+
         if (isset($this->_propertyMap[$name])) {
             if (isset($this->_propertyMap[$name][0])) {
                 return $this->_propertyMap[$name][0]();
@@ -41,6 +43,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function __set($name, $value)
     {
+        $this->wait();
+
         if (isset($this->_propertyMap[$name])) {
             if (isset($this->_propertyMap[$name][1])) {
                 $this->_propertyMap[$name][1]($value);
@@ -55,6 +59,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function __unset($name)
     {
+        $this->wait();
+
         $this->{$name} = null;
     }
 
@@ -64,6 +70,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function offsetGet($offset)
     {
+        $this->wait();
+
         return $this->{$offset};
     }
 
@@ -76,6 +84,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function offsetSet($offset, $value)
     {
+        $this->wait();
+
         if (is_null($offset) || is_numeric($offset)) {
             throw new \RuntimeException('Indexed arrays not allowed at the root of '.get_class($this).' objects.');
         }
@@ -88,6 +98,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function offsetUnset($offset)
     {
+        $this->wait();
+
         $this->{$offset} = null;
     }
 
@@ -97,6 +109,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function offsetExists($offset)
     {
+        $this->wait();
+
         return isset($this->{$offset});
     }
 
@@ -112,6 +126,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
 
     public function init(array $data)
     {
+        $this->wait();
+
         if (!empty($data)) {
 
             if (!empty($data['path'])) {
@@ -137,6 +153,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
 
     public function toArray()
     {
+        $this->wait();
+
         $data = [
             'kind' => static::KIND,
             'path' => [
@@ -160,12 +178,16 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
 
     public function extract($expression)
     {
+        $this->wait();
+
         $result = JmesPath::search($expression, $this->toArray());
         return is_array($result) ? new ObjectArray($result) : $result;
     }
 
     public function extractValue($expression)
     {
+        $this->wait();
+
         $valueArray = array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
         $result = JmesPath::search($expression, $valueArray);
         return is_array($result) ? new ObjectArray($result) : $result;
@@ -173,11 +195,15 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
 
     public function getValue()
     {
+        $this->wait();
+
         return (new ObjectArray($this->getMappedValues()))->merge($this);
     }
 
     public function setValue(array $values)
     {
+        $this->wait();
+
         if (!empty($values)) {
             foreach ($values as $key => $value) {
                 $this->{(string) $key} = $value;
@@ -188,12 +214,16 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
 
     public function mergeValue(ItemInterface $item)
     {
+        $this->wait();
+
         ObjectArray::mergeObject($item->getValue(), $this);
         return $this;
     }
 
     public function resetValue()
     {
+        $this->wait();
+
         foreach (ObjectArray::getPublicProperties($this) as $key) {
             $this->{$key} = null;
         }
@@ -210,6 +240,8 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
      */
     public function serialize()
     {
+        $this->wait();
+
         return serialize($this->toArray());
     }
 
