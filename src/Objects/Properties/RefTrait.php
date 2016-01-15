@@ -40,7 +40,7 @@ trait RefTrait
         return $this;
     }
 
-    private function setRefFromETag()
+    protected function setRefFromETag()
     {
         $etag = $this->getResponse()->getHeader('ETag');
         $this->_ref = !empty($etag) ? trim($etag[0], '"') : null;

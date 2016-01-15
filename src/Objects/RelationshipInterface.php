@@ -56,23 +56,6 @@ interface RelationshipInterface extends ItemInterface
     public function setRelation($kind);
 
     /**
-     * @return string
-     */
-    public function getRef($required = false);
-
-    /**
-     * @param string $ref
-     *
-     * @return self
-     */
-    public function setRef($ref);
-
-    /**
-     * @return int
-     */
-    public function getReftime();
-
-    /**
      * Get the current relation value.
      *
      * @return boolean Success of operation.

@@ -5,10 +5,6 @@ class Relationship extends AbstractItem implements RelationshipInterface
 {
     use Properties\RelationTrait;
     use Properties\RelationshipTrait;
-    use Properties\RefTrait;
-    use Properties\ReftimeTrait;
-    use Properties\ScoreTrait;
-    use Properties\DistanceTrait;
     use Properties\ItemClassTrait;
 
     /**
@@ -38,11 +34,6 @@ class Relationship extends AbstractItem implements RelationshipInterface
         $this->_source = null;
         $this->_relation = null;
         $this->_destination = null;
-        $this->_ref = null;
-        $this->_reftime = null;
-        $this->_score = null;
-        $this->_distance = null;
-        $this->resetValue();
     }
 
     public function init(array $data)
@@ -51,7 +42,10 @@ class Relationship extends AbstractItem implements RelationshipInterface
 
             if (!empty($data['path'])) {
                 $data = array_merge($data, $data['path']);
+                unset($data['path']);
             }
+
+            parent::init($data);
 
             foreach ($data as $key => $value) {
                 if ($key === 'source') {
@@ -70,16 +64,6 @@ class Relationship extends AbstractItem implements RelationshipInterface
                     }
                 } elseif ($key === 'relation') {
                     $this->setRelation($value);
-                } elseif ($key === 'value') {
-                    $this->setValue((array) $value);
-                } elseif ($key === 'ref') {
-                    $this->setRef($value);
-                } elseif ($key === 'reftime') {
-                    $this->setReftime($value);
-                } elseif ($key === 'score') {
-                    $this->setScore($value);
-                } elseif ($key === 'distance') {
-                    $this->setDistance($value);
                 }
             }
         }
@@ -91,21 +75,9 @@ class Relationship extends AbstractItem implements RelationshipInterface
      */
     public function toArray()
     {
-        $data = [
-            'kind' => static::KIND,
-            'path' => [
-                'kind' => static::KIND,
-                'source' => null,
-                'destination' => null,
-                'relation' => $this->getRelation(),
-                'ref' => $this->getRef(),
-            ],
-        ];
-
-        $reftime = $this->getReftime();
-        if (!empty($reftime)) {
-            $data['path']['reftime'] = $reftime;
-        }
+        $data = parent::toArray();
+        
+        $data['path']['relation'] = $this->_relation;
 
         $source = $this->getSource();
         if ($source) {
@@ -114,6 +86,8 @@ class Relationship extends AbstractItem implements RelationshipInterface
                 'collection' => $source->getCollection(),
                 'key' => $source->getKey(),
             ];
+        } else {
+            $data['path']['source'] = null;
         }
 
         $destination = $this->getDestination();
@@ -123,19 +97,8 @@ class Relationship extends AbstractItem implements RelationshipInterface
                 'collection' => $destination->getCollection(),
                 'key' => $destination->getKey(),
             ];
-        }
-
-        $value = parent::toArray();
-        if (!empty($value)) {
-            $data['value'] = $value;
-        }
-
-        // search properties
-        if ($this->_score !== null) {
-            $data['score'] = $this->_score;
-        }
-        if ($this->_distance !== null) {
-            $data['distance'] = $this->_distance;
+        } else {
+            $data['path']['destination'] = null;
         }
 
         return $data;

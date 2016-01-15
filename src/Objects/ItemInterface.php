@@ -7,10 +7,37 @@ namespace andrefelipe\Orchestrate\Objects;
  * - Accessible: Value can be easily be managed with get/set/merge/resetValue,
  * and through JMESPath with extractValue.
  * - Searchable: They can be part of search results.
- *
+ * - Uniquely identifiable: through Ref and Reftime.
  */
 interface ItemInterface extends ObjectInterface
 {
+    /**
+     * @return string
+     */
+    public function getRef($required = false);
+
+    /**
+     * @param string $ref
+     *
+     * @return self
+     */
+    public function setRef($ref);
+
+    /**
+     * @return int
+     */
+    public function getReftime();
+
+    /**
+     * @return float
+     */
+    public function getScore();
+
+    /**
+     * @return float
+     */
+    public function getDistance();
+
     /**
      * Get item Value.
      *
@@ -45,13 +72,4 @@ interface ItemInterface extends ObjectInterface
      */
     public function extractValue($expression);
 
-    /**
-     * @return float
-     */
-    public function getScore();
-
-    /**
-     * @return float
-     */
-    public function getDistance();
 }

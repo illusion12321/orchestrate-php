@@ -8,53 +8,16 @@ use JmesPath\Env as JmesPath;
 abstract class AbstractItem extends AbstractConnection implements ItemInterface
 {
     use Properties\KindTrait;
+    use Properties\RefTrait;
+    use Properties\ReftimeTrait;
+    use Properties\ScoreTrait;
+    use Properties\DistanceTrait;
     use ToJsonTrait;
 
     /**
      * @var array Storage for user-defined properties mapped to getter/setters.
      */
     private $_propertyMap = [];
-
-    /**
-     * @param string $name The property name to map methods to.
-     * @param boolean|string $getterName The getter method name. Method must exist in current object.
-     *                                   Defaults to true, which will automatically try to find a
-     *                                   method named after your property with camelCase, for example 'getName'.
-     * @param boolean|string $setterName The setter method name. Method must exist in current object.
-     *                                   Defaults to true, which will automatically try to find a
-     *                                   method named after your property with camelCase, for example 'setName'.
-     */
-    protected function mapProperty($name, $getterName = true, $setterName = true)
-    {
-        $this->_propertyMap[$name] = [];
-
-        if ($getterName === true || $setterName === true) {
-            $capitalized = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $name)));
-
-            if ($getterName === true) {
-                $getterName = 'get'.$capitalized;
-            }
-            if ($setterName === true) {
-                $setterName = 'set'.$capitalized;
-            }
-        }
-
-        if ($getterName) {
-            if (method_exists($this, $getterName)) {
-                $this->_propertyMap[$name][0] = [$this, $getterName];
-            } else {
-                throw new \BadMethodCallException('A matching getter method could not be found, tried: '.$getterName);
-            }
-        }
-
-        if ($setterName) {
-            if (method_exists($this, $setterName)) {
-                $this->_propertyMap[$name][1] = [$this, $setterName];
-            } else {
-                throw new \BadMethodCallException('A matching setter method could not be found, tried: '.$setterName);
-            }
-        }
-    }
 
     /**
      * @param string $name
@@ -107,11 +70,14 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
     /**
      * @param string $offset
      * @param mixed $value
+     *
+     * @throws \RuntimeException if trying to set values as indexed arrays at
+     * root level, i.e., $item[0] = 'myvalue';
      */
     public function offsetSet($offset, $value)
     {
         if (is_null($offset) || is_numeric($offset)) {
-            $this->noIndexedArrayException();
+            throw new \RuntimeException('Indexed arrays not allowed at the root of '.get_class($this).' objects.');
         }
 
         $this->{(string) $offset} = $value;
@@ -134,14 +100,62 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
         return isset($this->{$offset});
     }
 
-    public function getValue()
+    public function reset()
     {
-        return (new ObjectArray($this->getMappedValues()))->merge($this);
+        parent::reset();
+        $this->_ref = null;
+        $this->_reftime = null;
+        $this->_score = null;
+        $this->_distance = null;
+        $this->resetValue();
+    }
+
+    public function init(array $data)
+    {
+        if (!empty($data)) {
+
+            if (!empty($data['path'])) {
+                $data = array_merge($data, $data['path']);
+            }
+
+            foreach ($data as $key => $value) {
+                if ($key === 'ref') {
+                    $this->setRef($value);
+                } elseif ($key === 'reftime') {
+                    $this->setReftime($value);
+                } elseif ($key === 'value') {
+                    $this->setValue((array) $value);
+                } elseif ($key === 'score') {
+                    $this->setScore($value);
+                } elseif ($key === 'distance') {
+                    $this->setDistance($value);
+                }
+            }
+        }
+        return $this;
     }
 
     public function toArray()
     {
-        return array_merge($this->getMappedValues(true), ObjectArray::objectToArray($this));
+        $data = [
+            'kind' => static::KIND,
+            'path' => [
+                'kind' => static::KIND,
+                'ref' => $this->_ref,
+                'reftime' => $this->_reftime,
+            ],
+            'value' => array_merge($this->getMappedValues(true), ObjectArray::objectToArray($this)),
+        ];
+
+        // search properties
+        if ($this->_score !== null) {
+            $data['score'] = $this->_score;
+        }
+        if ($this->_distance !== null) {
+            $data['distance'] = $this->_distance;
+        }
+
+        return $data;
     }
 
     public function extract($expression)
@@ -155,6 +169,11 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
         $valueArray = array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
         $result = JmesPath::search($expression, $valueArray);
         return is_array($result) ? new ObjectArray($result) : $result;
+    }
+
+    public function getValue()
+    {
+        return (new ObjectArray($this->getMappedValues()))->merge($this);
     }
 
     public function setValue(array $values)
@@ -214,9 +233,45 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
         throw new \InvalidArgumentException('Invalid serialized data type.');
     }
 
-    private function noIndexedArrayException()
+    /**
+     * @param string $name The property name to map methods to.
+     * @param boolean|string $getterName The getter method name. Method must exist in current object.
+     *                                   Defaults to true, which will automatically try to find a
+     *                                   method named after your property with camelCase, for example 'getName'.
+     * @param boolean|string $setterName The setter method name. Method must exist in current object.
+     *                                   Defaults to true, which will automatically try to find a
+     *                                   method named after your property with camelCase, for example 'setName'.
+     */
+    protected function mapProperty($name, $getterName = true, $setterName = true)
     {
-        throw new \RuntimeException('Indexed arrays not allowed at the root of '.get_class($this).' objects.');
+        $this->_propertyMap[$name] = [];
+
+        if ($getterName === true || $setterName === true) {
+            $capitalized = str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $name)));
+
+            if ($getterName === true) {
+                $getterName = 'get'.$capitalized;
+            }
+            if ($setterName === true) {
+                $setterName = 'set'.$capitalized;
+            }
+        }
+
+        if ($getterName) {
+            if (method_exists($this, $getterName)) {
+                $this->_propertyMap[$name][0] = [$this, $getterName];
+            } else {
+                throw new \BadMethodCallException('A matching getter method could not be found, tried: '.$getterName);
+            }
+        }
+
+        if ($setterName) {
+            if (method_exists($this, $setterName)) {
+                $this->_propertyMap[$name][1] = [$this, $setterName];
+            } else {
+                throw new \BadMethodCallException('A matching setter method could not be found, tried: '.$setterName);
+            }
+        }
     }
 
     /**

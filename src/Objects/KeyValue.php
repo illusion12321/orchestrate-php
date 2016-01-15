@@ -7,10 +7,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 {
     use Properties\CollectionTrait;
     use Properties\KeyTrait;
-    use Properties\RefTrait;
-    use Properties\ReftimeTrait;
-    use Properties\ScoreTrait;
-    use Properties\DistanceTrait;
 
     /**
      * @var boolean
@@ -39,12 +35,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         parent::reset();
         $this->_collection = null;
         $this->_key = null;
-        $this->_ref = null;
-        $this->_score = null;
-        $this->_distance = null;
-        $this->_reftime = null;
         $this->_tombstone = false;
-        $this->resetValue();
     }
 
     public function init(array $data)
@@ -53,23 +44,16 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
             if (!empty($data['path'])) {
                 $data = array_merge($data, $data['path']);
+                unset($data['path']);
             }
+
+            parent::init($data);
 
             foreach ($data as $key => $value) {
                 if ($key === 'collection') {
                     $this->setCollection($value);
                 } elseif ($key === 'key') {
                     $this->setKey($value);
-                } elseif ($key === 'ref') {
-                    $this->setRef($value);
-                } elseif ($key === 'reftime') {
-                    $this->setReftime($value);
-                } elseif ($key === 'value') {
-                    $this->setValue((array) $value);
-                } elseif ($key === 'score') {
-                    $this->setScore($value);
-                } elseif ($key === 'distance') {
-                    $this->setDistance($value);
                 } elseif ($key === 'tombstone') {
                     $this->_tombstone = (boolean) $value;
                 }
@@ -80,31 +64,13 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
     public function toArray()
     {
-        $data = [
-            'kind' => static::KIND,
-            'path' => [
-                'collection' => $this->getCollection(),
-                'kind' => static::KIND,
-                'key' => $this->getKey(),
-                'ref' => $this->getRef(),
-            ],
-            'value' => parent::toArray(),
-        ];
+        $data = parent::toArray();
 
-        if ($this->_reftime !== null) {
-            $data['path']['reftime'] = $this->_reftime;
-        }
+        $data['path']['collection'] = $this->_collection;
+        $data['path']['key'] = $this->_key;
 
         if ($this->_tombstone) {
             $data['path']['tombstone'] = $this->_tombstone;
-        }
-
-        // search properties
-        if ($this->_score !== null) {
-            $data['score'] = $this->_score;
-        }
-        if ($this->_distance !== null) {
-            $data['distance'] = $this->_distance;
         }
 
         return $data;

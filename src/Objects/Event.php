@@ -5,13 +5,9 @@ class Event extends AbstractItem implements EventInterface
 {
     use Properties\CollectionTrait;
     use Properties\KeyTrait;
-    use Properties\RefTrait;
-    use Properties\ReftimeTrait;
     use Properties\TypeTrait;
     use Properties\TimestampTrait;
     use Properties\OrdinalTrait;
-    use Properties\ScoreTrait;
-    use Properties\DistanceTrait;
 
     /**
      * @param string $collection
@@ -43,11 +39,6 @@ class Event extends AbstractItem implements EventInterface
         $this->_timestamp = null;
         $this->_ordinal = null;
         $this->_ordinalStr = null;
-        $this->_ref = null;
-        $this->_reftime = null;
-        $this->_score = null;
-        $this->_distance = null;
-        $this->resetValue();
     }
 
     public function init(array $data)
@@ -56,10 +47,12 @@ class Event extends AbstractItem implements EventInterface
 
             if (!empty($data['path'])) {
                 $data = array_merge($data, $data['path']);
+                unset($data['path']);
             }
 
-            foreach ($data as $key => $value) {
+            parent::init($data);
 
+            foreach ($data as $key => $value) {
                 if ($key === 'collection') {
                     $this->setCollection($value);
                 } elseif ($key === 'key') {
@@ -70,18 +63,8 @@ class Event extends AbstractItem implements EventInterface
                     $this->setTimestamp($value);
                 } elseif ($key === 'ordinal') {
                     $this->setOrdinal($value);
-                } elseif ($key === 'ref') {
-                    $this->setRef($value);
-                } elseif ($key === 'reftime') {
-                    $this->setReftime($value);
                 } elseif ($key === 'ordinal_str') {
                     $this->setOrdinalStr($value);
-                } elseif ($key === 'value') {
-                    $this->setValue((array) $value);
-                } elseif ($key === 'score') {
-                    $this->setScore($value);
-                } elseif ($key === 'distance') {
-                    $this->setDistance($value);
                 }
             }
         }
@@ -90,32 +73,14 @@ class Event extends AbstractItem implements EventInterface
 
     public function toArray()
     {
-        $data = [
-            'kind' => static::KIND,
-            'path' => [
-                'collection' => $this->getCollection(),
-                'kind' => static::KIND,
-                'key' => $this->getKey(),
-                'type' => $this->getType(),
-                'timestamp' => $this->getTimestamp(),
-                'ordinal' => $this->getOrdinal(),
-                'ref' => $this->getRef(),
-                'reftime' => $this->getReftime(),
-                'ordinal_str' => $this->getOrdinalStr(),
-            ],
-            'value' => parent::toArray(),
-            'timestamp' => $this->getTimestamp(),
-            'ordinal' => $this->getOrdinal(),
-            'reftime' => $this->getReftime(),
-        ];
+        $data = parent::toArray();
 
-        // search properties
-        if ($this->_score !== null) {
-            $data['score'] = $this->_score;
-        }
-        if ($this->_distance !== null) {
-            $data['distance'] = $this->_distance;
-        }
+        $data['path']['collection'] = $this->_collection;
+        $data['path']['key'] = $this->_key;
+        $data['path']['type'] = $this->_type;
+        $data['path']['timestamp'] = $this->_timestamp;
+        $data['path']['ordinal'] = $this->_ordinal;
+        $data['path']['ordinal_str'] = $this->_ordinalStr;
 
         return $data;
     }

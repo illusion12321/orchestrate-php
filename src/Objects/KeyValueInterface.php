@@ -39,23 +39,6 @@ interface KeyValueInterface extends ItemInterface
     public function setKey($key);
 
     /**
-     * @return string
-     */
-    public function getRef($required = false);
-
-    /**
-     * @param string $ref
-     *
-     * @return self
-     */
-    public function setRef($ref);
-
-    /**
-     * @return int
-     */
-    public function getReftime();
-
-    /**
      * @return boolean
      */
     public function isTombstone();
