@@ -65,6 +65,7 @@ class Client
      */
     public function ping()
     {
+        // TODO add try catch Exception for timeouts
         return $this->getHttpClient()->request('HEAD')->getStatusCode() === 200;
     }
 
@@ -79,7 +80,8 @@ class Client
      */
     public function deleteCollection($collection)
     {
-        $response = $this->request(
+        // TODO add try catch Exception
+        $response = $this->getHttpClient()->request(
             'DELETE',
             $collection,
             ['query' => ['force' => 'true']]

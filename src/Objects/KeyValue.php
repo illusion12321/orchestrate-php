@@ -86,10 +86,13 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function getAsync($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
-
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         if ($ref) {
-            $path .= '/refs/'.trim($ref, '"');
+            $path[] = 'refs';
+            $path[] = trim($ref, '"');
         }
 
         // request
@@ -101,6 +104,11 @@ class KeyValue extends AbstractItem implements KeyValueInterface
                 $self->setRefFromETag();
                 return $self;
             }
+            // ,
+            // static function ($self) {
+            //     return new \GuzzleHttp\Promise\RejectedPromise($self);
+            // }
+
         );
 
         return $promise;
@@ -148,7 +156,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         $newValue = $value === null ? parent::toArray() : $value;
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['json' => $newValue];
 
         if ($ref) {
@@ -162,7 +173,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
         $promise = $promise->then(
             static function ($self) use ($value, $newValue) {
-                $self->setValue($self->getBody());
 
                 if ($value !== null) {
                     $self->resetValue();
@@ -188,11 +198,11 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         $newValue = $value === null ? parent::toArray() : $value;
 
         // request
-        $promise = $this->requestAsync('POST', $this->getCollection(true), ['json' => $newValue]);
+        $path = [$this->getCollection(true)];
+        $promise = $this->requestAsync('POST', $path, ['json' => $newValue]);
 
         $promise = $promise->then(
             static function ($self) use ($value, $newValue) {
-                $self->setValue($self->getBody());
 
                 if ($value !== null) {
                     $self->resetValue();
@@ -236,7 +246,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     private function _patchAsync(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
@@ -283,7 +296,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     private function _patchMergeAsync(array $value, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['json' => $value];
 
         if ($ref) {
@@ -330,7 +346,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     private function _deleteAsync($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = [];
 
         if ($ref) {
@@ -366,7 +385,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
     public function purgeAsync()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['query' => ['purge' => 'true']];
 
         // request

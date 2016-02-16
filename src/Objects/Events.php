@@ -70,8 +70,12 @@ class Events extends AbstractSearchList implements EventsInterface
     public function get($limit = 10, TimeRangeBuilder $range = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-        .'/events/'.$this->getType(true).'/';
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'events',
+            $this->getType(true),
+        ];
 
         $parameters = $range ? $range->toArray() : [];
         $parameters['limit'] = $limit > 100 ? 100 : $limit;
@@ -115,7 +119,7 @@ class Events extends AbstractSearchList implements EventsInterface
         }
 
         // request
-        $this->request('GET', $this->_collection, ['query' => $parameters]);
+        $this->request('GET', [$this->_collection], ['query' => $parameters]);
 
         if ($this->isSuccess()) {
             $this->setResponseValues();

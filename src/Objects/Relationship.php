@@ -110,9 +110,6 @@ class Relationship extends AbstractItem implements RelationshipInterface
         $path = $this->formRelationPath();
 
         // Orchestrate doesn't support relationship history (refs) yet
-        // if ($ref) {
-        //     $path .= '/refs/'.trim($ref, '"');
-        // }
 
         // request
         $this->request('GET', $path);

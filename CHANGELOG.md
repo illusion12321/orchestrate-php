@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## HEAD
+- Working on Async. Only implemented on KeyValue to test out.
+- Fix url encode on requests, for cases an item key has slashes or other special chars.
+
 ## 0.16.1 - 2016-01-05
 - BC: Split methods for If-Match/If-None-Match conditionals for a much more comprehensive usage:
 - Use 'putIf('myref', [value...])' instead of 'put([value...], 'myref')';

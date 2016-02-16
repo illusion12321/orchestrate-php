@@ -64,8 +64,12 @@ class Relationships extends AbstractSearchList implements RelationshipsInterface
     public function get($limit = 10, $offset = 0)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-        .'/relations/'.implode('/', $this->getDepth(true));
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'relations',
+        ];
+        $path = array_merge($path, $this->getDepth(true));
 
         $parameters = ['limit' => $limit];
 
@@ -111,7 +115,7 @@ class Relationships extends AbstractSearchList implements RelationshipsInterface
         }
 
         // request
-        $this->request('GET', $this->_collection, ['query' => $parameters]);
+        $this->request('GET', [$this->_collection], ['query' => $parameters]);
 
         if ($this->isSuccess()) {
             $this->setResponseValues();

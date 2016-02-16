@@ -134,11 +134,11 @@ abstract class AbstractConnection implements ConnectionInterface
      * Request using the current HTTP client and store the response and
      * decoded json body internally.
      *
-     * More information on the parameters please go to the Guzzle docs.
+     * More information on the options please go to the Guzzle docs.
      *
-     * @param string $method  HTTP method
-     * @param string $uri     URI
-     * @param array  $options Request options to apply.
+     * @param string       $method  HTTP method
+     * @param string|array $uri     URI
+     * @param array        $options Request options to apply.
      *
      * @return ResponseInterface
      * @throws GuzzleException
@@ -153,11 +153,11 @@ abstract class AbstractConnection implements ConnectionInterface
      * Request asynchronously using the current HTTP client, preparing the
      * success and exception callbacks.
      *
-     * More information on the parameters please go to the Guzzle docs.
+     * More information on the options please go to the Guzzle docs.
      *
-     * @param string $method  HTTP method
-     * @param string $uri     URI
-     * @param array  $options Request options to apply.
+     * @param string       $method  HTTP method
+     * @param string|array $uri     URI
+     * @param array        $options Request options to apply.
      *
      * @return PromiseInterface
      */
@@ -176,12 +176,16 @@ abstract class AbstractConnection implements ConnectionInterface
         $this->_body = null;
         $this->_status = null;
 
-        // store in var to save some memory on the callbacks
+        // store in var as we use static functions on the callbacks
         $self = $this;
 
+        // sanitize uri
+        if (is_array($uri)) {
+            $uri = implode('/', array_map('urlencode', $uri));
+        }
+
         // request
-        $this->_promise = $this->getHttpClient()
-            ->requestAsync($method, $uri, $options);
+        $this->_promise = $this->getHttpClient()->requestAsync($method, $uri, $options);
 
         $promise = $this->_promise->then(
             static function (ResponseInterface $response) use ($self) {

@@ -142,11 +142,11 @@ class Collection extends AbstractSearchList implements CollectionInterface
         return $this->isSuccess();
     }
 
-    public function delete($collectionName)
+    public function delete($collection_name)
     {
-        if ($collectionName === $this->getCollection(true)) {
+        if ($collection_name === $this->getCollection(true)) {
 
-            $this->request('DELETE', $collectionName, ['query' => ['force' => 'true']]);
+            $this->request('DELETE', $collection_name, ['query' => ['force' => 'true']]);
 
             if ($this->isSuccess()) {
                 $this->setResponseValues();

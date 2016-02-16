@@ -76,7 +76,7 @@ trait RelationshipTrait
     /**
      * Helper to form the relation URL path
      *
-     * @return string
+     * @return array
      */
     private function formRelationPath($plural = false, $reverse = false)
     {
@@ -89,8 +89,13 @@ trait RelationshipTrait
             $destination = $item;
         }
 
-        return $source->getCollection(true).'/'.$source->getKey(true)
-        .'/relation'.($plural ? 's' : '').'/'.$this->getRelation(true).'/'
-        .$destination->getCollection(true).'/'.$destination->getKey(true);
+        return [
+            $source->getCollection(true),
+            $source->getKey(true),
+            'relation'.($plural ? 's' : ''),
+            $this->getRelation(true),
+            $destination->getCollection(true),
+            $destination->getKey(true),
+        ];
     }
 }
