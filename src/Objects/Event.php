@@ -119,7 +119,7 @@ class Event extends AbstractItem implements EventInterface
 
     private function _put(array $value = null, $ref = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // define request options
         $path = [
@@ -171,7 +171,7 @@ class Event extends AbstractItem implements EventInterface
             $path[] = $timestamp;
         }
 
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // request
         $this->request('POST', $path, ['json' => $newValue]);

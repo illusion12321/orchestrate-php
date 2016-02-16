@@ -139,7 +139,7 @@ class Relationship extends AbstractItem implements RelationshipInterface
 
     private function _put(array $value = null, $ref = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // define request options
         $path = $this->formRelationPath();

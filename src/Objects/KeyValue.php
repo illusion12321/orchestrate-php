@@ -153,7 +153,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
     private function _putAsync(array $value = null, $ref = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // define request options
         $path = [
@@ -195,7 +195,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
     public function postAsync(array $value = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // request
         $path = [$this->getCollection(true)];
