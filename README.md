@@ -355,7 +355,7 @@ $this->view->member = $item->getValue();
 $this->view->member = $item->extractValue('{name: fullname, country: country}');
 
 // then in volt:
-<p>Member {{ member.name }}, {{ member.country }}</p>
+<p>Member {{ member['name'] }}, {{ member['country'] }}</p>
 
 
 
@@ -376,8 +376,6 @@ $result = $item->extract('{name: value.name, thumb: value.thumbs[0]}');
 $result = $collection->extractValues('[].{name: name, thumb: thumbs[0])}');
 $result = $item->extractValue('{name: name, thumb: thumbs[0]}');
 ```
-
-**NOTE** When a JMESPath result is an array, it will be automatically wrapped into an ObjectArray.
 
 
 

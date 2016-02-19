@@ -26,7 +26,7 @@ ObjectInterface
     /**
      * Use a JMESPath expression to model the data you need.
      *
-     * @return mixed|ObjectArray
+     * @return array|null
      */
     public function extractValues($expression);
 

@@ -68,7 +68,8 @@ interface ItemInterface extends ObjectInterface
      * Use a JMESPath expression to model the data you need.
      *
      * @param string $expression
-     * @return ObjectArray|mixed|null
+     * 
+     * @return array|null
      */
     public function extractValue($expression);
 

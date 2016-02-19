@@ -53,7 +53,7 @@ ConnectionInterface
      *
      * @param string $expression
      *
-     * @return ObjectArray|mixed|null
+     * @return array|null
      */
     public function extract($expression);
 }

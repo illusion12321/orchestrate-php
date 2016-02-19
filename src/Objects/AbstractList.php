@@ -159,14 +159,12 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
 
     public function extract($expression)
     {
-        $result = JmesPath::search($expression, $this->toArray());
-        return is_array($result) ? new ObjectArray($result) : $result;
+        return JmesPath::search($expression, $this->toArray());
     }
 
     public function extractValues($expression)
     {
-        $result = JmesPath::search($expression, $this->getValues()->toArray());
-        return is_array($result) ? new ObjectArray($result) : $result;
+        return JmesPath::search($expression, $this->getValues()->toArray());
     }
 
     public function getValues()
