@@ -178,23 +178,19 @@ abstract class AbstractItem extends AbstractConnection implements ItemInterface
 
     public function extract($expression)
     {
-        $this->wait();
         return JmesPath::search($expression, $this->toArray());
     }
 
     public function extractValue($expression)
     {
-        $this->wait();
-
-        $valueArray = array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
-        return JmesPath::search($expression, $valueArray);
+        return JmesPath::search($expression, $this->getValue());
     }
 
     public function getValue()
     {
         $this->wait();
 
-        return (new ObjectArray($this->getMappedValues()))->merge($this);
+        return array_merge($this->getMappedValues(), ObjectArray::objectToArray($this));
     }
 
     public function setValue(array $values)

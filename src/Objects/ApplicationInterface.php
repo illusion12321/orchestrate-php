@@ -61,7 +61,7 @@ interface ApplicationInterface extends ListInterface
     public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0);
 
     /**
-     * @return ObjectArray
+     * @return array
      */
     public function getAggregates();
 }

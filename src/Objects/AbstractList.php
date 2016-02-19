@@ -12,7 +12,7 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
     use ToJsonTrait;
 
     /**
-     * @var ObjectArray
+     * @var array
      */
     protected $_results = null;
 
@@ -126,10 +126,10 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
                     $this->_nextUrl = $value;
 
                 } elseif ($key === 'results') {
-                    $this->_results = new ObjectArray(array_map(
+                    $this->_results = array_map(
                         [$this, 'createInstance'],
                         $value
-                    ));
+                    );
                 }
             }
         }
@@ -141,7 +141,7 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
         $data = [
             'kind' => 'list',
             'count' => count($this),
-            'results' => $this->getResults()->toArray(),
+            'results' => $this->getResults(),
         ];
 
         if ($this->_totalCount !== null) {
@@ -164,7 +164,7 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
 
     public function extractValues($expression)
     {
-        return JmesPath::search($expression, $this->getValues()->toArray());
+        return JmesPath::search($expression, $this->getValues());
     }
 
     public function getValues()
@@ -175,20 +175,20 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
                 $values[] = $item->getValue();
             }
         }
-        return new ObjectArray($values);
+        return $values;
     }
 
     public function getResults()
     {
         if (!$this->_results) {
-            $this->_results = new ObjectArray();
+            $this->_results = [];
         }
         return $this->_results;
     }
 
     public function mergeResults(ListInterface $list)
     {
-        $this->getResults()->merge($list->getResults());
+        ObjectArray::mergeObject($list->getResults(), $this->_results);
         return $this;
     }
 
@@ -274,10 +274,10 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
         // set properties
         if ($body = $this->getBody()) {
             if (!empty($body['results'])) {
-                $this->_results = new ObjectArray(array_map(
+                $this->_results = array_map(
                     [$this, 'createInstance'],
                     $body['results']
-                ));
+                );
             }
             if (isset($body['total_count'])) {
                 $this->_totalCount = (int) $body['total_count'];

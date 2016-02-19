@@ -9,17 +9,17 @@ namespace andrefelipe\Orchestrate\Objects\Properties;
 trait AggregatesTrait
 {
     /**
-     * @var ObjectArray
+     * @var array
      */
     private $_aggregates;
 
     /**
-     * @return ObjectArray
+     * @return array
      */
     public function getAggregates()
     {
         if (!$this->_aggregates) {
-            $this->_aggregates = new ObjectArray();
+            $this->_aggregates = [];
         }
         return $this->_aggregates;
     }

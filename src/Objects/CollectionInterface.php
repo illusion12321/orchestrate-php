@@ -25,7 +25,7 @@ interface CollectionInterface extends ListInterface
     public function setCollection($collection);
 
     /**
-     * @return ObjectArray
+     * @return array
      */
     public function getAggregates();
 

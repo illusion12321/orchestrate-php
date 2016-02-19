@@ -12,7 +12,7 @@ ObjectInterface
     /**
      * Get the results of the list operation.
      *
-     * @return ObjectArray
+     * @return array
      */
     public function getResults();
 

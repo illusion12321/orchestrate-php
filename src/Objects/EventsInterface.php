@@ -54,7 +54,7 @@ interface EventsInterface extends ListInterface
     public function setType($type);
 
     /**
-     * @return ObjectArray
+     * @return array
      */
     public function getAggregates();
 

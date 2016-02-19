@@ -237,13 +237,13 @@ if ($item->get()) {
 
     // at any time, get the Value out if needed
     print_r($item->getValue());
-    // andrefelipe\Orchestrate\Common\ObjectArray Object
+    // Array
     // (
     //     [title] => My Title
     //     [file_url] => http://myfile.jpg
     // )
 
-    // toArray() returns an Array representation of the object
+    // toArray() returns an Array of the Orchestrate object
     print_r($item->toArray());
     // Array
     // (
@@ -299,15 +299,6 @@ if ($collection->search('collection', 'title:"The Title*"')) {
 
 ```
 
-
-
-
-
-## ObjectArray
-
-ObjectArray turns a simple Array into an object, which can be accessed via object or array syntax plus a few other handy methods like toArray, toJson, merge and extract.
-
-Why is that important? Because it makes your data more accessible to you, and to your template engine.
 
 
 
@@ -685,9 +676,9 @@ if ($item->get()) {
 // Example of getting the object info
 $item->getKey(); // string
 $item->getRef(); // string
-$item->getValue(); // ObjectArray of the Value
-$item->toArray(); // Array representation of the object
-$item->toJson(); // Json representation of the object
+$item->getValue(); // Array of the Value
+$item->toArray(); // Array of the Orchestrate object (with path and value)
+$item->toJson(); // Json of the Orchestrate object
 $item->getBody(); // Array of the unfiltered HTTP response body
 
 ```
@@ -1472,7 +1463,6 @@ Please refer to the source code for now, while a proper documentation is made.
 ## Useful Notes
 
 Here are some useful notes to consider when using the Orchestrate service:
-- Avoid using slashes (/) in the key name, some problems will arise when querying them;
 - When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date);
 - Avoid using dashes in properties names, not required, but makes easier to be accessed directly in JS or PHP, without need to wrap in item['my-prop'] or item->{'my-prop'};
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
@@ -1481,7 +1471,5 @@ Here are some useful notes to consider when using the Orchestrate service:
 
 ## Postscript
 
-This client is actively maintained. I am using to develop the next version of [typo/graphic posters](https://www.typographicposters.com) and should be using in more projects at work.
-
-That project is on [Phalcon](http://phalconphp.com/en/) so any heads up into creating a proper ODM for Orchestrate are appreciated.  
+This client is actively maintained. I am using to develop the next version of [typo/graphic posters](https://www.typographicposters.com) and more projects at work.
 

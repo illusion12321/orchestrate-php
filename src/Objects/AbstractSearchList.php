@@ -1,8 +1,6 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ObjectArray;
-
 /**
  * Adds the aggregate support to List objects that provides search support.
  */
@@ -21,7 +19,7 @@ abstract class AbstractSearchList extends AbstractList
         if (!empty($data)) {
 
             if (!empty($data['aggregates'])) {
-                $this->_aggregates = new ObjectArray($data['aggregates']);
+                $this->_aggregates = $data['aggregates'];
             }
 
             parent::init($data);
@@ -34,7 +32,7 @@ abstract class AbstractSearchList extends AbstractList
         $data = parent::toArray();
 
         if ($this->_aggregates) {
-            $data['aggregates'] = $this->_aggregates->toArray();
+            $data['aggregates'] = $this->_aggregates;
         }
 
         return $data;
@@ -50,7 +48,7 @@ abstract class AbstractSearchList extends AbstractList
         if ($this->isSuccess()) {
             $body = $this->getBody();
             if (!empty($body['aggregates'])) {
-                $this->_aggregates = new ObjectArray($body['aggregates']);
+                $this->_aggregates = $body['aggregates'];
             } else {
                 $this->_aggregates = null;
             }

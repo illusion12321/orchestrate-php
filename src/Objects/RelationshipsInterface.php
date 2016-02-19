@@ -61,7 +61,7 @@ interface RelationshipsInterface extends ListInterface
     public function get($limit = 10, $offset = 0)
 
     /**
-     * @return ObjectArray
+     * @return array
      */
     public function getAggregates();
 

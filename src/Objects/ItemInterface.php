@@ -41,7 +41,7 @@ interface ItemInterface extends ObjectInterface
     /**
      * Get item Value.
      *
-     * @return ObjectArray
+     * @return array
      */
     public function getValue();
 
