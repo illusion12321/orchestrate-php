@@ -146,7 +146,8 @@ abstract class AbstractConnection implements ConnectionInterface
     protected function request($method, $uri = null, array $options = [])
     {
         $options[RequestOptions::SYNCHRONOUS] = true;
-        return $this->requestAsync($method, $uri, $options)->wait();
+        $this->requestAsync($method, $uri, $options);
+        return $this->getResponse();
     }
 
     /**
