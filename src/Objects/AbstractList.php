@@ -31,8 +31,6 @@ abstract class AbstractList extends AbstractConnection implements ListInterface
      */
     protected $_prevUrl = '';
 
-    public function __construct() {}
-
     /**
      * Set the client which this object, and all of its children,
      * will use to make Orchestrate API requests.
