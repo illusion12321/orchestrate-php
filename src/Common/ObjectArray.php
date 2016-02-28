@@ -112,11 +112,12 @@ class ObjectArray implements \ArrayAccess, \Countable, ToJsonInterface
 
     /**
      * @param string $expression
+     * 
+     * @return array|null
      */
     public function extract($expression)
     {
-        $result = JmesPath::search($expression, $this->toArray());
-        return is_array($result) ? new self($result) : $result;
+        return JmesPath::search($expression, $this->toArray());
     }
 
     /**

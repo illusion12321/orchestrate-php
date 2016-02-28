@@ -20,4 +20,16 @@ trait ReftimeTrait
     {
         return $this->_reftime;
     }
+
+    /**
+     * @param int $value
+     *
+     * @return self
+     */
+    private function setReftime($value)
+    {
+        $this->_reftime = (int) $value;
+
+        return $this;
+    }
 }

@@ -1,19 +1,15 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 /**
  * Define the KeyValue minimum required interface.
  */
-interface KeyValueInterface extends
-\ArrayAccess,
-ValueInterface,
-ToJsonInterface,
-ReusableObjectInterface,
-ConnectionInterface
+interface KeyValueInterface extends ItemInterface
 {
+    const KIND = 'item';
+
     /**
      * @param boolean $required
      *
@@ -43,33 +39,6 @@ ConnectionInterface
     public function setKey($key);
 
     /**
-     * @return string
-     */
-    public function getRef($required = false);
-
-    /**
-     * @param string $ref
-     *
-     * @return self
-     */
-    public function setRef($ref);
-
-    /**
-     * @return int
-     */
-    public function getReftime();
-
-    /**
-     * @return float
-     */
-    public function getScore();
-
-    /**
-     * @return float
-     */
-    public function getDistance();
-
-    /**
      * @return boolean
      */
     public function isTombstone();
@@ -84,12 +53,28 @@ ConnectionInterface
 
     /**
      * @param array $value
-     * @param string $ref
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-put
      */
-    public function put(array $value = null, $ref = null);
+    public function put(array $value = null);
+
+    /**
+     * @param string $ref
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put-conditional
+     */
+    public function putIf($ref = true, array $value = null);
+
+    /**
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-put-conditional
+     */
+    public function putIfNone(array $value = null);
 
     /**
      * @param array $value
@@ -101,31 +86,58 @@ ConnectionInterface
 
     /**
      * @param PatchBuilder $operations
-     * @param string $ref
      * @param boolean $reload
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch
      */
-    public function patch(PatchBuilder $operations, $ref = null, $reload = false);
+    public function patch(PatchBuilder $operations, $reload = false);
+
+    /**
+     * @param string $ref
+     * @param PatchBuilder $operations
+     * @param boolean $reload
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-conditional
+     */
+    public function patchIf($ref, PatchBuilder $operations, $reload = false);
 
     /**
      * @param array $value
-     * @param string $ref
      * @param boolean $reload
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge
      */
-    public function patchMerge(array $value, $ref = null, $reload = false);
+    public function patchMerge(array $value, $reload = false);
 
     /**
+     *
      * @param string $ref
+     * @param array $value
+     * @param boolean $reload
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-patch-merge-conditional
+     */
+    public function patchMergeIf($ref = true, array $value, $reload = false);
+
+    /**
      *
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#keyvalue-delete
      */
-    public function delete($ref = null);
+    public function delete();
+
+    /**
+     * @param string $ref The specific ref to delete.
+     * Pass true to read the ref value from the current object, via $item->getRef().
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#keyvalue-delete
+     */
+    public function deleteIf($ref = true);
 
     /**
      * @return boolean Success of operation.
@@ -149,12 +161,12 @@ ConnectionInterface
     public function event($type = null, $timestamp = null, $ordinal = null);
 
     /**
-     * @return Relations
+     * @return Relationships
      */
-    public function relations($kind);
+    public function relationships($kind);
 
     /**
-     * @return Relation
+     * @return Relationship
      */
-    public function relation($kind, KeyValueInterface $destination);
+    public function relationship($kind, KeyValueInterface $destination);
 }

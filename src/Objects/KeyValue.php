@@ -1,28 +1,12 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 
 class KeyValue extends AbstractItem implements KeyValueInterface
 {
-    use CollectionTrait;
-    use KeyTrait;
-    use ReftimeTrait;
-    use RefTrait;
-
-    /**
-     * @var float
-     */
-    private $_score = null;
-
-    /**
-     * @var float
-     */
-    private $_distance = null;
+    use Properties\CollectionTrait;
+    use Properties\KeyTrait;
 
     /**
      * @var boolean
@@ -41,16 +25,6 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         $this->setRef($ref);
     }
 
-    public function getScore()
-    {
-        return $this->_score;
-    }
-
-    public function getDistance()
-    {
-        return $this->_distance;
-    }
-
     public function isTombstone()
     {
         return $this->_tombstone;
@@ -61,12 +35,7 @@ class KeyValue extends AbstractItem implements KeyValueInterface
         parent::reset();
         $this->_collection = null;
         $this->_key = null;
-        $this->_ref = null;
-        $this->_score = null;
-        $this->_distance = null;
-        $this->_reftime = null;
         $this->_tombstone = false;
-        $this->resetValue();
     }
 
     public function init(array $data)
@@ -75,23 +44,16 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
             if (!empty($data['path'])) {
                 $data = array_merge($data, $data['path']);
+                unset($data['path']);
             }
+
+            parent::init($data);
 
             foreach ($data as $key => $value) {
                 if ($key === 'collection') {
                     $this->setCollection($value);
                 } elseif ($key === 'key') {
                     $this->setKey($value);
-                } elseif ($key === 'ref') {
-                    $this->setRef($value);
-                } elseif ($key === 'value') {
-                    $this->setValue((array) $value);
-                } elseif ($key === 'score') {
-                    $this->_score = (float) $value;
-                } elseif ($key === 'distance') {
-                    $this->_distance = (float) $value;
-                } elseif ($key === 'reftime') {
-                    $this->_reftime = (int) $value;
                 } elseif ($key === 'tombstone') {
                     $this->_tombstone = (boolean) $value;
                 }
@@ -102,28 +64,10 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
     public function toArray()
     {
-        $data = [
-            'kind' => 'item',
-            'path' => [
-                'collection' => $this->getCollection(),
-                'kind' => 'item',
-                'key' => $this->getKey(),
-                'ref' => $this->getRef(),
-            ],
-            'value' => parent::toArray(),
-        ];
+        $data = parent::toArray();
 
-        if ($this->_score !== null) {
-            $data['score'] = $this->_score;
-        }
-
-        if ($this->_distance !== null) {
-            $data['distance'] = $this->_distance;
-        }
-
-        if ($this->_reftime !== null) {
-            $data['path']['reftime'] = $this->_reftime;
-        }
+        $data['path']['collection'] = $this->_collection;
+        $data['path']['key'] = $this->_key;
 
         if ($this->_tombstone) {
             $data['path']['tombstone'] = $this->_tombstone;
@@ -134,206 +78,351 @@ class KeyValue extends AbstractItem implements KeyValueInterface
 
     public function get($ref = null)
     {
-        // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
-
-        if ($ref) {
-            $path .= '/refs/'.trim($ref, '"');
-        }
-
-        // request
-        $this->request('GET', $path);
-
-        // set values
-        if ($this->isSuccess()) {
-            $this->setValue($this->getBody());
-            $this->setRefFromETag();
-        }
+        $this->getAsync($ref);
+        $this->wait();
         return $this->isSuccess();
     }
 
-    public function put(array $value = null, $ref = null)
+    public function getAsync($ref = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        // define request options
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
+        if ($ref) {
+            $path[] = 'refs';
+            $path[] = trim($ref, '"');
+        }
+
+        // request
+        $promise = $this->requestAsync('GET', $path);
+
+        $promise = $promise->then(
+            static function ($self) {
+                $self->setValue($self->getBody());
+                $self->setRefFromETag();
+                return $self;
+            }
+            // ,
+            // static function ($self) {
+            //     return new \GuzzleHttp\Promise\RejectedPromise($self);
+            // }
+
+        );
+
+        return $promise;
+    }
+
+    public function put(array $value = null)
+    {
+        return $this->_put($value);
+    }
+
+    public function putAsync(array $value = null)
+    {
+        return $this->_putAsync($value);
+    }
+
+    public function putIf($ref = true, array $value = null)
+    {
+        return $this->_put($value, $this->getValidRef($ref));
+    }
+
+    public function putIfAsync($ref = true, array $value = null)
+    {
+        return $this->_putAsync($value, $this->getValidRef($ref));
+    }
+
+    public function putIfNone(array $value = null)
+    {
+        return $this->_put($value, false);
+    }
+
+    public function putIfNoneAsync(array $value = null)
+    {
+        return $this->_putAsync($value, false);
+    }
+
+    private function _put(array $value = null, $ref = null)
+    {
+        $this->_putAsync($value, $ref);
+        $this->wait();
+        return $this->isSuccess();
+    }
+
+    private function _putAsync(array $value = null, $ref = null)
+    {
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['json' => $newValue];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
-
         } elseif ($ref === false) {
-
-            // set If-None-Match
             $options['headers'] = ['If-None-Match' => '"*"'];
         }
 
         // request
-        $this->request('PUT', $path, $options);
+        $promise = $this->requestAsync('PUT', $path, $options);
 
-        // set values
-        if ($this->isSuccess()) {
-            $this->setRefFromETag();
+        $promise = $promise->then(
+            static function ($self) use ($value, $newValue) {
 
-            if ($value !== null) {
-                $this->resetValue();
-                $this->setValue($newValue);
+                if ($value !== null) {
+                    $self->resetValue();
+                    $self->setValue($newValue);
+                }
+                $self->setRefFromETag();
+                return $self;
             }
-        }
-        return $this->isSuccess();
+        );
+
+        return $promise;
     }
 
     public function post(array $value = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
-
-        // request
-        $this->request('POST', $this->getCollection(true), ['json' => $newValue]);
-
-        // set values
-        if ($this->isSuccess()) {
-            $this->setKeyRefFromLocation();
-
-            if ($value !== null) {
-                $this->resetValue();
-                $this->setValue($newValue);
-            }
-        }
+        $this->postAsync($value);
+        $this->wait();
         return $this->isSuccess();
     }
 
-    public function patch(PatchBuilder $operations, $ref = null, $reload = false)
+    public function postAsync(array $value = null)
+    {
+        $newValue = $value === null ? $this->getValue() : $value;
+
+        // request
+        $path = [$this->getCollection(true)];
+        $promise = $this->requestAsync('POST', $path, ['json' => $newValue]);
+
+        $promise = $promise->then(
+            static function ($self) use ($value, $newValue) {
+
+                if ($value !== null) {
+                    $self->resetValue();
+                    $self->setValue($newValue);
+                }
+                $self->setKeyRefFromLocation();
+                return $self;
+            }
+        );
+
+        return $promise;
+    }
+
+    public function patch(PatchBuilder $operations, $reload = false)
+    {
+        return $this->_patch($operations, null, $reload);
+    }
+
+    public function patchAsync(PatchBuilder $operations, $reload = false)
+    {
+        return $this->_patchAsync($operations, null, $reload);
+    }
+
+    public function patchIf($ref = true, PatchBuilder $operations, $reload = false)
+    {
+        return $this->_patch($operations, $this->getValidRef($ref), $reload);
+    }
+
+    public function patchIfAsync($ref = true, PatchBuilder $operations, $reload = false)
+    {
+        return $this->_patchAsync($operations, $this->getValidRef($ref), $reload);
+    }
+
+    private function _patch(PatchBuilder $operations, $ref = null, $reload = false)
+    {
+        $this->_patchAsync($operations, $ref, $reload);
+        $this->wait();
+        return $this->isSuccess();
+    }
+
+    private function _patchAsync(PatchBuilder $operations, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['json' => $operations->toArray()];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
-        $this->request('PATCH', $path, $options);
+        $promise = $this->requestAsync('PATCH', $path, $options);
 
-        // set values
-        if ($this->isSuccess()) {
-            $this->setRefFromETag();
+        $promise = $promise->then(
+            static function ($self) use ($reload) {
 
-            // reload the Value from API
-            if ($reload) {
-                $this->get($this->getRef());
+                $self->setRefFromETag();
+
+                // reload the Value from API
+                if ($reload) {
+                    $self->get($self->getRef());
+                }
+
+                return $self;
             }
-        }
+        );
+
+        return $promise;
+    }
+
+    public function patchMerge(array $value, $reload = false)
+    {
+        return $this->_patchMerge($value, $reload);
+    }
+
+    public function patchMergeIf($ref, array $value, $reload = false)
+    {
+        return $this->_patchMerge($value, $this->getValidRef($ref), $reload);
+    }
+
+    private function _patchMerge(array $value, $ref = null, $reload = false)
+    {
+        $this->_patchMergeAsync($value, $ref, $reload);
+        $this->wait();
         return $this->isSuccess();
     }
 
-    public function patchMerge(array $value, $ref = null, $reload = false)
+    private function _patchMergeAsync(array $value, $ref = null, $reload = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['json' => $value];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
-        $this->request('PATCH', $path, $options);
+        $promise = $this->requestAsync('PATCH', $path, $options);
 
-        // set values
-        if ($this->isSuccess()) {
-            $this->setRefFromETag();
+        $promise = $promise->then(
+            static function ($self) use ($reload) {
 
-            // reload the Value from API
-            if ($reload) {
-                $this->get($this->getRef());
+                $self->setRefFromETag();
+
+                // reload the Value from API
+                if ($reload) {
+                    $self->get($self->getRef());
+                }
+
+                return $self;
             }
-        }
+        );
+
+        return $promise;
+    }
+
+    public function delete()
+    {
+        return $this->_delete();
+    }
+
+    public function deleteIf($ref = true)
+    {
+        return $this->_delete($this->getValidRef($ref));
+    }
+
+    private function _delete($ref = null)
+    {
+        $this->_deleteAsync($ref);
+        $this->wait();
         return $this->isSuccess();
     }
 
-    public function delete($ref = null)
+    private function _deleteAsync($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = [];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
         // request
-        $this->request('DELETE', $path, $options);
+        $promise = $this->requestAsync('DELETE', $path, $options);
 
-        if ($this->isSuccess()) {
-            $this->_score = null;
-            $this->_distance = null;
-            $this->_reftime = null;
-            $this->_tombstone = true;
-            $this->resetValue();
-        }
-        return $this->isSuccess();
+        $promise = $promise->then(
+            static function ($self) {
+
+                $self->_score = null;
+                $self->_distance = null;
+                $self->_reftime = null;
+                $self->_tombstone = true;
+                $self->resetValue();
+
+                return $self;
+            }
+        );
+
+        return $promise;
     }
 
     public function purge()
     {
+        $this->purgeAsync();
+        $this->wait();
+        return $this->isSuccess();
+    }
+
+    public function purgeAsync()
+    {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+        ];
         $options = ['query' => ['purge' => 'true']];
 
         // request
-        $this->request('DELETE', $path, $options);
+        $promise = $this->requestAsync('DELETE', $path, $options);
 
-        if ($this->isSuccess()) {
-            $this->_key = null;
-            $this->_ref = null;
-            $this->_score = null;
-            $this->_distance = null;
-            $this->_reftime = null;
-            $this->_tombstone = false;
-            $this->resetValue();
-        }
-        return $this->isSuccess();
+        $promise = $promise->then(
+            static function ($self) {
+
+                $this->_key = null;
+                $this->_ref = null;
+                $this->_score = null;
+                $this->_distance = null;
+                $this->_reftime = null;
+                $this->_tombstone = false;
+                $this->resetValue();
+
+                return $self;
+            }
+        );
+
+        return $promise;
     }
 
     public function refs()
     {
         return (new Refs($this->getCollection(true), $this->getKey(true)))
-            ->setHttpClient($this->getHttpClient(true))
+            ->setHttpClient($this->getHttpClient())
             ->setItemClass(new \ReflectionClass($this));
-
-        // this new reflection instance may be cached, just check subclasses scope
     }
 
     public function events($type = null)
     {
         return (new Events($this->getCollection(true), $this->getKey(true), $type))
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     public function event($type = null, $timestamp = null, $ordinal = null)
@@ -344,19 +433,19 @@ class KeyValue extends AbstractItem implements KeyValueInterface
             $type,
             $timestamp,
             $ordinal
-        ))->setHttpClient($this->getHttpClient(true));
+        ))->setHttpClient($this->getHttpClient());
     }
 
-    public function relations($kind)
+    public function relationships($kind)
     {
-        return (new Relations($this->getCollection(true), $this->getKey(true), $kind))
-            ->setHttpClient($this->getHttpClient(true));
+        return (new Relationships($this->getCollection(true), $this->getKey(true), $kind))
+            ->setHttpClient($this->getHttpClient());
     }
 
-    public function relation($kind, KeyValueInterface $destination)
+    public function relationship($kind, KeyValueInterface $destination)
     {
-        return (new Relation($this, $kind, $destination))
-            ->setHttpClient($this->getHttpClient(true));
+        return (new Relationship($this, $kind, $destination))
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**

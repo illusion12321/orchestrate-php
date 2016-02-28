@@ -13,7 +13,7 @@ A very user-friendly PHP client for [Orchestrate.io](https://orchestrate.io) DBa
 
 Add helpful features which Orchestrate API doesn't support (yet):
 - [Bi-directional relation](#graph-put).
-- [Get total item and event count](#collection-info) of a Collection.
+- [Get total item, event or relationship count](#collection-info) of a Collection or entire Application.
 - [Load resulting value](#keyvalue-patch-partial-update---operations) of an item after Patching.
 
 Sample integrations:
@@ -109,7 +109,7 @@ if ($item->isSuccess()) {
 ##### Actual Orchestrate objects (Collection, KeyValue, Event, etc), which provide an object API as well as the response status.
 
 ```php
-use andrefelipe\Orchestrate\Application;
+use andrefelipe\Orchestrate\Objects\Application;
 
 // provide the parameters, in order: apiKey, host, version
 $application = new Application(
@@ -177,10 +177,6 @@ if ($item->get()) {
     echo $item->getStatusCode();
     // 404
     // — the HTTP response status code
-    
-    echo $item->getResponseDate();
-    // Wed, 04 Feb 2015 14:41:37 GMT
-    // - the HTTP Date header
 
     echo $item->getOrchestrateRequestId();
     // ec96acd0-ac7b-11e4-8cf6-22000a0d84a1
@@ -241,13 +237,13 @@ if ($item->get()) {
 
     // at any time, get the Value out if needed
     print_r($item->getValue());
-    // andrefelipe\Orchestrate\Common\ObjectArray Object
+    // Array
     // (
     //     [title] => My Title
     //     [file_url] => http://myfile.jpg
     // )
 
-    // toArray() returns an Array representation of the object
+    // toArray() returns an Array of the Orchestrate object
     print_r($item->toArray());
     // Array
     // (
@@ -267,7 +263,9 @@ if ($item->get()) {
     // )
 
     // to Json too
-    $item->toJson(JSON_PRETTY_PRINT);
+    echo $item->toJson(JSON_PRETTY_PRINT);
+    // or
+    echo json_encode($item, JSON_PRETTY_PRINT);
     // {
     //     "kind": "item",
     //     "path": {
@@ -301,15 +299,6 @@ if ($collection->search('collection', 'title:"The Title*"')) {
 
 ```
 
-
-
-
-
-## ObjectArray
-
-ObjectArray turns a simple Array into an object, which can be accessed via object or array syntax plus a few other handy methods like toArray, toJson, merge and extract.
-
-Why is that important? Because it makes your data more accessible to you, and to your template engine.
 
 
 
@@ -357,7 +346,7 @@ $this->view->member = $item->getValue();
 $this->view->member = $item->extractValue('{name: fullname, country: country}');
 
 // then in volt:
-<p>Member {{ member.name }}, {{ member.country }}</p>
+<p>Member {{ member['name'] }}, {{ member['country'] }}</p>
 
 
 
@@ -379,17 +368,17 @@ $result = $collection->extractValues('[].{name: name, thumb: thumbs[0])}');
 $result = $item->extractValue('{name: name, thumb: thumbs[0]}');
 ```
 
-**NOTE** When a JMESPath result is an array, it will be automatically wrapped into an ObjectArray.
 
 
 
 
+## Models / ODM
 
-## Models
+There's one major decision on our library: **KeyValue and Event's values are stored in the object itself**. So when you get a property with $item->myProp you are accessing it directly. — That won't differ much from an Array memory-wise, because we are storing data as dynamic vars. But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
 
-There's one major decision on our library: **KeyValue and Event's values are stored in the object itself**. So when you get a property with $item->myProp you are accessing it directly. 
+That provides the basis for an ODM. Our objects (KeyValue, Event and Relationship) map directly to the items in your Orchestrate database, so by extending them, you can define your properties, validation, default values, etc.
 
-That won't differ much from an Array memory-wise, because we are storing data as dynamic vars. But by extending a KeyValue class and defining our public properties you can actually reduce the memory allocation.
+For example, let's start with a very simple KeyValue, made to reflect a 'Member' of our project:
 
 ```php
 // Member.php
@@ -505,19 +494,20 @@ class Members extends Collection
         $this->setItemClass('MyProject\Models\Member');
 
         // could set the Event class too if desired
-        // $this->setEventClass('MyProject\Models\MemberActivity');        
+        // $this->setEventClass('MyProject\Models\MemberActivity');
     }
 }
 
 // at this approach, whenever we create items from this collection,
 // it will be Member objects
+
+// for example, let's instantiate a Http client programatically
 use MyProject\Models\Members;
 use andrefelipe\Orchestrate;
 use GuzzleHttp\Client as GuzzleClient;
 
-// let's instantiate a Http client programatically
-$clientConfig = Orchestrate\default_http_config();
-$httpClient = new GuzzleClient($clientConfig);
+// creates a pre-configured Guzzle Client with the default settings
+$httpClient = Orchestrate\default_http_client();
 
 // instatiate the collection
 $members = new Members($httpClient);
@@ -538,6 +528,7 @@ $client->setEventClass($class);
 // andrefelipe\Orchestrate\Objects\EventInterface for Event
 ```
 
+For a pratical example, please view [this project](https://github.com/andrefelipe/orchestrate-phalcon).
 
 
 
@@ -550,9 +541,8 @@ Objects can be serialized and stored in your prefered cache for later re-use.
 It is valuable to cache in JSON format, because any part of your application, in any language, could take advantage of that cache. But if your use case is strictly PHP you can have the best performance. In my ultra simple test, serialization is 3 times faster than JSON decoding and instantiation.
 
 ```php
-// serialize single item
+// serialize in PHP's format
 $item = $collection->item('john');
-
 if ($item->get()) {
     file_put_contents('your-cache-path', serialize($item));
 }
@@ -568,6 +558,29 @@ $item = unserialize($data);
 
 $data = file_get_contents('your-cache-path-collection');
 $collection = unserialize($data);
+
+
+
+// serialize in JSON
+$item = $collection->item('john');
+if ($item->get()) {
+    file_put_contents('your-cache-path', json_encode($item));
+}
+
+// serialize entire collections
+if ($collection->search('*', 'value.created_date:desc', null, 100)) {
+    file_put_contents('your-cache-path-collection', json_encode($collection));
+}
+
+// instantiation
+// you can't recreate your custom classes with JSON
+// but you can work in a similar way
+$data = file_get_contents('your-cache-path');
+$item = (new KeyValue())->init(json_decode($data, true));
+
+$data = file_get_contents('your-cache-path-collection');
+$collection = (new Collection())->init(json_decode($data, true));
+
 
 ```
 
@@ -601,11 +614,23 @@ if ($application->ping()) {
 ### Collection Info:
 
 ```php
-// get total item count of the collection
+// get total item count of the Collection
 echo $collection->getTotalItems();
 
-// get total event count of the collection
+// get total event count of the Collection
 echo $collection->getTotalEvents();
+echo $collection->getTotalEvents('type'); // specific event type
+
+// get total relationship count of the Collection
+echo $collection->getTotalRelationships();
+echo $collection->getTotalRelationships('type'); // specific relation type
+
+// same goes for the entire Application
+echo $application->getTotalItems();
+echo $application->getTotalEvents();
+echo $application->getTotalEvents('type');
+echo $application->getTotalRelationships();
+echo $application->getTotalRelationships('type');
 ```
 
 
@@ -651,9 +676,9 @@ if ($item->get()) {
 // Example of getting the object info
 $item->getKey(); // string
 $item->getRef(); // string
-$item->getValue(); // ObjectArray of the Value
-$item->toArray(); // Array representation of the object
-$item->toJson(); // Json representation of the object
+$item->getValue(); // Array of the Value
+$item->toArray(); // Array of the Orchestrate object (with path and value)
+$item->toJson(); // Json of the Orchestrate object
 $item->getBody(); // Array of the unfiltered HTTP response body
 
 ```
@@ -684,8 +709,13 @@ $item = $client->put('collection', 'key', ['title' => 'New Title'], '20c14e8965d
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->put(['title' => 'New Title'], '20c14e8965d6cbb0');
-$item->put(['title' => 'New Title'], true); // uses the current object Ref
+$item->putIf('20c14e8965d6cbb0', ['title' => 'New Title']);
+$item->putIf(true, ['title' => 'New Title']); // uses the current object Ref, if set
+
+// you can set the value direcly to the object too
+$item->get();
+$item->title = 'New Title'; // check what will be stored with toArray() or getValue()
+$item->putIf(); // will be saved only if the current ref is the same
 ```
 
 
@@ -699,7 +729,11 @@ $item = $client->put('collection', 'key', ['title' => 'New Title'], false);
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->put(['title' => 'New Title'], false);
+$item->putIfNone(['title' => 'New Title']);
+
+// you can set the value direcly to the object too
+$item->title = 'New Title'; // check what will be stored with toArray() or getValue()
+$item->putIfNone(); // will be saved only if the current ref is the same
 ```
 
 
@@ -747,9 +781,11 @@ $item = $client->patch('collection', 'key', $patch, '20c14e8965d6cbb0');
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->patch($patch, '20c14e8965d6cbb0');
-$item->patch($patch, true); // uses the current object Ref
-$item->patch($patch, true, true); // with the reload as mentioned above
+$item->patchIf('20c14e8965d6cbb0', $patch);
+$item->patchIf(true, $patch); // uses the current object Ref
+$item->patchIf(true, $patch, true); // with the reload as mentioned above
+
+
 ```
 
 
@@ -778,8 +814,8 @@ $item = $client->patchMerge('collection', 'key', ['title' => 'New Title'], '20c1
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$item->patchMerge(['title' => 'New Title'], '20c14e8965d6cbb0');
-$item->patchMerge(['title' => 'New Title'], true); // uses the current object Ref
+$item->patchMergeIf('20c14e8965d6cbb0', ['title' => 'New Title']);
+$item->patchMergeIf(true, ['title' => 'New Title']); // uses the current object Ref
 // also has a 'reload' parameter as mentioned above
 ```
 
@@ -826,8 +862,8 @@ $item = $collection->item('key');
 // first get the item, or set a ref:
 // $item->get();
 // or $item->setRef('20c14e8965d6cbb0');
-$item->delete(true); // delete the current ref
-$item->delete('20c14e8965d6cbb0'); // delete a specific ref
+$item->deleteIf(true); // delete the current ref
+$item->deleteIf('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
 
@@ -920,8 +956,8 @@ Get the specified version of a value.
 $refs = $client->listRefs('collection', 'key');
 
 // Approach 2 - Object
-$item = $collection->item('key');
-$refs = $item->refs();
+$refs = $collection->refs('key');
+// or $refs = $item->refs();
 $refs->get(100);
 
 // now get array of the results
@@ -944,6 +980,65 @@ $refs->prevPage(); // loads previous set of results
 
 
 
+
+
+### Root Search:
+
+```php
+// Approach 1 - Client
+$application = $client->rootSearch('@path.kind:* AND title:"The Title*"');
+
+// Approach 2 - Object
+$application->search('@path.kind:* AND title:"The Title*"');
+
+
+// one way of getting array of the search results
+$itemList = $results->getResults();
+
+// serialize as json
+echo json_encode($application, JSON_PRETTY_PRINT);
+
+// or go ahead and iterate over the results directly
+foreach ($application as $item) {
+    
+    echo $item->title;
+
+    $item->getScore(); // search score
+    $item->getDistance(); // populated if it was a Geo query
+}
+
+// aggregates
+$application->getAggregates(); // array of the Aggregate results, if any 
+
+// pagination
+$application->getNextUrl(); // string
+$application->getPrevUrl(); // string
+count($application); // count of the current set of results
+$application->getTotalCount(); // count of the total results
+$application->nextPage(); // loads next set of results
+$application->prevPage(); // loads previous set of results
+```
+
+All Search parameters are supported, and it includes [Geo](https://orchestrate.io/docs/apiref#geo-queries) and [Aggregates](https://orchestrate.io/docs/apiref#aggregates) queries. Please refer to the [API Reference](https://orchestrate.io/docs/apiref#search).
+```php
+// public function search($query, $sort=null, $aggregate=null, $limit=10, $offset=0)
+
+// aggregates example
+$application->search(
+    'value.created_date:[2014-01-01 TO 2014-12-31]',
+    null,
+    'value.created_date:time_series:month'
+);
+```
+
+Mixing any object type is supported too:
+```php
+$application->search('@path.kind:(item event relationship) AND title:"The Title*"');
+// results will be either KeyValue, Event or Relation objects
+```
+
+
+
 ### Search:
 
 ```php
@@ -954,7 +1049,7 @@ $collection = $client->search('collection', 'title:"The Title*"');
 $collection->search('title:"The Title*"');
 
 
-// now get array of the search results
+// one way of getting array of the search results
 $itemList = $results->getResults();
 
 // or go ahead and iterate over the results directly
@@ -990,13 +1085,11 @@ $collection->search(
 );
 ```
 
-Mixing event search is supported too:
+Mixing any object type is supported too:
 ```php
 $collection->search('@path.kind:(item event) AND title:"The Title*"');
-// results will be either KeyValue or Event
+// results will be either KeyValue, Event or Relation objects
 ```
-
-Searching only events would be fine too, but for that you may be interested in the [Events](#event-search) class.
 
 
 
@@ -1039,8 +1132,8 @@ $event = $client->putEvent('collection', 'key', 'type', 1400684480732, 1, ['titl
 // Approach 2 - Object
 $item = $collection->item('key');
 $event = $item->event('type', 1400684480732, 1);
-$event->put(['title' => 'New Title'], '20c14e8965d6cbb0');
-$event->put(['title' => 'New Title'], true); // uses the current object Ref, in case you have or loaded before with ->get()
+$event->putIf('20c14e8965d6cbb0', ['title' => 'New Title']);
+$event->putIf(true, ['title' => 'New Title']); // uses the current object Ref, in case you have it, or loaded before with ->get()
 ```
 
 
@@ -1094,8 +1187,8 @@ $event = $client->deleteEvent('collection', 'key', 'type', 1400684480732, 1, '20
 // Approach 2 - Object
 $item = $collection->item('key');
 $event = $item->event('type', 1400684480732, 1);
-$event->delete(true); // delete the current ref
-$event->delete('20c14e8965d6cbb0'); // delete a specific ref
+$event->deleteIf(true); // delete the current ref
+$event->deleteIf('20c14e8965d6cbb0'); // delete a specific ref
 ```
 
 
@@ -1170,9 +1263,7 @@ $events->prevPage(); // loads previous set of results
 
 ```php
 // Approach 1 - Client
-$collection = $client->searchEvents('collection', 'key', 'type', 'title:"The Title*"');
-// if you don't need key or type, pass null
-$collection = $client->searchEvents('collection', null, 'type', 'title:"The Title*"');
+$collection = $client->search('collection', '@path.kind:event AND title:"The Title*"');
 
 
 // Approach 2 - Object
@@ -1236,20 +1327,22 @@ $events->search(
 
 
 
-### Graph Get (List):
+### Graph List:
 
-Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk. Relations aren't fetched by unit, so the result will always be a List.
+Returns relation's collection, key, ref, and values. The "kind" parameter(s) indicate which relations to walk and the depth to walk.
 
 ```php
 // Approach 1 - Client
-$relations = $client->listRelations('collection', 'key', 'kind');
+$relations = $client->listRelationships('collection', 'key', 'kind');
 
 // Approach 2 - Object
 $item = $collection->item('key');
-$relations = $item->relations('kind');
+$relations = $item->relationships('kind');
 $relations->get(100);
 
 // Kind param can be array too, to indicate the depth to walk
+$relations = $item->relationships(['kind', 'another-kind']);
+
 
 // get array of the results (KeyValue objects)
 $relations->getResults();
@@ -1276,14 +1369,20 @@ $relations->prevPage(); // loads previous set of results
 
 ```php
 // Approach 1 - Client
-$item = $client->putRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+$item = $client->putRelationship('collection', 'key', 'kind', 'toCollection', 'toKey');
 
 // Approach 2 - Object
 $item = $collection->item('key');
 $anotherItem = $collection->item('another-key');
 
-if ($item->relation('kind', $anotherItem)->put()) {
+$relation = $item->relationship('kind', $anotherItem);
+
+if ($relation->put()) {
     // success
+
+} else {
+    // check error status message
+    echo $relation->getStatus();
 }
 
 // TIP: Relations are one way operations. We relate an item to another,
@@ -1291,14 +1390,38 @@ if ($item->relation('kind', $anotherItem)->put()) {
 
 // To make life easier we implemented that two-way operation, so both source
 // and destination items relates to each other.
-// Just pass 'true' as parameter.
 
-if ($item->relation('kind', $anotherItem)->put(true)) {
+if ($relation->putBoth()) {
     // success, now both items are related to each other
 
     // Note that 2 API calls are made in this operation,
     // and the operation success is given only if both are
     // successful.
+}
+
+```
+
+
+### Graph Put with Properties
+
+```php
+$values = ['title' => 'My Title'];
+
+// Approach 1 - Client
+$item = $client->putRelationship('collection', 'key', 'kind', 'toCollection', 'toKey', $values);
+
+// Approach 2 - Object (recommended)
+$item = $collection->item('key');
+$anotherItem = $collection->item('another-key');
+
+$relation = $item->relationship('kind', $anotherItem);
+
+if ($relation->put($values)) {
+    // success
+}
+
+if ($relation->putBoth($values)) {
+    // success
 }
 
 ```
@@ -1310,18 +1433,20 @@ Deletes a relationship between two objects. Relations don't have a history, so t
 
 ```php
 // Approach 1 - Client
-$item = $client->deleteRelation('collection', 'key', 'kind', 'toCollection', 'toKey');
+$item = $client->deleteRelationship('collection', 'key', 'kind', 'toCollection', 'toKey');
 
 // Approach 2 - Object
 $item = $collection->item('key');
 $anotherItem = $collection->item('another-key');
 
-if ($item->relation('kind', $anotherItem)->delete()) {
+$relation = $item->relationship('kind', $anotherItem);
+
+if ($relation->delete()) {
     // success
 }
 
 // Same two-way operation can be made here too:
-if ($item->relation('kind', $anotherItem)->delete(true)) {
+if ($relation->deleteBoth()) {
     // success, now both items are not related to each other anymore
 }
 
@@ -1338,7 +1463,6 @@ Please refer to the source code for now, while a proper documentation is made.
 ## Useful Notes
 
 Here are some useful notes to consider when using the Orchestrate service:
-- Avoid using slashes (/) in the key name, some problems will arise when querying them;
 - When adding a field for a date, suffix it with '_date' or other [supported prefixes](https://orchestrate.io/docs/apiref#sorting-by-date);
 - Avoid using dashes in properties names, not required, but makes easier to be accessed directly in JS or PHP, without need to wrap in item['my-prop'] or item->{'my-prop'};
 - If applicable, remember you can use a composite key like `{deviceID}_{sensorID}_{timestamp}` for your KeyValue keys, as the List query supports key filtering. More info here: https://orchestrate.io/blog/2014/05/22/the-primary-key/ and API here: https://orchestrate.io/docs/apiref#keyvalue-list;
@@ -1347,7 +1471,5 @@ Here are some useful notes to consider when using the Orchestrate service:
 
 ## Postscript
 
-This client is actively maintained. I am using to develop the next version of [typo/graphic posters](https://www.typographicposters.com) and should be using in more projects at work.
-
-That project is on [Phalcon](http://phalconphp.com/en/) so any heads up into creating a proper ODM for Orchestrate are appreciated.  
+This client is actively maintained. I am using to develop the next version of [typo/graphic posters](https://www.typographicposters.com) and more projects at work.
 

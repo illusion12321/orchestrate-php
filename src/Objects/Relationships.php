@@ -1,25 +1,23 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
-
-class Events extends AbstractSearchList implements EventsInterface
+class Relationships extends AbstractSearchList implements RelationshipsInterface
 {
     use Properties\CollectionTrait;
     use Properties\KeyTrait;
-    use Properties\TypeTrait;
-    use Properties\EventClassTrait;
+    use Properties\DepthTrait;
+    use Properties\RelationshipClassTrait;
 
     /**
      * @param string $collection
      * @param string $key
-     * @param string $type
+     * @param string|array $kind
      */
-    public function __construct($collection = null, $key = null, $type = null)
+    public function __construct($collection = null, $key = null, $kind = null)
     {
         $this->setCollection($collection);
         $this->setKey($key);
-        $this->setType($type);
+        $this->setDepth($kind);
     }
 
     public function reset()
@@ -27,15 +25,15 @@ class Events extends AbstractSearchList implements EventsInterface
         parent::reset();
         $this->_collection = null;
         $this->_key = null;
-        $this->_type = null;
+        $this->_depth = null;
     }
 
     public function init(array $data)
     {
         if (!empty($data)) {
 
-            if (isset($data['eventClass'])) {
-                $this->setEventClass($data['eventClass']);
+            if (isset($data['relationshipClass'])) {
+                $this->setRelationshipClass($data['relationshipClass']);
             }
             if (isset($data['collection'])) {
                 $this->setCollection($data['collection']);
@@ -43,8 +41,8 @@ class Events extends AbstractSearchList implements EventsInterface
             if (isset($data['key'])) {
                 $this->setKey($data['key']);
             }
-            if (isset($data['type'])) {
-                $this->setType($data['type']);
+            if (isset($data['depth'])) {
+                $this->setDepth($data['depth']);
             }
 
             parent::init($data);
@@ -58,27 +56,26 @@ class Events extends AbstractSearchList implements EventsInterface
         $data['kind'] = static::KIND;
         $data['collection'] = $this->_collection;
         $data['key'] = $this->_key;
-        $data['type'] = $this->_type;
-
-        if ($this->getEventClass()->name !== self::$defaultEventClassName) {
-            $data['eventClass'] = $this->getEventClass()->name;
-        }
+        $data['depth'] = $this->_depth;
 
         return $data;
     }
 
-    public function get($limit = 10, TimeRangeBuilder $range = null)
+    public function get($limit = 10, $offset = 0)
     {
         // define request options
         $path = [
             $this->getCollection(true),
             $this->getKey(true),
-            'events',
-            $this->getType(true),
+            'relations',
         ];
+        $path = array_merge($path, $this->getDepth(true));
 
-        $parameters = $range ? $range->toArray() : [];
-        $parameters['limit'] = $limit > 100 ? 100 : $limit;
+        $parameters = ['limit' => $limit];
+
+        if ($offset) {
+            $parameters['offset'] = $offset;
+        }
 
         // request
         $this->request('GET', $path, ['query' => $parameters]);
@@ -86,19 +83,18 @@ class Events extends AbstractSearchList implements EventsInterface
         if ($this->isSuccess()) {
             $this->setResponseValues();
         }
-
         return $this->isSuccess();
     }
 
     public function search($query, $sort = null, $aggregate = null, $limit = 10, $offset = 0)
     {
         // define request options
-        $queryParts = ['@path.kind:'.Event::KIND];
+        $queryParts = ['@path.kind:'.Relationship::KIND];
         if (!empty($this->_key)) {
             $queryParts[] = '@path.key:'.$this->_key;
         }
-        if (!empty($this->_type)) {
-            $queryParts[] = '@path.type:'.$this->_type;
+        if (!empty($this->_depth)) {
+            $queryParts[] = '@path.relation:'.implode('/', $this->_depth);
         }
         if ($query) {
             $queryParts[] = $query;
@@ -135,8 +131,8 @@ class Events extends AbstractSearchList implements EventsInterface
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === Event::KIND) {
-                $class = $this->getEventClass();
+            if ($kind === Relationship::KIND) {
+                $class = $this->getRelationshipClass();
 
             } else {
                 return null;

@@ -40,9 +40,20 @@ trait RefTrait
         return $this;
     }
 
-    private function setRefFromETag()
+    protected function setRefFromETag()
     {
         $etag = $this->getResponse()->getHeader('ETag');
         $this->_ref = !empty($etag) ? trim($etag[0], '"') : null;
+    }
+
+    protected function getValidRef($ref = true)
+    {
+        if ($ref === true) {
+            $ref = $this->getRef();
+        }
+        if (empty($ref) || !is_string($ref)) {
+            throw new \BadMethodCallException('A valid \'ref\' value is required.');
+        }
+        return $ref;
     }
 }

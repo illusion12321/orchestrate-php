@@ -2,26 +2,17 @@
 namespace andrefelipe\Orchestrate\Objects;
 
 use andrefelipe\Orchestrate\Common\ObjectArray;
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
 use andrefelipe\Orchestrate\Common\ToJsonTrait;
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
 use GuzzleHttp\ClientInterface;
 use JmesPath\Env as JmesPath;
 
-abstract class AbstractList extends AbstractResponse implements
-\ArrayAccess,
-\IteratorAggregate,
-\Countable,
-\Serializable,
-ListInterface,
-ToJsonInterface,
-ReusableObjectInterface
+abstract class AbstractList extends AbstractConnection implements ListInterface
 {
-    use CollectionTrait;
+    use Properties\KindTrait;
     use ToJsonTrait;
 
     /**
-     * @var ObjectArray
+     * @var array
      */
     protected $_results = null;
 
@@ -39,14 +30,6 @@ ReusableObjectInterface
      * @var string
      */
     protected $_prevUrl = '';
-
-    /**
-     * @param string $collection
-     */
-    public function __construct($collection = null)
-    {
-        $this->setCollection($collection);
-    }
 
     /**
      * Set the client which this object, and all of its children,
@@ -120,17 +103,12 @@ ReusableObjectInterface
     public function reset()
     {
         parent::reset();
-        $this->_collection = null;
         $this->_totalCount = null;
         $this->_nextUrl = '';
         $this->_prevUrl = '';
         $this->_results = null;
     }
 
-    /**
-     * @param array $data
-     * @return AbstractList
-     */
     public function init(array $data)
     {
         if (!empty($data)) {
@@ -146,32 +124,22 @@ ReusableObjectInterface
                     $this->_nextUrl = $value;
 
                 } elseif ($key === 'results') {
-                    $this->_results = new ObjectArray(array_map(
+                    $this->_results = array_map(
                         [$this, 'createInstance'],
                         $value
-                    ));
-
-                    // set Collection name if not already
-                    if (!$this->_collection && isset($this->_results[0])
-                        && method_exists($this->_results[0], 'getCollection')
-                    ) {
-                        $this->setCollection($this->_results[0]->getCollection());
-                    }
+                    );
                 }
             }
         }
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function toArray()
     {
         $data = [
             'kind' => 'list',
             'count' => count($this),
-            'results' => $this->getResults()->toArray(),
+            'results' => $this->getResults(),
         ];
 
         if ($this->_totalCount !== null) {
@@ -189,50 +157,42 @@ ReusableObjectInterface
 
     public function extract($expression)
     {
-        $result = JmesPath::search($expression, $this->toArray());
-        return is_array($result) ? new ObjectArray($result) : $result;
+        return JmesPath::search($expression, $this->toArray());
     }
 
     public function extractValues($expression)
     {
-        $result = JmesPath::search($expression, $this->getValues()->toArray());
-        return is_array($result) ? new ObjectArray($result) : $result;
+        return JmesPath::search($expression, $this->getValues());
     }
 
-    /**
-     * @return ObjectArray
-     */
     public function getValues()
     {
         $values = [];
         foreach ($this->getResults() as $item) {
-            if ($item instanceof ValueInterface) {
+            if ($item instanceof ItemInterface) {
                 $values[] = $item->getValue();
             }
         }
-        return new ObjectArray($values);
+        return $values;
     }
 
-    /**
-     * @return ObjectArray
-     */
     public function getResults()
     {
         if (!$this->_results) {
-            $this->_results = new ObjectArray();
+            $this->_results = [];
         }
         return $this->_results;
     }
 
-    /**
-     * @return self
-     */
     public function mergeResults(ListInterface $list)
     {
-        $this->getResults()->merge($list->getResults());
+        ObjectArray::mergeObject($list->getResults(), $this->_results);
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         return serialize($this->toArray());
@@ -258,33 +218,21 @@ ReusableObjectInterface
         throw new \InvalidArgumentException('Invalid serialized data type.');
     }
 
-    /**
-     * @return int
-     */
     public function getTotalCount()
     {
         return $this->_totalCount;
     }
 
-    /**
-     * @return string
-     */
     public function getNextUrl()
     {
         return $this->_nextUrl;
     }
 
-    /**
-     * @return string
-     */
     public function getPrevUrl()
     {
         return $this->_prevUrl;
     }
 
-    /**
-     * @return boolean Success of operation.
-     */
     public function nextPage()
     {
         if ($this->_nextUrl) {
@@ -298,9 +246,6 @@ ReusableObjectInterface
         return false;
     }
 
-    /**
-     * @return boolean Success of operation.
-     */
     public function prevPage()
     {
         if ($this->_prevUrl) {
@@ -327,10 +272,10 @@ ReusableObjectInterface
         // set properties
         if ($body = $this->getBody()) {
             if (!empty($body['results'])) {
-                $this->_results = new ObjectArray(array_map(
+                $this->_results = array_map(
                     [$this, 'createInstance'],
                     $body['results']
-                ));
+                );
             }
             if (isset($body['total_count'])) {
                 $this->_totalCount = (int) $body['total_count'];

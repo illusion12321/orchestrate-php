@@ -1,28 +1,40 @@
-# TODO and IDEAS
+# TODO and IDEAS   
 
-- Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
+- Docs on Graph Get and Graph conditionals, check for client api change as well.
+
+- Maybe add an 'newInstance' (or clone) method to each Object, to make it easier to create a empty instance to work on. Probably it should come pre-set with the same name/collection.
+
+- Study the removal of the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
+
+- Add relationships(), relationship() methods to Collection (and probably Application)
+
+- Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder)) or better, use collection->search('query*', $options), where $options = (new Orchestrate/Query/SearchOptions())->limit(10)->sort('title')
+- scheme: app->query(‘*')->sort(’title:asc')->get(20) — ou ->find() ou ->send() ou ->search()
+- scheme: app->search(‘*’, [’sort’ => ’title:asc’, ‘limit’ => 20]]);
+- scheme: listItems()->range()->limit()->get() (maybe always end in 'get')
+---Do not use the object itself to build the query chain, it's confusing---
+
+- Study the removal of several functions parameters
+
+- Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder! I.E. collection->search('query*', ['limit' => 10, 'sort' => 'title'])
+
 - Consider renaming Collection/Events 'get' method to their client counterpart (review the Client class for ideas)
 
-- Go ahead and add the collection->my_item map.. that loads the item with get already? OK, but should implement an internal cache right?
-. application->my_collection->my_item
-. application->collection('my_collection')->item('my_item')
-. application->item('my_collection', 'my_item')
-. Note that collection->my_item should return null when it doens't exist, because of implementations could favor that: Model::get($id) ?? $default_model;
+- Implement Bulk operations support 
 
-- MAYBE remove the constructor params in favor of a single array or string — if array use init / if string consider as path and split accordingly
+- On Application object, add method to setCollectionClass, and allow to set many, by collection name?
 
-- MAYBE remove value parameter from put and post, to favor the object syntax? Review the use cases, considering a ODM that would use a 'save' method
+- getReftime could automatically load the reftime if not provided? only if required, to not make API calls without the user knowing
+
+- Maybe change 'patchMerge' on KeyValue to just 'merge'
+
+- Remove the Client class as we know it, turning it into an Operations constructor — we should to create api operations, then use at will: execute on Pools, async, etc..
 
 - Add feature of getting lists above the limit of 100, even passing -1 to get entire list (pages loading will happen in background)
 
-- Work on Search Query builder (query + sort + aggregate builder, then be used on collection->query($queryBuilder))
----Do not use the object itself to build the query chain, it's confusing---
+- Consider BLOB storage support?
 
-- Provide a quicker access to query builders by allowing regular arrays, which get passed to a init on each query builder
-
-- Implement more common interfaces, and general organization of the classes / folders (create an AbstractCollection, to gather all common parts of searchable lists: collection/events)
-
-- could have find/search/findFirst method on KeyValue to search the collection and load the first match.
+- could have find/search/findFirst method on KeyValue to search the collection and load the first match?
 
 - Collection could follow too? findFirst?
 

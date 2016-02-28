@@ -1,33 +1,29 @@
 <?php
 namespace andrefelipe\Orchestrate;
 
-use andrefelipe\Orchestrate\Objects\AbstractConnection;
+use andrefelipe\Orchestrate\Objects\Application;
 use andrefelipe\Orchestrate\Objects\Collection;
 use andrefelipe\Orchestrate\Objects\Event;
 use andrefelipe\Orchestrate\Objects\Events;
 use andrefelipe\Orchestrate\Objects\KeyValue;
-use andrefelipe\Orchestrate\Objects\Properties\EventClassTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
 use andrefelipe\Orchestrate\Objects\Refs;
-use andrefelipe\Orchestrate\Objects\Relation;
-use andrefelipe\Orchestrate\Objects\Relations;
+use andrefelipe\Orchestrate\Objects\Relationship;
+use andrefelipe\Orchestrate\Objects\Relationships;
 use andrefelipe\Orchestrate\Query\KeyRangeBuilder;
 use andrefelipe\Orchestrate\Query\PatchBuilder;
 use andrefelipe\Orchestrate\Query\TimeRangeBuilder;
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 
 /**
  * Client interface for Orchestrate API.
  *
  * @link https://orchestrate.io/docs/apiref
  */
-class Client extends AbstractConnection
+class Client
 {
-    use EventClassTrait;
-    use ItemClassTrait;
-
     /**
-     * Instantiates a default HTTP client on construction.
+     * If you provide any parameters if will instantiate a HTTP client on construction.
+     * Otherwise it will create one when required.
      *
      * @param string $apiKey Orchestrate API key. If not set gets from env 'ORCHESTRATE_API_KEY'.
      * @param string $host Orchestrate API host. Defaults to 'https://api.orchestrate.io'
@@ -35,8 +31,32 @@ class Client extends AbstractConnection
      */
     public function __construct($apiKey = null, $host = null, $version = null)
     {
-        $config = default_http_config($apiKey, $host, $version);
-        $this->setHttpClient(new GuzzleClient($config));
+        // lazily instantiante
+        if ($apiKey || $host || $version) {
+            $client = default_http_client($apiKey, $host, $version);
+            $this->setHttpClient($client);
+        }
+    }
+
+    /**
+     * @var ClientInterface
+     */
+    private $_httpClient;
+
+    public function getHttpClient()
+    {
+        if (!$this->_httpClient) {
+            $this->_httpClient = default_http_client();
+        }
+
+        return $this->_httpClient;
+    }
+
+    public function setHttpClient(ClientInterface $httpClient)
+    {
+        $this->_httpClient = $httpClient;
+
+        return $this;
     }
 
     /**
@@ -45,7 +65,8 @@ class Client extends AbstractConnection
      */
     public function ping()
     {
-        return $this->getHttpClient(true)->request('HEAD')->getStatusCode() === 200;
+        // TODO add try catch Exception for timeouts
+        return $this->getHttpClient()->request('HEAD')->getStatusCode() === 200;
     }
 
     // Collection
@@ -54,12 +75,13 @@ class Client extends AbstractConnection
      * Deletes a collection. Warning this will permanently erase all data within
      * this collection and cannot be reversed!
      *
-     * @return boolean
+     * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#collections-delete
      */
     public function deleteCollection($collection)
     {
-        $response = $this->request(
+        // TODO add try catch Exception
+        $response = $this->getHttpClient()->request(
             'DELETE',
             $collection,
             ['query' => ['force' => 'true']]
@@ -82,9 +104,7 @@ class Client extends AbstractConnection
         KeyRangeBuilder $range = null
     ) {
         $list = (new Collection($collection))
-            ->setItemClass($this->getItemClass())
-            ->setEventClass($this->getEventClass())
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $range);
         return $list;
@@ -110,9 +130,31 @@ class Client extends AbstractConnection
         $offset = 0
     ) {
         $list = (new Collection($collection))
-            ->setItemClass($this->getItemClass())
-            ->setEventClass($this->getEventClass())
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
+
+        $list->search($query, $sort, $aggregate, $limit, $offset);
+        return $list;
+    }
+
+    /**
+     * @param string $query
+     * @param string|array $sort
+     * @param string|array $aggregate
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return Application
+     * @link https://orchestrate.io/docs/apiref#search-root
+     */
+    public function rootSearch(
+        $query,
+        $sort = null,
+        $aggregate = null,
+        $limit = 10,
+        $offset = 0
+    ) {
+        $list = (new Application())
+            ->setHttpClient($this->getHttpClient());
 
         $list->search($query, $sort, $aggregate, $limit, $offset);
         return $list;
@@ -149,7 +191,14 @@ class Client extends AbstractConnection
     {
         $item = $this->newItem($collection, $key);
 
-        $item->put($value, $ref);
+        if ($ref) {
+            $item->putIf($ref, $value);
+        } elseif ($ref === false) {
+            $item->putIfNone($value);
+        } else {
+            $item->put($value);
+        }
+
         return $item;
     }
 
@@ -172,7 +221,12 @@ class Client extends AbstractConnection
     ) {
         $item = $this->newItem($collection, $key);
 
-        $item->patch($operations, $ref, $reload);
+        if ($ref) {
+            $item->patchIf($ref, $operations, $reload);
+        } else {
+            $item->patch($operations, $reload);
+        }
+
         return $item;
     }
 
@@ -195,7 +249,12 @@ class Client extends AbstractConnection
     ) {
         $item = $this->newItem($collection, $key);
 
-        $item->patchMerge($value, $ref, $reload);
+        if ($ref) {
+            $item->patchMergeIf($ref, $value, $reload);
+        } else {
+            $item->patchMerge($value, $reload);
+        }
+
         return $item;
     }
 
@@ -226,7 +285,12 @@ class Client extends AbstractConnection
     {
         $item = $this->newItem($collection, $key);
 
-        $item->delete($ref);
+        if ($ref) {
+            $item->deleteIf($ref);
+        } else {
+            $item->delete();
+        }
+
         return $item;
     }
 
@@ -265,8 +329,7 @@ class Client extends AbstractConnection
         $values = false
     ) {
         $list = (new Refs($collection, $key))
-            ->setItemClass($this->getItemClass())
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $offset, $values);
         return $list;
@@ -315,7 +378,12 @@ class Client extends AbstractConnection
     ) {
         $item = newEvent($collection, $key, $type, $timestamp, $ordinal);
 
-        $item->put($value, $ref);
+        if ($ref) {
+            $item->putIf($ref, $value);
+        } else {
+            $item->put($value);
+        }
+
         return $item;
     }
 
@@ -363,7 +431,12 @@ class Client extends AbstractConnection
     ) {
         $item = newEvent($collection, $key, $type, $timestamp, $ordinal);
 
-        $item->delete($ref);
+        if ($ref) {
+            $item->deleteIf($ref, $value);
+        } else {
+            $item->delete($value);
+        }
+
         return $item;
     }
 
@@ -405,40 +478,9 @@ class Client extends AbstractConnection
         $events = (new Events($collection))
             ->setKey($key)
             ->setType($type)
-            ->setEventClass($this->getEventClass())
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
 
         $events->get($limit, $range);
-        return $events;
-    }
-
-    /**
-     * @param string $collection
-     * @param string $type
-     * @param string $query
-     * @param string|array $sort
-     * @param string|array $aggregate
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return Events
-     * @link https://orchestrate.io/docs/apiref#search-events
-     */
-    public function searchEvents(
-        $collection,
-        $type,
-        $query,
-        $sort = null,
-        $aggregate = null,
-        $limit = 10,
-        $offset = 0
-    ) {
-        $events = (new Events($collection))
-            ->setType($type)
-            ->setEventClass($this->getEventClass())
-            ->setHttpClient($this->getHttpClient(true));
-
-        $events->search($query, $sort, $aggregate, $limit, $offset);
         return $events;
     }
 
@@ -450,24 +492,23 @@ class Client extends AbstractConnection
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @param boolean $bothWays
      *
-     * @return Relation
-     * @link https://orchestrate.io/docs/apiref#graph-put
+     * @return Relationship
+     * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function putRelation(
+    public function getRelationship(
         $collection,
         $key,
         $kind,
         $toCollection,
-        $toKey,
-        $bothWays = false
+        $toKey
     ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
-        $relation = new Relation($source, $kind, $destination);
-        $relation->put($bothWays);
+        $relation = new Relationship($source, $kind, $destination);
+        $relation->get();
+
         return $relation;
     }
 
@@ -477,24 +518,81 @@ class Client extends AbstractConnection
      * @param string $kind
      * @param string $toCollection
      * @param string $toKey
-     * @param boolean $bothWays
+     * @param array $value
+     * @param string $ref
+     * @param boolean $both_ways
      *
-     * @return Relation
+     * @return Relationship
+     * @link https://orchestrate.io/docs/apiref#graph-put
+     */
+    public function putRelationship(
+              $collection,
+              $key,
+              $kind,
+              $toCollection,
+              $toKey,
+        array $value = null,
+              $ref = null,
+              $both_ways = false
+    ) {
+        $source = $this->newItem($collection, $key);
+        $destination = $this->newItem($toCollection, $toKey);
+
+        $item = new Relationship($source, $kind, $destination);
+
+        if ($ref) {
+            if ($both_ways) {
+                $item->putIfBoth($value);
+            } else {
+                $item->putIf($value);
+            }
+        } elseif ($ref === false) {
+            if ($both_ways) {
+                $item->putIfNoneBoth($value);
+            } else {
+                $item->putIfNone($value);
+            }
+        } else {
+            if ($both_ways) {
+                $item->putBoth($value);
+            } else {
+                $item->put($value);
+            }
+        }
+
+        return $item;
+    }
+
+    /**
+     * @param string $collection
+     * @param string $key
+     * @param string $kind
+     * @param string $toCollection
+     * @param string $toKey
+     * @param boolean $both_ways
+     *
+     * @return Relationship
      * @link https://orchestrate.io/docs/apiref#graph-delete
      */
-    public function deleteRelation(
+    public function deleteRelationship(
         $collection,
         $key,
         $kind,
         $toCollection,
         $toKey,
-        $bothWays = false
+        $both_ways = false
     ) {
         $source = $this->newItem($collection, $key);
         $destination = $this->newItem($toCollection, $toKey);
 
-        $relation = new Relation($source, $kind, $destination);
-        $relation->delete($bothWays);
+        $relation = new Relationship($source, $kind, $destination);
+
+        if ($both_ways) {
+            $relation->deleteBoth();
+        } else {
+            $relation->delete();
+        }
+
         return $relation;
     }
 
@@ -505,18 +603,18 @@ class Client extends AbstractConnection
      * @param int $limit
      * @param int $offset
      *
-     * @return Relations
+     * @return Relationships
      * @link https://orchestrate.io/docs/apiref#graph-get
      */
-    public function listRelations(
+    public function listRelationships(
         $collection,
         $key,
         $kind,
         $limit = 10,
         $offset = 0
     ) {
-        $list = (new Relations($collection, $key, $kind))
-            ->setHttpClient($this->getHttpClient(true));
+        $list = (new Relationships($collection, $key, $kind))
+            ->setHttpClient($this->getHttpClient());
 
         $list->get($limit, $offset);
         return $list;
@@ -533,11 +631,11 @@ class Client extends AbstractConnection
      */
     private function newItem($collection = null, $key = null, $ref = null)
     {
-        return $this->getItemClass()->newInstance()
+        return (new KeyValue())
             ->setCollection($collection)
             ->setKey($key)
             ->setRef($ref)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 
     /**
@@ -558,12 +656,12 @@ class Client extends AbstractConnection
         $timestamp = null,
         $ordinal = null
     ) {
-        return $this->getEventClass()->newInstance()
+        return (new Event())
             ->setCollection($collection)
             ->setKey($key)
             ->setType($type)
             ->setTimestamp($timestamp)
             ->setOrdinal($ordinal)
-            ->setHttpClient($this->getHttpClient(true));
+            ->setHttpClient($this->getHttpClient());
     }
 }

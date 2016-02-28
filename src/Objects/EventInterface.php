@@ -1,18 +1,12 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Common\ToJsonInterface;
-
 /**
  * Define the Event minimum required interface.
  */
-interface EventInterface extends
-\ArrayAccess,
-ValueInterface,
-ToJsonInterface,
-ReusableObjectInterface,
-ConnectionInterface
+interface EventInterface extends ItemInterface
 {
+    const KIND = 'event';
 
     /**
      * @param boolean $required
@@ -88,23 +82,6 @@ ConnectionInterface
     /**
      * @return string
      */
-    public function getRef($required = false);
-
-    /**
-     * @param string $ref
-     *
-     * @return self
-     */
-    public function setRef($ref);
-
-    /**
-     * @return int
-     */
-    public function getReftime();
-
-    /**
-     * @return string
-     */
     public function getOrdinalStr();
 
     /**
@@ -120,7 +97,16 @@ ConnectionInterface
      * @return boolean Success of operation.
      * @link https://orchestrate.io/docs/apiref#events-put
      */
-    public function put(array $value = null, $ref = null);
+    public function put(array $value = null);
+
+    /**
+     * @param string $ref
+     * @param array $value
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#events-put-conditional
+     */
+    public function putIf($ref = true, array $value = null);
 
     /**
      * @param array $value
@@ -132,17 +118,17 @@ ConnectionInterface
     public function post(array $value = null, $timestamp = null);
 
     /**
+     *
+     * @return boolean Success of operation.
+     * @link https://orchestrate.io/docs/apiref#events-delete
+     */
+    public function delete();
+
+    /**
      * @param string $ref
      *
      * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-delete
+     * @link https://orchestrate.io/docs/apiref#events-delete-conditional
      */
-    public function delete($ref = null);
-
-    /**
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#events-delete
-     */
-    public function purge();
+    public function deleteIf($ref = true);
 }

@@ -1,34 +1,40 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\ItemClassTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-
-class Refs extends AbstractList
+class Refs extends AbstractList implements RefsInterface
 {
-    use ItemClassTrait;
-    use KeyTrait;
+    use Properties\CollectionTrait;
+    use Properties\KeyTrait;
+    use Properties\ItemClassTrait;
 
     public function __construct($collection = null, $key = null)
     {
-        parent::__construct($collection);
+        $this->setCollection($collection);
         $this->setKey($key);
     }
 
     public function reset()
     {
         parent::reset();
+        $this->_collection = null;
         $this->_key = null;
     }
 
     public function init(array $data)
     {
         if (!empty($data)) {
-            parent::init($data);
 
+            if (isset($data['itemClass'])) {
+                $this->setItemClass($data['itemClass']);
+            }
+            if (isset($data['collection'])) {
+                $this->setCollection($data['collection']);
+            }
             if (isset($data['key'])) {
                 $this->setKey($data['key']);
             }
+
+            parent::init($data);
         }
         return $this;
     }
@@ -36,27 +42,21 @@ class Refs extends AbstractList
     public function toArray()
     {
         $data = parent::toArray();
-        $data['kind'] = 'refs';
-
-        if (!empty($this->_key)) {
-            $data['key'] = $this->_key;
-        }
+        $data['kind'] = static::KIND;
+        $data['collection'] = $this->_collection;
+        $data['key'] = $this->_key;
 
         return $data;
     }
 
-    /**
-     * @param int $limit
-     * @param int $offset
-     * @param boolean $values
-     *
-     * @return boolean Success of operation.
-     * @link https://orchestrate.io/docs/apiref#refs-list
-     */
     public function get($limit = 10, $offset = 0, $values = false)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/refs/';
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'refs',
+        ];
 
         $parameters = ['limit' => $limit];
 
@@ -85,7 +85,7 @@ class Refs extends AbstractList
         if (!empty($itemValues['path']['kind'])) {
             $kind = $itemValues['path']['kind'];
 
-            if ($kind === 'item') {
+            if ($kind === KeyValue::KIND) {
                 $class = $this->getItemClass();
 
             } else {

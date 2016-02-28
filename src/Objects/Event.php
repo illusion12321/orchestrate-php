@@ -1,31 +1,13 @@
 <?php
 namespace andrefelipe\Orchestrate\Objects;
 
-use andrefelipe\Orchestrate\Objects\Properties\CollectionTrait;
-use andrefelipe\Orchestrate\Objects\Properties\KeyTrait;
-use andrefelipe\Orchestrate\Objects\Properties\ReftimeTrait;
-use andrefelipe\Orchestrate\Objects\Properties\RefTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TimestampTrait;
-use andrefelipe\Orchestrate\Objects\Properties\TypeTrait;
-
 class Event extends AbstractItem implements EventInterface
 {
-    use CollectionTrait;
-    use KeyTrait;
-    use ReftimeTrait;
-    use RefTrait;
-    use TimestampTrait;
-    use TypeTrait;
-
-    /**
-     * @var int
-     */
-    private $_ordinal = null;
-
-    /**
-     * @var string
-     */
-    private $_ordinalStr = null;
+    use Properties\CollectionTrait;
+    use Properties\KeyTrait;
+    use Properties\TypeTrait;
+    use Properties\TimestampTrait;
+    use Properties\OrdinalTrait;
 
     /**
      * @param string $collection
@@ -48,27 +30,6 @@ class Event extends AbstractItem implements EventInterface
         $this->setOrdinal($ordinal);
     }
 
-    public function getOrdinal($required = false)
-    {
-        if ($required && !$this->_ordinal) {
-            throw new \BadMethodCallException('There is no ordinal set yet. Do so through setOrdinal() method.');
-        }
-
-        return $this->_ordinal;
-    }
-
-    public function setOrdinal($ordinal)
-    {
-        $this->_ordinal = (int) $ordinal;
-
-        return $this;
-    }
-
-    public function getOrdinalStr()
-    {
-        return $this->_ordinalStr;
-    }
-
     public function reset()
     {
         parent::reset();
@@ -77,10 +38,7 @@ class Event extends AbstractItem implements EventInterface
         $this->_type = null;
         $this->_timestamp = null;
         $this->_ordinal = null;
-        $this->_ref = null;
-        $this->_reftime = null;
         $this->_ordinalStr = null;
-        $this->resetValue();
     }
 
     public function init(array $data)
@@ -89,10 +47,12 @@ class Event extends AbstractItem implements EventInterface
 
             if (!empty($data['path'])) {
                 $data = array_merge($data, $data['path']);
+                unset($data['path']);
             }
 
-            foreach ($data as $key => $value) {
+            parent::init($data);
 
+            foreach ($data as $key => $value) {
                 if ($key === 'collection') {
                     $this->setCollection($value);
                 } elseif ($key === 'key') {
@@ -103,14 +63,8 @@ class Event extends AbstractItem implements EventInterface
                     $this->setTimestamp($value);
                 } elseif ($key === 'ordinal') {
                     $this->setOrdinal($value);
-                } elseif ($key === 'ref') {
-                    $this->setRef($value);
-                } elseif ($key === 'reftime') {
-                    $this->_reftime = (int) $value;
                 } elseif ($key === 'ordinal_str') {
-                    $this->_ordinalStr = $value;
-                } elseif ($key === 'value') {
-                    $this->setValue((array) $value);
+                    $this->setOrdinalStr($value);
                 }
             }
         }
@@ -119,24 +73,14 @@ class Event extends AbstractItem implements EventInterface
 
     public function toArray()
     {
-        $data = [
-            'kind' => 'event',
-            'path' => [
-                'collection' => $this->getCollection(),
-                'kind' => 'event',
-                'key' => $this->getKey(),
-                'type' => $this->getType(),
-                'timestamp' => $this->getTimestamp(),
-                'ordinal' => $this->getOrdinal(),
-                'ref' => $this->getRef(),
-                'reftime' => $this->getReftime(),
-                'ordinal_str' => $this->getOrdinalStr(),
-            ],
-            'value' => parent::toArray(),
-            'timestamp' => $this->getTimestamp(),
-            'ordinal' => $this->getOrdinal(),
-            'reftime' => $this->getReftime(),
-        ];
+        $data = parent::toArray();
+
+        $data['path']['collection'] = $this->_collection;
+        $data['path']['key'] = $this->_key;
+        $data['path']['type'] = $this->_type;
+        $data['path']['timestamp'] = $this->_timestamp;
+        $data['path']['ordinal'] = $this->_ordinal;
+        $data['path']['ordinal_str'] = $this->_ordinalStr;
 
         return $data;
     }
@@ -144,8 +88,14 @@ class Event extends AbstractItem implements EventInterface
     public function get()
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'events',
+            $this->getType(true),
+            $this->getTimestamp(true),
+            $this->getOrdinal(true),
+        ];
 
         // request
         $this->request('GET', $path);
@@ -157,23 +107,33 @@ class Event extends AbstractItem implements EventInterface
         return $this->isSuccess();
     }
 
-    public function put(array $value = null, $ref = null)
+    public function put(array $value = null)
     {
-        $newValue = $value === null ? parent::toArray() : $value;
+        return $this->_put($value);
+    }
+
+    public function putIf($ref = true, array $value = null)
+    {
+        return $this->_put($value, $this->getValidRef($ref));
+    }
+
+    private function _put(array $value = null, $ref = null)
+    {
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'events',
+            $this->getType(true),
+            $this->getTimestamp(true),
+            $this->getOrdinal(true),
+        ];
 
         $options = ['json' => $newValue];
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
@@ -197,17 +157,21 @@ class Event extends AbstractItem implements EventInterface
 
     public function post(array $value = null, $timestamp = null)
     {
-        $path = $this->getCollection(true).'/'.$this->getKey(true)
-        .'/events/'.$this->getType(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'events',
+            $this->getType(true),
+        ];
 
         if ($timestamp === true) {
             $timestamp = $this->getTimestamp();
         }
         if ($timestamp) {
-            $path .= '/'.$timestamp;
+            $path[] = $timestamp;
         }
 
-        $newValue = $value === null ? parent::toArray() : $value;
+        $newValue = $value === null ? $this->getValue() : $value;
 
         // request
         $this->request('POST', $path, ['json' => $newValue]);
@@ -227,21 +191,31 @@ class Event extends AbstractItem implements EventInterface
         return $this->isSuccess();
     }
 
-    public function delete($ref = null)
+    public function delete()
+    {
+        return $this->_delete();
+    }
+
+    public function deleteIf($ref = true)
+    {
+        return $this->_delete($this->getValidRef($ref));
+    }
+
+    private function _delete($ref = null)
     {
         // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
+        $path = [
+            $this->getCollection(true),
+            $this->getKey(true),
+            'events',
+            $this->getType(true),
+            $this->getTimestamp(true),
+            $this->getOrdinal(true),
+        ];
 
         $options = ['query' => ['purge' => 'true']]; // currently required by Orchestrate
 
         if ($ref) {
-
-            // set If-Match
-            if ($ref === true) {
-                $ref = $this->getRef();
-            }
-
             $options['headers'] = ['If-Match' => '"'.$ref.'"'];
         }
 
@@ -253,29 +227,8 @@ class Event extends AbstractItem implements EventInterface
             $this->_ref = null;
             $this->_reftime = null;
             $this->_ordinalStr = null;
-            $this->resetValue();
-        }
-        return $this->isSuccess();
-    }
-
-    public function purge()
-    {
-        // define request options
-        $path = $this->getCollection(true).'/'.$this->getKey(true).'/events/'
-        .$this->getType(true).'/'.$this->getTimestamp(true).'/'.$this->getOrdinal(true);
-
-        $options = ['query' => ['purge' => 'true']];
-
-        // request
-        $this->request('DELETE', $path, $options);
-
-        // null ref if success, as it will never exist again
-        if ($this->isSuccess()) {
-            $this->_timestamp = null;
-            $this->_ordinal = null;
-            $this->_ref = null;
-            $this->_reftime = null;
-            $this->_ordinalStr = null;
+            $this->_score = null;
+            $this->_distance = null;
             $this->resetValue();
         }
         return $this->isSuccess();

@@ -13,9 +13,7 @@ class PatchBuilder implements ToArrayInterface
      * @var array
      */
     protected $operations = [];
-
-    public function __construct() {}
-
+    
     /**
      * @return array
      */

@@ -4,12 +4,15 @@ namespace andrefelipe\Orchestrate\Objects;
 /**
  *
  */
-interface ListInterface
+interface ListInterface extends
+\IteratorAggregate,
+\Countable,
+ObjectInterface
 {
     /**
      * Get the results of the list operation.
      *
-     * @return ObjectArray
+     * @return array
      */
     public function getResults();
 
@@ -23,7 +26,7 @@ interface ListInterface
     /**
      * Use a JMESPath expression to model the data you need.
      *
-     * @return mixed|ObjectArray
+     * @return array|null
      */
     public function extractValues($expression);
 

@@ -1,5 +1,42 @@
 # CHANGELOG
 
+## HEAD
+- Working on Async. Only implemented on KeyValue to test out.
+- Fix url encode on requests, for cases an item key has slashes or other special chars.
+- Removed convertion to ObjectArray of getValue and extract (JMESPath) methods, to ease compatibility with larger projects.
+
+## 0.16.1 - 2016-01-05
+- BC: Split methods for If-Match/If-None-Match conditionals for a much more comprehensive usage:
+- Use 'putIf('myref', [value...])' instead of 'put([value...], 'myref')';
+- Use 'putIf()' instead of 'put(null, true)';
+- Use 'putIfNone([value...])' instead of 'put([value...], false)';
+- Use 'putIfNone()' instead of 'put(null, false)';
+- Use 'deleteIf('myref')' instead of 'delete('myref')';
+- Same goes for all other methods, 'patchIf', 'patchMergeIf', relationship's 'putIf', 'putBothIf', 'putIfNone', 'putBothIfNone';
+- Client API remains the same, and will map correctly to corresponding method.
+- Added value support for relationship at the Client class.
+- Fixed a few errors.
+
+## 0.16.0 - 2016-01-03
+- Upgraded our Relationship class with full support for Value body.
+- Renamed 'Relation(s)' classes to 'Relationship(s)' to match Orchestrate.
+- Two-way relations are made through proper 'putBoth' and 'deleteBoth' methods.
+- Added getTotalRelationships method, and implemented them at the application level, to get the total item, event or relationship count of the entire application.
+- Removed 'purge' method from Event to simplify, please use 'delete' instead.
+- Removed 'searchEvents' from Client.
+- Added 'default_http_client' function to simplify the Guzzle client instantiation.
+- Removed getResponseDate() method.
+- Several internal improvements.
+
+## 0.15.0 - 2015-12-19
+- Introduced the Application object to provide Root Search.
+- Added support for Relation object in searches.
+- Moved the Application within the Objects namespace.
+- Implemented \JsonSerializable to objects.
+- Removed child class support from Client.
+- Added rootSearch method to Client.
+- Lazily instantiates a HTTP client on any object if required.
+
 ## 0.14.0 - 2015-05-29
 - Upgraded to Guzzle 6, PSR-7 compliant, cleaner and stronger.
 - Requires PHP >= 5.5
